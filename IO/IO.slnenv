@@ -1,0 +1,2 @@
+POCO_BASE=p:\poco
+PATH=$(PATH);$(POCO_BASE)\bin
