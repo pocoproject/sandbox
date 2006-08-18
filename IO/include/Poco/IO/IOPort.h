@@ -41,6 +41,7 @@
 
 
 #include "Poco/IO/IO.h"
+#include "Poco/IO/IOPortImpl.h"
 
 
 namespace Poco {

@@ -4,7 +4,7 @@
 // $Id: //poco/1.1.0/Foundation/include/Foundation/IOPort.h#1 $
 //
 // Library: IO
-// Package: Serial
+// Package: SerialPort
 // Module:  SerialPort
 //
 // Definition of the SerialPort class.
@@ -67,8 +67,8 @@ public:
 	const std::string& getName() const;
 
 private:
-	SerialPort(const Serial&);
-	const SerialPort& operator=(const Serial&);
+	SerialPort(const SerialPort&);
+	const SerialPort& operator=(const SerialPort&);
 };
 
 

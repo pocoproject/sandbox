@@ -57,46 +57,46 @@ class IO_API SerialConfig: private SerialConfigImpl
 public:
 	enum Parity
 	{
-		NONE  = NONE_IMPL,
-		ODD   = ODD_IMPL,
-		EVEN  = EVEN_IMPL,
-		MARK  = MARK_IMPL,
+		NONE = NONE_IMPL,
+		ODD = ODD_IMPL,
+		EVEN = EVEN_IMPL,
+		MARK = MARK_IMPL,
 		SPACE = SPACE_IMPL
 	};
 
 	enum StartBits
 	{
-		ONESTART  = ONESTOP_IMPL,
+		ONESTART = ONESTOP_IMPL,
 		ONE5START = ONE5STOP_IMPL,
-		TWOSTART  = TWOSTOP_IMPL
+		TWOSTART = TWOSTOP_IMPL
 	};
 
 	enum StopBits
 	{
-		ONESTOP  = ONESTOP_IMPL,
+		ONESTOP = ONESTOP_IMPL,
 		ONE5STOP = ONE5STOP_IMPL,
-		TWOSTOP  = TWOSTOP_IMPL
+		TWOSTOP = TWOSTOP_IMPL
 	};
 
 	SerialConfig();
-	
 	SerialConfig::SerialConfig(
 		int speed,
-		int dataBits = 8,
-		Parity parity = NONE,
-		StartBits startBits = ONESTART,
-		StopBits stopBits = ONESTOP,
-		bool useXonXoff = false,
-		unsigned char xOnChar = 0x00,
-		unsigned char xOffChar = 0xFF,
-		bool useEOF = true,
-		unsigned char eof = 0x0D,
-		int bufferSize = 1,
-		int timeout = 5000);
+		int dataBits=8,
+		char parity='N',
+		StartBits startBits=ONESTART,
+		StopBits stopBits=ONESTOP,
+		bool useXonXoff=false,
+		unsigned char xOnChar=0x00,
+		unsigned char xOffChar=0xFF,
+		bool useEOF=true,
+		unsigned char eof=0x0D,
+		int bufferSize=1,
+		int timeout=5000);
 
 	void setSpeed(int speed);
 	void setDataBits(int dataBits);
 	void setParity(ParityImpl parity);
+	void setParityChar(char parityChar);
 	void setStartBits(StartBitsImpl startBits);
 	void setStopBits(StopBitsImpl stopBits);
 	void setUseXonXoff(bool use);
@@ -110,10 +110,10 @@ public:
 
 	int getSpeed() const;
 	int getDataBits() const;
-	Parity getParity() const;
-	char parityChar() const;
-	StartBits getStartBits() const;
-	StopBits getStopBits() const;
+	ParityImpl getParity() const;
+	char getParityChar() const;
+	StartBitsImpl getStartBits() const;
+	StopBitsImpl getStopBits() const;
 	bool getUseXonXoff() const;
 	unsigned char getXonChar() const;
 	unsigned char getXoffChar() const;
@@ -143,6 +143,12 @@ inline void SerialConfig::setDataBits(int dataBits)
 inline void SerialConfig::setParity(SerialConfigImpl::ParityImpl parity)
 {
 	setParityImpl(parity);
+}
+
+
+inline void SerialConfig::setParityChar(char parityChar)
+{
+	setParityCharImpl(parityChar);
 }
 
 
@@ -218,27 +224,26 @@ inline int SerialConfig::getDataBits() const
 }
 
 
-inline SerialConfig::Parity SerialConfig::getParity() const
+inline SerialConfigImpl::ParityImpl SerialConfig::getParity() const
 {
-	return (Parity) getParityImpl();
+	return getParityImpl();
 }
 
 
-inline char SerialConfig::parityChar() const
+inline char SerialConfig::getParityChar() const
 {
-	return parityCharImpl();
+	return getParityCharImpl();
+}
+
+inline SerialConfigImpl::StartBitsImpl SerialConfig::getStartBits() const
+{
+	return getStartBitsImpl();
 }
 
 
-inline SerialConfig::StartBits SerialConfig::getStartBits() const
+inline SerialConfigImpl::StopBitsImpl SerialConfig::getStopBits() const
 {
-	return (StartBits) getStartBitsImpl();
-}
-
-
-inline SerialConfig::StopBits SerialConfig::getStopBits() const
-{
-	return (StopBits) getStopBitsImpl();
+	return getStopBitsImpl();
 }
 
 
@@ -282,7 +287,6 @@ inline int SerialConfig::getTimeoutSeconds() const
 {
 	return getTimeoutSecondsImpl();
 }
-
 
 inline int SerialConfig::getTimeout() const
 {

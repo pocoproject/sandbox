@@ -35,6 +35,11 @@
 
 
 #include "Poco/IO/SerialConfig_WIN32.h"
+#include "Poco/Exception.h"
+#include <sstream>
+
+
+using Poco::InvalidArgumentException;
 
 
 namespace Poco {
@@ -43,31 +48,98 @@ namespace IO {
 
 const int SerialConfigImpl::MSEC = 1000;
 
-SerialConfigImpl::SerialConfigImpl(
-	int speed,
+
+SerialConfigImpl::SerialConfigImpl(int speed,
 	int dataBits,
-	ParityImpl parity,
+	char parity,
 	StartBitsImpl startBits,
 	StopBitsImpl stopBits,
 	bool useXonXoff,
-	unsigned char xOn,
-	unsigned char xOff,
+	unsigned char xOnChar,
+	unsigned char xOffChar,
 	bool useEOF,
-	unsigned char eof,
+	unsigned char eofChar,
 	int bufferSize,
-	int timeout):
-	_speed(speed),
-	_dataBits(dataBits),
-	_parity(parity),
-	_startBits(startBits),
-	_stopBits(stopBits),
-	_useXonXoff(useXonXoff),
-	_xOnChar(xOn),
-	_xOffChar(xOff),
-	_eof(eof),
-	_bufferSize(bufferSize),
-	_timeout(timeout)
+	int timeout): 
+	_useXonXoff(useXonXoff), 
+	_useEOF(useEOF), 
+	_bufferSize(bufferSize)
 {
+	ZeroMemory(&_dcb, sizeof(DCB));
+
+	_dcb.DCBlength = sizeof(DCB);
+	_dcb.ByteSize = dataBits;
+	_dcb.BaudRate = speed;
+
+	setParityCharImpl(parity);
+	_dcb.fParity = (('N' != parity) && ('n' != parity));
+	
+	_dcb.StopBits = stopBits;
+
+	if (_useEOF) _dcb.EofChar = eofChar;
+
+	if (useXonXoff)
+	{
+		_dcb.fOutX = TRUE;
+		_dcb.fInX = TRUE;
+		_dcb.XonChar = xOnChar;
+		_dcb.XoffChar = xOffChar;
+	}
+
+	ZeroMemory(&_cto, sizeof(COMMTIMEOUTS));
+	_cto.ReadIntervalTimeout = MAXDWORD ;
+	_cto.ReadTotalTimeoutMultiplier = MAXDWORD;
+	
+	setTimeoutImpl(timeout);
+}
+
+
+char SerialConfigImpl::getParityCharImpl() const
+{
+	switch (_dcb.Parity)
+	{
+	case NONE_IMPL:
+		return 'N';
+	case ODD_IMPL:
+		return 'O';
+	case EVEN_IMPL:
+		return 'E';
+	case MARK_IMPL:
+		return 'M';
+	case SPACE_IMPL:
+		return 'S';
+	default:
+		return 'N';
+	}
+}
+
+
+void SerialConfigImpl::setParityCharImpl(char parityChar)
+{
+	switch (parityChar)
+	{
+	case 'n': case 'N':
+		_dcb.Parity = NONE_IMPL; break;
+
+	case 'o': case 'O':
+		_dcb.Parity = ODD_IMPL; break;
+
+	case 'e': case 'E':
+		_dcb.Parity = EVEN_IMPL; break;
+
+	case 'm': case 'M':
+		_dcb.Parity = MARK_IMPL; break;
+
+	case 's': case 'S':
+		_dcb.Parity = SPACE_IMPL; break;
+
+	default:
+		{
+			std::ostringstream os;
+			os << "SerialConfigImpl::setParityCharImpl(" << parityChar << ')';
+			throw InvalidArgumentException(os.str());
+		}
+	}
 }
 
 

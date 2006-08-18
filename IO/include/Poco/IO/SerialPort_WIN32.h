@@ -74,8 +74,8 @@ private:
 	HANDLE _handle;
 	SerialConfigImpl _config;
 
-	friend class Serial;
-	friend class IOPortImpl<Serial, SerialConfig>;
+	friend class SerialPort;
+	friend class IOPortImpl<SerialPort, SerialConfig>;
 };
 
 

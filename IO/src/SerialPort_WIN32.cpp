@@ -39,6 +39,8 @@
 #include <windows.h>
 
 
+using Poco::CreateFileException;
+
 namespace Poco {
 namespace IO {
 
@@ -84,7 +86,7 @@ void SerialPortImpl::initImpl()
 
 	cto.ReadIntervalTimeout = MAXDWORD ;
 	cto.ReadTotalTimeoutMultiplier = MAXDWORD;
-	cto.ReadTotalTimeoutConstant = _config.getTimeoutImpl();;
+	cto.ReadTotalTimeoutConstant = _config.getTimeoutImpl();
 
 	if (!SetCommTimeouts(_handle, &cto)) handleError(_name);
 
@@ -163,29 +165,30 @@ const std::string& SerialPortImpl::getNameImpl() const
 
 std::string& SerialPortImpl::getErrorText(std::string& buf)
 {
-    DWORD dwRet;
-    LPTSTR pTemp = NULL;
+	DWORD dwRet;
+	LPTSTR pTemp = NULL;
 
-    DWORD err_code = GetLastError();
+	DWORD errCode = GetLastError();
 
-    dwRet = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_ARGUMENT_ARRAY,
-                           NULL,
-                           err_code,
-                           LANG_NEUTRAL,
-                           pTemp,
-                           0,
-                           NULL );
-    if (dwRet && pTemp)
-    {
+	dwRet = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_ARGUMENT_ARRAY,
+		NULL,
+		errCode,
+		LANG_NEUTRAL,
+		pTemp,
+		0,
+		NULL);
+
+	if (dwRet && pTemp)
+	{
 		if ((std::string(pTemp).length()-2) >= 0)
 		{
 			pTemp[std::string(pTemp).length()-2] = TEXT('\0');  //remove cr and newline character
 			buf = pTemp;
 		}
 
-        LocalFree((HLOCAL) pTemp);
-    }
-    return buf;
+		LocalFree((HLOCAL) pTemp);
+	}
+	return buf;
 }
 
 void SerialPortImpl::handleError(const std::string& name)

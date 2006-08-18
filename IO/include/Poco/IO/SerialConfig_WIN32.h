@@ -53,25 +53,25 @@ class IO_API SerialConfigImpl
 public:
 	enum ParityImpl
 	{
-		NONE_IMPL  = NOPARITY,
-		ODD_IMPL   = ODDPARITY,
-		EVEN_IMPL  = EVENPARITY,
-		MARK_IMPL  = MARKPARITY,
+		NONE_IMPL = NOPARITY,
+		ODD_IMPL = ODDPARITY,
+		EVEN_IMPL = EVENPARITY,
+		MARK_IMPL = MARKPARITY,
 		SPACE_IMPL = SPACEPARITY
 	};
 
 	enum StartBitsImpl
 	{
-		ONESTART_IMPL  = ONESTOPBIT,
+		ONESTART_IMPL = ONESTOPBIT,
 		ONE5START_IMPL = ONE5STOPBITS,
-		TWOSTART_IMPL  = TWOSTOPBITS
+		TWOSTART_IMPL = TWOSTOPBITS
 	};
 
 	enum StopBitsImpl
 	{
-		ONESTOP_IMPL  = ONESTOPBIT,
+		ONESTOP_IMPL = ONESTOPBIT,
 		ONE5STOP_IMPL = ONE5STOPBITS,
-		TWOSTOP_IMPL  = TWOSTOPBITS
+		TWOSTOP_IMPL = TWOSTOPBITS
 	};
 
 protected:
@@ -80,20 +80,21 @@ protected:
 	SerialConfigImpl(
 		int speed,
 		int dataBits,
-		ParityImpl parity,
+		char parity,
 		StartBitsImpl startBits,
 		StopBitsImpl stopBits,
 		bool useXonXoff,
-		unsigned char xOn,
-		unsigned char xOff,
+		unsigned char xOnChar,
+		unsigned char xOffChar,
 		bool useEOF,
-		unsigned char eof,
+		unsigned char eofChar,
 		int bufferSize,
 		int timeout);
 
 	void setSpeedImpl(int speed);
 	void setDataBitsImpl(int dataBits);
 	void setParityImpl(ParityImpl parity);
+	void setParityCharImpl(char parityChar);
 	void setStartBitsImpl(StartBitsImpl startBits);
 	void setStopBitsImpl(StopBitsImpl stopBits);
 	void setUseXonXoffImpl(bool use);
@@ -108,7 +109,7 @@ protected:
 	int getSpeedImpl() const;
 	int getDataBitsImpl() const;
 	ParityImpl getParityImpl() const;
-	char parityCharImpl() const;
+	char getParityCharImpl() const;
 	StartBitsImpl getStartBitsImpl() const;
 	StopBitsImpl getStopBitsImpl() const;
 	bool getUseXonXoffImpl() const;
@@ -120,23 +121,21 @@ protected:
 	int getTimeoutSecondsImpl() const;
 	int getTimeoutImpl() const;
 
+	DCB& dcb();
+	COMMTIMEOUTS& commTimeouts();
+
 private:
 	SerialConfigImpl();
 
-	int _speed;
-	int _dataBits;
-	ParityImpl _parity;
-	StartBitsImpl _startBits;
-	StopBitsImpl _stopBits;
+	void applyCommTimeouts(int timeout);
+
+	DCB _dcb;
+	COMMTIMEOUTS _cto;
 	bool _useXonXoff;
-	unsigned char _xOnChar;
-	unsigned char _xOffChar;
 	bool _useEOF;
-	unsigned char _eof;
 	int _bufferSize;
-	int _timeout;
-	
-	friend class SerialImpl;
+
+	friend class SerialPortImpl;
 	friend class SerialConfig;
 };
 
@@ -146,31 +145,32 @@ private:
 //
 inline void SerialConfigImpl::setSpeedImpl(int speed)
 {
-	_speed = speed;
+	_dcb.BaudRate = speed;
 }
 
 
 inline void SerialConfigImpl::setDataBitsImpl(int dataBits)
 {
-	_dataBits = dataBits;
+	_dcb.ByteSize = dataBits;
 }
 
 
 inline void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
 {
-	_parity = parity;
+	_dcb.fParity = (parity != SerialConfigImpl::ParityImpl::NONE_IMPL);
+	_dcb.Parity = parity;
 }
 
 
 inline void SerialConfigImpl::setStartBitsImpl(SerialConfigImpl::StartBitsImpl startBits)
 {
-	_startBits = startBits;
+	_dcb.StopBits = startBits;
 }
 
 
 inline void SerialConfigImpl::setStopBitsImpl(SerialConfigImpl::StopBitsImpl stopBits)
 {
-	_stopBits = stopBits;
+	_dcb.StopBits = stopBits;
 }
 
 
@@ -182,13 +182,13 @@ inline void SerialConfigImpl::setUseXonXoffImpl(bool use)
 
 inline void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
 {
-	_xOnChar = xOn;
+	_dcb.XonChar = xOn;
 }
 
 
 inline void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
 {
-	_xOffChar = xOff;
+	_dcb.XoffChar = xOff;
 }
 
 
@@ -200,7 +200,7 @@ inline void SerialConfigImpl::setUseEOFImpl(bool useEOF)
 
 inline void SerialConfigImpl::setEOFCharImpl(unsigned char eof)
 {
-	_eof = eof;
+	_dcb.EofChar = eof;
 }
 
 
@@ -212,63 +212,44 @@ inline void SerialConfigImpl::setBufferSizeImpl(int size)
 
 inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
 {
-	_timeout = timeout*MSEC;
+	setTimeoutImpl(timeout*MSEC);
 }
 
 inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 {
-	_timeout = timeout;
+	_cto.ReadTotalTimeoutConstant = timeout;
 }
 
 
 inline int SerialConfigImpl::getSpeedImpl() const
 {
-	return _speed;
+	return _dcb.BaudRate;
 }
 
 
 inline int SerialConfigImpl::getDataBitsImpl() const
 {
-	return _dataBits;
+	return _dcb.ByteSize;
 }
 
 
 inline SerialConfigImpl::ParityImpl SerialConfigImpl::getParityImpl() const
 {
-	return _parity;
-}
-
-
-inline char SerialConfigImpl::parityCharImpl() const
-{
-	switch (_parity)
-	{
-	case NONE_IMPL:
-		return 'N';
-	case ODD_IMPL:
-		return 'O';
-	case EVEN_IMPL:
-		return 'E';
-	case MARK_IMPL:
-		return 'M';
-	case SPACE_IMPL:
-		return 'S';
-	default:
-		return 'N';
-	}
+	return (SerialConfigImpl::ParityImpl) _dcb.Parity;
 }
 
 
 inline SerialConfigImpl::StartBitsImpl SerialConfigImpl::getStartBitsImpl() const
 {
-	return _startBits;
+	return (SerialConfigImpl::StartBitsImpl) _dcb.StopBits;
 }
 
 
 inline SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
 {
-	return _stopBits;
+	return (SerialConfigImpl::StopBitsImpl) _dcb.StopBits;
 }
+
 
 
 inline bool SerialConfigImpl::getUseXonXoffImpl() const
@@ -277,15 +258,16 @@ inline bool SerialConfigImpl::getUseXonXoffImpl() const
 }
 
 
+
 inline unsigned char SerialConfigImpl::getXonCharImpl() const
 {
-	return _xOnChar;
+	return _dcb.XonChar;
 }
 
 
 inline unsigned char SerialConfigImpl::getXoffCharImpl() const
 {
-	return _xOffChar;
+	return _dcb.XoffChar;
 }
 
 
@@ -295,9 +277,9 @@ inline bool SerialConfigImpl::getUseEOFImpl() const
 }
 
 
-unsigned char SerialConfigImpl::getEOFCharImpl() const
+inline unsigned char SerialConfigImpl::getEOFCharImpl() const
 {
-	return _eof;
+	return _dcb.EofChar;
 }
 
 
@@ -309,13 +291,25 @@ inline int SerialConfigImpl::getBufferSizeImpl() const
 
 inline int SerialConfigImpl::getTimeoutSecondsImpl() const
 {
-	return _timeout*MSEC;
+	return getTimeoutImpl()*MSEC;
 }
 
 
 inline int SerialConfigImpl::getTimeoutImpl() const
 {
-	return _timeout;
+	return _cto.ReadTotalTimeoutConstant;
+}
+
+
+inline DCB& SerialConfigImpl::dcb()
+{
+	return _dcb;
+}
+
+
+inline COMMTIMEOUTS& SerialConfigImpl::commTimeouts()
+{
+	return _cto;
 }
 
 

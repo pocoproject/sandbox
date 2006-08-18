@@ -49,9 +49,9 @@ namespace IO {
 SerialConfig::SerialConfig(): 
 	SerialConfigImpl(2400, 
 		8, 
-		SerialConfigImpl::NONE_IMPL, 
-		SerialConfigImpl::ONESTART_IMPL, 
-		SerialConfigImpl::ONESTOP_IMPL,
+		'N', 
+		SerialConfigImpl::StartBitsImpl::ONESTART_IMPL, 
+		SerialConfigImpl::StopBitsImpl::ONESTOP_IMPL,
 		false,
 		0, 
 		-1,
@@ -66,7 +66,7 @@ SerialConfig::SerialConfig():
 SerialConfig::SerialConfig(
 	int speed,
 	int dataBits,
-	SerialConfig::Parity parity,
+	char parity,
 	SerialConfig::StartBits startBits,
 	SerialConfig::StopBits stopBits,
 	bool useXonXoff,
@@ -76,19 +76,18 @@ SerialConfig::SerialConfig(
 	unsigned char eof,
 	int bufferSize,
 	int timeout):
-SerialConfigImpl(
-	speed,
-	dataBits,
-	(SerialConfigImpl::ParityImpl) parity,
-	(SerialConfigImpl::StartBitsImpl)startBits,
-	(SerialConfigImpl::StopBitsImpl) stopBits,
-	useXonXoff,
-	xOnChar,
-	xOffChar,
-	useEOF,
-	eof,
-	bufferSize,
-	timeout)
+	SerialConfigImpl(speed,
+		dataBits,
+		parity,
+		(SerialConfigImpl::StartBitsImpl)startBits,
+		(SerialConfigImpl::StopBitsImpl) stopBits,
+		useXonXoff,
+		xOnChar,
+		xOffChar,
+		useEOF,
+		eof,
+		bufferSize,
+		timeout)
 {
 }
 

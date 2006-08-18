@@ -4,7 +4,7 @@
 // $Id: //poco/1.1.0/Foundation/src/IOPort.cpp#1 $
 //
 // Library: IO
-// Package: Serial
+// Package: SerialPort
 // Module:  SerialPort
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
