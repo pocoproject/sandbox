@@ -4,7 +4,7 @@
 // $Id: //poco/1.1.0/Foundation/include/Foundation/IOPort.h#1 $
 //
 // Library: IO
-// Package: SerialPort
+// Package: Serial
 // Module:  SerialPort
 //
 // Definition of the SerialPort class.
