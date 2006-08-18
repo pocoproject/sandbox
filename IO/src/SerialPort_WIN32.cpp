@@ -60,35 +60,9 @@ SerialPortImpl::~SerialPortImpl()
 
 void SerialPortImpl::initImpl()
 {
-	DCB dcb;
-	ZeroMemory(&dcb, sizeof(DCB));
+	if (!SetCommState(_handle, &(_config.dcb()))) handleError(_name);
 
-	dcb.DCBlength = sizeof(DCB);
-	dcb.ByteSize = _config.getDataBitsImpl();
-	dcb.EofChar = _config.getEOFCharImpl();
-	dcb.BaudRate = _config.getSpeedImpl();
-	dcb.fParity = (_config.getParityImpl() != SerialConfigImpl::ParityImpl::NONE_IMPL);
-	dcb.Parity = _config.getParityImpl();
-	dcb.StopBits = _config.getStopBitsImpl();
-
-	if (_config.getUseXonXoffImpl())
-	{
-		dcb.fOutX = TRUE;
-		dcb.fInX = TRUE;
-		dcb.XonChar = _config.getXonCharImpl();
-		dcb.XoffChar = _config.getXoffCharImpl();
-	}
-
-	if (!SetCommState(_handle, &dcb)) handleError(_name);
-
-	COMMTIMEOUTS cto;
-	ZeroMemory(&cto, sizeof(COMMTIMEOUTS));
-
-	cto.ReadIntervalTimeout = MAXDWORD ;
-	cto.ReadTotalTimeoutMultiplier = MAXDWORD;
-	cto.ReadTotalTimeoutConstant = _config.getTimeoutImpl();
-
-	if (!SetCommTimeouts(_handle, &cto)) handleError(_name);
+	if (!SetCommTimeouts(_handle, &(_config.commTimeouts()))) handleError(_name);
 
 	DWORD bufSize = (DWORD) _config.getBufferSizeImpl();
 	SetupComm(_handle, bufSize, bufSize);
@@ -100,6 +74,7 @@ void SerialPortImpl::reconfigureImpl(const SerialConfigImpl& config)
 	_config = config;
 	initImpl();
 }
+
 
 void SerialPortImpl::openImpl()
 {
@@ -122,7 +97,6 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 	DWORD read = 0;
 	int bufSize = _config.getBufferSizeImpl();
 	char* pReadBuf = new char[bufSize+1];
-	char eof = _config.getEOFCharImpl();
 	SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
 
 	buffer = "";
@@ -137,7 +111,9 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 
 		poco_assert(read <= bufSize);
 		buffer.append(pReadBuf, read);
-		if (buffer.find(eof) != buffer.npos) break;
+		if ((_config.getUseEOFImpl()) && 
+			((buffer.find(_config.getEOFCharImpl()) != buffer.npos))) 
+			break;
 	}while(0 != read);
 
 	delete[] pReadBuf;
@@ -165,12 +141,12 @@ const std::string& SerialPortImpl::getNameImpl() const
 
 std::string& SerialPortImpl::getErrorText(std::string& buf)
 {
-	DWORD dwRet;
-	LPTSTR pTemp = NULL;
+    DWORD dwRet;
+    LPTSTR pTemp = NULL;
 
-	DWORD errCode = GetLastError();
+    DWORD errCode = GetLastError();
 
-	dwRet = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_ARGUMENT_ARRAY,
+    dwRet = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_ARGUMENT_ARRAY,
 		NULL,
 		errCode,
 		LANG_NEUTRAL,
@@ -178,25 +154,24 @@ std::string& SerialPortImpl::getErrorText(std::string& buf)
 		0,
 		NULL);
 
-	if (dwRet && pTemp)
-	{
+    if (dwRet && pTemp)
+    {
 		if ((std::string(pTemp).length()-2) >= 0)
 		{
 			pTemp[std::string(pTemp).length()-2] = TEXT('\0');  //remove cr and newline character
 			buf = pTemp;
 		}
 
-		LocalFree((HLOCAL) pTemp);
-	}
-	return buf;
+        LocalFree((HLOCAL) pTemp);
+    }
+    return buf;
 }
+
 
 void SerialPortImpl::handleError(const std::string& name)
 {
 	std::string errorText;
 	DWORD error = GetLastError();
-
-	PurgeComm(_handle, PURGE_TXABORT|PURGE_RXABORT|PURGE_TXCLEAR|PURGE_RXCLEAR);
 
 	switch (error)
 	{
