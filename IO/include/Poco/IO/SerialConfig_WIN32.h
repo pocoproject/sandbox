@@ -127,8 +127,6 @@ protected:
 private:
 	SerialConfigImpl();
 
-	void applyCommTimeouts(int timeout);
-
 	DCB _dcb;
 	COMMTIMEOUTS _cto;
 	bool _useXonXoff;
