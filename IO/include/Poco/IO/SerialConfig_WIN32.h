@@ -213,6 +213,7 @@ inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
 	setTimeoutImpl(timeout*MSEC);
 }
 
+
 inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 {
 	_cto.ReadTotalTimeoutConstant = timeout;
@@ -249,12 +250,10 @@ inline SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
 }
 
 
-
 inline bool SerialConfigImpl::getUseXonXoffImpl() const
 {
 	return _useXonXoff;
 }
-
 
 
 inline unsigned char SerialConfigImpl::getXonCharImpl() const
