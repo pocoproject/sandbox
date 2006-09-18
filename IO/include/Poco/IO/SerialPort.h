@@ -53,7 +53,7 @@ namespace Poco {
 namespace IO {
 
 
-class IO_API SerialPort: protected SerialPortImpl
+class IO_API SerialPort: private SerialPortImpl
 {
 public:
 	SerialPort(const std::string& name, const SerialConfig& config);
@@ -77,7 +77,7 @@ private:
 //
 inline void SerialPort::reconfigure(const SerialConfig& config)
 {
-	reconfigureImpl(config);
+	reconfigureImpl((SerialConfigImpl&) config);
 }
 
 inline void SerialPort::open()

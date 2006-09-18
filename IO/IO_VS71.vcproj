@@ -157,9 +157,6 @@
 				<File
 					RelativePath=".\include\Poco\Io\IOPort.h">
 				</File>
-				<File
-					RelativePath=".\include\Poco\Io\IOPortImpl.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"

@@ -41,7 +41,6 @@
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IO/IOPortImpl.h"
 
 
 namespace Poco {
@@ -49,22 +48,12 @@ namespace IO {
 
 
 template <class P, class C>
-class IOPort: private IOPortImpl<P, C>
+class IOPort
 	/// The IOPort class provides methods for working with a hardware I/O port.
 {
 public:
-	IOPort(const std::string& name, const C& config): IOPortImpl<P,C>(name, config)
+	IOPort(const std::string& name, const C& config): _port(name, config)
 		/// Creates the I/O port.
-	{
-	}
-		
-	IOPort(const char* name): IOPortImpl<P,C>(std::string(name))
-		/// Creates the I/O port.
-	{
-	}
-		
-	IOPort(const IOPort<P,C>& port): IOPortImpl<P,C>(port.getNameImpl())
-		/// Copy constructor.
 	{
 	}
 
@@ -76,47 +65,49 @@ public:
 	void init()
 		/// Initializes the port.
 	{
-		return initImpl();
+		return _port.init();
 	}
 
 	void reconfigure(const C& config)
 		/// Initializes the port.
 	{
-		return reconfigureImpl(config);
+		return _port.reconfigure(config);
 	}
 
 	void open()
 		/// Opens the port.
 	{
-		return openImpl();
+		return _port.open();
 	}
 
 	void close()
 		/// Closes the port.
 	{
-		return closeImpl();
+		return _port.close();
 	}
 
 	std::string& read(std::string& buffer)
 		/// Reads the data from the port.
 	{
-		return readImpl(buffer);
+		return _port.read(buffer);
 	}
 
 	int write(const std::string& data)
 		/// Writes the data to the port.
 	{
-		return writeImpl(data);
+		return _port.write(data);
 	}
 
 	const std::string& getName() const
 		/// Returns the port name.
 	{
-		return getNameImpl();
+		return _port.getName();
 	}
 
 private:
 	IOPort();
+
+	P _port;
 };
 
 

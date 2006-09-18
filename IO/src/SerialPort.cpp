@@ -47,7 +47,7 @@ namespace IO {
 
 
 SerialPort::SerialPort(const std::string& name, const SerialConfig& config):
-	SerialPortImpl(name, config)
+	SerialPortImpl(name, (SerialConfigImpl&) config)
 {
 }
 

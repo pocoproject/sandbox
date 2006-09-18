@@ -134,7 +134,6 @@ private:
 	int _bufferSize;
 
 	friend class SerialPortImpl;
-	friend class SerialConfig;
 };
 
 

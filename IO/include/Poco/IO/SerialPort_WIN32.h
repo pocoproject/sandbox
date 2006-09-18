@@ -42,7 +42,6 @@
 
 #include "Poco/IO/IO.h"
 #include "Poco/IO/SerialConfig_WIN32.h"
-#include "Poco/IO/IOPortImpl.h"
 #include <windows.h>
 
 
@@ -73,9 +72,6 @@ private:
 	std::string _name;
 	HANDLE _handle;
 	SerialConfigImpl _config;
-
-	friend class SerialPort;
-	friend class IOPortImpl<SerialPort, SerialConfig>;
 };
 
 

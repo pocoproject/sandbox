@@ -38,7 +38,7 @@
 #include "Poco/IO/SerialConfig.h"
 #include "Poco/IO/SerialPort.h"
 #include "Poco/IO/ActivePort.h"
-
+#include <iostream>
 
 using Poco::ActiveResult;
 using Poco::IO::IOPort;
@@ -59,7 +59,8 @@ IOTest::~IOTest()
 
 void IOTest::testSerial()
 {
-	// not really a test (yet)
+	// In order for this test to work, two serial ports connected 
+	// with a null modem cable are needed.
 
 	typedef IOPort<SerialPort, SerialConfig> SerialPort;
 	SerialConfig config(9600, 
@@ -75,18 +76,38 @@ void IOTest::testSerial()
 		10,//buffer size
 		1000);//timeout
 
-	SerialPort com1("COM1", config);
-	std::string str = "test";
+	std::string name1;
+	std::string name2;
+
+#if defined(POCO_OS_FAMILY_WINDOWS)
+	name1 = "COM1";
+	name2 = "COM2";
+#elif defined(POCO_OS_FAMILY_UNIX)
+	throw NotImplementedException("Not implemented");
+#endif
+
+	SerialPort com1(name1, config);
+	SerialPort com2(name2, config);
+	std::string str = "0123456789";
 	com1.write(str);
-		
-	config.setBufferSize(1);
-	config.setTimeout(15000);
-	com1.reconfigure(config);
+	str = ""; assert("" == str);
+	com2.read(str);	
+	assert("0123456789" == str);
 	
-	ActivePort<SerialPort> activePort(com1);
-	std::string buffer;
-	ActiveResult<std::string> result = activePort.read(buffer);
+	config.setBufferSize(1);
+	config.setSpeed(19200);
+	com1.reconfigure(config);
+	com2.reconfigure(config);
+	com1.write(str);
+	str = ""; assert("" == str);	
+	com2.read(str);	
+	assert("0123456789" == str);
+	/*
+	ActivePort<SerialPort> activePort(com2);
+	ActiveResult<std::string> result = activePort.read(str);
 	result.wait();
+	assert("0123456789" == str);
+	*/
 }
 
 
