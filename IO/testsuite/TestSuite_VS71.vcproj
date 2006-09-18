@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;&quot;$(POCO_BASE)\Foundation\include&quot;;&quot;$(POCO_BASE)\CppUnit\include&quot;;&quot;$(POCO_BASE)\CppUnit\WinTestRunner\include&quot;"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -81,7 +81,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="TRUE"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="..\include;&quot;$(POCO_BASE)\Foundation\include&quot;;&quot;$(POCO_BASE)\CppUnit\include&quot;;&quot;$(POCO_BASE)\CppUnit\WinTestRunner\include&quot;"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
