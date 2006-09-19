@@ -212,7 +212,7 @@
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\include\Poco\IO\ActivePort.h"
+					RelativePath=".\include\Poco\Io\ActivePort.h"
 					>
 				</File>
 				<File
@@ -220,11 +220,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\IOPort.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\IOPortImpl.h"
+					RelativePath=".\include\Poco\Io\IOPort.h"
 					>
 				</File>
 			</Filter>
@@ -240,20 +236,34 @@
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\include\Poco\IO\SerialConfig.h"
+					RelativePath=".\include\Poco\Io\SerialConfig.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\SerialConfig_WIN32.h"
+					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Io\SerialPort.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\SerialPort.h"
+					RelativePath=".\include\Poco\Io\SerialPort_WIN32.h"
 					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialPort_WIN32.h"
-					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter

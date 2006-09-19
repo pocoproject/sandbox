@@ -106,6 +106,8 @@ public:
 
 private:
 	IOPort();
+	IOPort(const P&);
+	const P& operator = (const P&);
 
 	P _port;
 };

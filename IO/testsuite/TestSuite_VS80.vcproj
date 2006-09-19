@@ -201,10 +201,18 @@
 			<Filter
 				Name="Header Files"
 				>
+				<File
+					RelativePath=".\src\IOTest.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				>
+				<File
+					RelativePath=".\src\IOTest.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
