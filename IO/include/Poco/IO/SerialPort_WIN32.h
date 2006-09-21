@@ -58,7 +58,11 @@ protected:
 	void reconfigureImpl(const SerialConfigImpl& config);
 	void openImpl();
 	void closeImpl();
+	char readImpl();
+	int readImpl(char* pBuffer, int length);
 	std::string& readImpl(std::string& buffer);
+	int writeImpl(char c);
+	int writeImpl(const char* buffer, int length);
 	int writeImpl(const std::string& data);
 	const std::string& getNameImpl() const;
 	void handleError(const std::string& path);

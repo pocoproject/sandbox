@@ -223,6 +223,10 @@
 					RelativePath=".\include\Poco\Io\IOPort.h"
 					>
 				</File>
+				<File
+					RelativePath=".\include\Poco\IO\IOPortStream.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"

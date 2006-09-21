@@ -154,7 +154,7 @@ inline void SerialConfigImpl::setDataBitsImpl(int dataBits)
 
 inline void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
 {
-	_dcb.fParity = (parity != SerialConfigImpl::ParityImpl::NONE_IMPL);
+	_dcb.fParity = (parity != NONE_IMPL);
 	_dcb.Parity = parity;
 }
 

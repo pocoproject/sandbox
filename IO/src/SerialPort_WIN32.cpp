@@ -37,9 +37,11 @@
 #include "Poco/IO/SerialPort_WIN32.h"
 #include "Poco/Exception.h"
 #include <windows.h>
-
+#include <iostream>
 
 using Poco::CreateFileException;
+using Poco::IOException;
+
 
 namespace Poco {
 namespace IO {
@@ -91,15 +93,36 @@ void SerialPortImpl::closeImpl()
 }
 
 
+char SerialPortImpl::readImpl()
+{
+	char readBuf = 0;
+	readImpl(&readBuf, 1);
+	return readBuf;
+}
+
+
+int SerialPortImpl::readImpl(char* pBuffer, int length)
+{
+	if (0 == length) return 0;
+
+	DWORD read = 0;
+	//SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
+
+	if (!ReadFile(_handle, pBuffer, length, &read, NULL)) 
+		handleError(_name);
+
+	return read;
+}
+
+
 std::string& SerialPortImpl::readImpl(std::string& buffer)
 {
-	std::string* addr = &buffer;
 	DWORD read = 0;
 	int bufSize = _config.getBufferSizeImpl();
 	char* pReadBuf = new char[bufSize+1];
-	SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
+	//SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
 
-	buffer = "";
+	buffer.clear();
 	do
     {
 		ZeroMemory(pReadBuf, bufSize+1); 
@@ -111,9 +134,17 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 
 		poco_assert(read <= bufSize);
 		buffer.append(pReadBuf, read);
-		if ((_config.getUseEOFImpl()) && 
-			((buffer.find(_config.getEOFCharImpl()) != buffer.npos))) 
-			break;
+		
+		if (_config.getUseEOFImpl()) 
+		{
+			size_t pos = buffer.find(_config.getEOFCharImpl());
+			if (pos != buffer.npos)
+			{
+				buffer = buffer.substr(0, pos);
+				PurgeComm(_handle, PURGE_RXCLEAR);
+				break;
+			}
+		}
 	}while(0 != read);
 
 	delete[] pReadBuf;
@@ -121,15 +152,45 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 }
 
 
+int SerialPortImpl::writeImpl(char c)
+{
+	return writeImpl(&c, 1);
+}
+
+
+int SerialPortImpl::writeImpl(const char* pBuffer, int length)
+{
+	if (0 == length) return 0;
+
+	std::string str;
+	str.assign(pBuffer, length);
+	
+	return writeImpl(str);
+}
+
+
 int SerialPortImpl::writeImpl(const std::string& data)
 {
-	DWORD dwWritten = 0;
-	int length = data.length();
+	if (0 == data.length()) return 0;
 
-	if(!WriteFile(_handle, data.c_str(), length, &dwWritten, NULL) || (dwWritten != length))
+	std::string d = data;
+
+	if (_config.getUseEOFImpl()) 
+	{
+		size_t pos = d.find(_config.getEOFCharImpl());
+		if (pos != d.npos) d = d.substr(0, pos+1);
+	}
+
+	DWORD written = 0;
+	DWORD length = static_cast<DWORD>(d.length());
+	std::cout << d << std::endl;
+	if (!WriteFile(_handle, d.data(), length, &written, NULL) || 
+		((written != length) && (0 != written)))
 		handleError(_name);
+	else if (0 == written)
+		throw IOException("Error writing to " + _name);
 
-	return dwWritten;
+	return written;
 }
 
 

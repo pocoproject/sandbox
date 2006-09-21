@@ -41,6 +41,9 @@
 
 
 #include "Poco/IO/IO.h"
+#include "Poco/BinaryReader.h"
+#include "Poco/BinaryWriter.h"
+#include <sstream>
 
 
 namespace Poco {
@@ -52,7 +55,8 @@ class IOPort
 	/// The IOPort class provides methods for working with a hardware I/O port.
 {
 public:
-	IOPort(const std::string& name, const C& config): _port(name, config)
+	IOPort(const std::string& name, const C& config): 
+		_port(name, config), _reader(_sstream), _writer(_sstream)
 		/// Creates the I/O port.
 	{
 	}
@@ -86,14 +90,38 @@ public:
 		return _port.close();
 	}
 
+	char read()
+		/// Reads one character from the port.
+	{
+		return _port.read();
+	}
+
+	int read(char* buffer, int length)
+		/// Reads a string of characters from the port.
+	{
+		return _port.read(buffer, length);
+	}
+
 	std::string& read(std::string& buffer)
-		/// Reads the data from the port.
+		/// Reads a string of characters from the port.
 	{
 		return _port.read(buffer);
 	}
 
+	int write(char c)
+		/// Writes a character to the port.
+	{
+		return _port.write(c);
+	}
+
+	int write(const char* buffer, int length)
+		/// Writes a string of characters to the port.
+	{
+		return _port.write(buffer, length);
+	}
+
 	int write(const std::string& data)
-		/// Writes the data to the port.
+		/// Writes a string of characters to the port.
 	{
 		return _port.write(data);
 	}
@@ -110,6 +138,9 @@ private:
 	const P& operator = (const P&);
 
 	P _port;
+	std::stringstream _sstream;
+	BinaryReader _reader;
+	BinaryWriter _writer;
 };
 
 

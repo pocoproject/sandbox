@@ -62,7 +62,11 @@ public:
 	void reconfigure(const SerialConfig& config);
 	void open();
 	void close();
+	char read();
+	int read(char* pBuffer, int length);
 	std::string& read(std::string& buffer);
+	int write(char c);
+	int write(const char* pBuffer, int length);
 	int write(const std::string& data);
 	const std::string& getName() const;
 
@@ -80,6 +84,7 @@ inline void SerialPort::reconfigure(const SerialConfig& config)
 	reconfigureImpl((SerialConfigImpl&) config);
 }
 
+
 inline void SerialPort::open()
 {
 	openImpl();
@@ -92,9 +97,33 @@ inline void SerialPort::close()
 }
 
 
+inline char SerialPort::read()
+{
+	return readImpl();
+}
+
+
+inline int SerialPort::read(char* pBuffer, int length)
+{
+	return readImpl(pBuffer, length);
+}
+
+
 inline std::string& SerialPort::read(std::string& buffer)
 {
 	return readImpl(buffer);
+}
+
+
+inline int  SerialPort::write(char c)
+{
+	return writeImpl(c);
+}
+
+
+inline int SerialPort::write(const char* pBuffer, int length)
+{
+	return writeImpl(pBuffer, length);
 }
 
 

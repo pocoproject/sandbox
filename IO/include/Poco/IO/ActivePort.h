@@ -42,6 +42,7 @@
 
 #include "Poco/IO/IO.h"
 #include "Poco/ActiveMethod.h"
+#include "Poco/Void.h"
 
 
 namespace Poco {
@@ -63,13 +64,14 @@ public:
 	{
 	}
 	
-	Poco::ActiveMethod<std::string, std::string, ActivePort> read;
+	Poco::ActiveMethod<std::string, Void, ActivePort> read;
 	Poco::ActiveMethod<int, std::string, ActivePort> write;
 
 protected:
-	std::string readImp(const std::string& buffer)
+	std::string readImp(const Void& v)
 	{	
-		return _port.read(const_cast<std::string&>(buffer));
+		std::string buffer;
+		return _port.read(buffer);
 	}
 	
 	int writeImp(const std::string& data)

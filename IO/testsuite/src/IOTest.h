@@ -38,15 +38,30 @@
 
 #include "Poco/IO/IO.h"
 #include "CppUnit/TestCase.h"
+#include "Poco/BinaryReader.h"
+#include "Poco/BinaryWriter.h"
+#include "Poco/IO/IOPort.h"
+#include "Poco/IO/SerialConfig.h"
+#include "Poco/IO/SerialPort.h"
+#include "Poco/IO/IOPortStream.h"
 
 
 class IOTest: public CppUnit::TestCase
 {
 public:
+	typedef Poco::IO::IOPort<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialIO;
+	typedef Poco::IO::IOPortInputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialInputStream;
+	typedef Poco::IO::IOPortOutputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialOutputStream;
+	
 	IOTest(const std::string& name);
 	~IOTest();
 
-	void testSerial();
+	// In order for this tests to work, two null-modem wired 
+	// serial ports are required.
+	void testSerialPort();
+	void testActiveSerialPort();
+	void testSerialStreams();
+	void testSerialBinary();
 
 	void setUp();
 	void tearDown();
@@ -54,6 +69,14 @@ public:
 	static CppUnit::Test* suite();
 
 private:
+	static const unsigned char SERIAL_EOF;
+
+	void writeSerialBinary(Poco::BinaryWriter& writer);
+	void readSerialBinary(Poco::BinaryReader& reader);
+
+	Poco::IO::SerialConfig _serialConfig;
+	std::string _serialName1;
+	std::string _serialName2;
 };
 
 
