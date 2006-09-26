@@ -37,7 +37,6 @@
 #include "Poco/IO/SerialPort_WIN32.h"
 #include "Poco/Exception.h"
 #include <windows.h>
-#include <iostream>
 
 using Poco::CreateFileException;
 using Poco::IOException;
@@ -106,7 +105,6 @@ int SerialPortImpl::readImpl(char* pBuffer, int length)
 	if (0 == length) return 0;
 
 	DWORD read = 0;
-	//SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
 
 	if (!ReadFile(_handle, pBuffer, length, &read, NULL)) 
 		handleError(_name);
@@ -120,12 +118,11 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 	DWORD read = 0;
 	int bufSize = _config.getBufferSizeImpl();
 	char* pReadBuf = new char[bufSize+1];
-	//SetFilePointer(_handle, 0, NULL, FILE_BEGIN);
 
 	buffer.clear();
 	do
     {
-		ZeroMemory(pReadBuf, bufSize+1); 
+		ZeroMemory(pReadBuf, bufSize+1);
 		if (!ReadFile(_handle, pReadBuf, bufSize, &read, NULL)) 
 		{
 			delete[] pReadBuf;
@@ -183,7 +180,7 @@ int SerialPortImpl::writeImpl(const std::string& data)
 
 	DWORD written = 0;
 	DWORD length = static_cast<DWORD>(d.length());
-	std::cout << d << std::endl;
+
 	if (!WriteFile(_handle, d.data(), length, &written, NULL) || 
 		((written != length) && (0 != written)))
 		handleError(_name);
@@ -255,8 +252,6 @@ void SerialPortImpl::handleError(const std::string& name)
 		throw IOException(name, getErrorText(errorText));
 	case ERROR_NOT_ENOUGH_MEMORY:
 		throw OutOfMemoryException(name, getErrorText(errorText));
-	//following error occurs if the file was opened with FILE_FLAG_OVERLAPPED
-	//and all the data was read so do nothing here
 	case ERROR_HANDLE_EOF: break;
 	default:
 		throw FileException(name, getErrorText(errorText));

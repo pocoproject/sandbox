@@ -76,7 +76,7 @@ public:
 protected:
 	int_type readFromDevice()
 	{
-		return _port.read();
+		return charToInt(_port.read());
 	}
 
 	int_type writeToDevice(char c)
@@ -126,7 +126,7 @@ class IOPortOutputStream: public IOPortIOS<P, C>, public std::ostream
 {
 public:
 	IOPortOutputStream(IOPort<P, C>& port):
-		IOPortIOS(port, std::ios::out),
+		IOPortIOS<P, C>(port, std::ios::out),
 		std::ostream(&_buf)
 		/// Creates the IOPortOutputStream with the given IOPort.
 	{
@@ -151,7 +151,7 @@ class IOPortInputStream: public IOPortIOS<P, C>, public std::istream
 {
 public:
 	IOPortInputStream(IOPort<P, C>& port):
-		IOPortIOS(port, std::ios::in),
+		IOPortIOS<P, C>(port, std::ios::in),
 		std::istream(&_buf)
 		/// Creates the IOPortInputStream with the given IOPort.
 	{

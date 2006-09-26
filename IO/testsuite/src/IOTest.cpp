@@ -104,14 +104,11 @@ void IOTest::testSerialPort()
 	str += 0x0D;
 	str += "0987654321";
 
-	//assert(21 == com1.write(str));
-	com1.write(str);
-	str = ""; assert("" == str);	
+	assert(11 == com1.write(str));
 	assert(10 == com2.read(str).length());	
 	assert("1234567890" == str);
-/*
+
 	assert(5 == com1.write(str.c_str(), 5));
-	com1.write(0x0D);
 	Thread::sleep(100);
 	char chr[5] = "";
 	assert(3 == com2.read(chr, 3));	
@@ -124,14 +121,13 @@ void IOTest::testSerialPort()
 	assert('4' == chr[0]);
 	assert('5' == chr[1]);
 	assert(0 == chr[2]);
-*/	
+
 	SerialConfig config(_serialConfig);
 	config.setBufferSize(1);
 	config.setSpeed(2400);
 	com1.reconfigure(config);
 	com2.reconfigure(config);
 	com1.write(str);
-	str = ""; assert("" == str);	
 	com2.read(str);	
 	assert("1234567890" == str);	
 }
@@ -196,15 +192,15 @@ void IOTest::writeSerialBinary(BinaryWriter& writer)
 	writer << false;
 	writer << 'a';
 
-	//writer << (short) -100;
+	writer << (short) -100;
 	writer << (unsigned short) 50000;
-	//writer << -123456;
+	writer << -123456;
 	writer << (unsigned) 123456;
 	writer << (long) -1234567890;
 	writer << (unsigned long) 1234567890;
 	
 #if defined(POCO_HAVE_INT64)
-	//writer << (Int64) -1234567890;
+	writer << (Int64) -1234567890;
 	writer << (UInt64) 1234567890;
 #endif
 
@@ -247,17 +243,17 @@ void IOTest::readSerialBinary(BinaryReader& reader)
 	reader >> c;
 	assert (c == 'a');
 
-	//short shortv = 0;
-	//reader >> shortv;
-	//assert (shortv == -100);
+	short shortv = 0;
+	reader >> shortv;
+	assert (shortv == -100);
 
 	unsigned short ushortv = 0;
 	reader >> ushortv;
 	assert (ushortv == 50000);
 
-	//int intv = 0;
-	//reader >> intv;
-	//assert (intv == -123456);
+	int intv = 0;
+	reader >> intv;
+	assert (intv == -123456);
 
 	unsigned uintv = 0;
 	reader >> uintv;
@@ -272,9 +268,9 @@ void IOTest::readSerialBinary(BinaryReader& reader)
 	assert (ulongv == 1234567890);
 
 #if defined(POCO_HAVE_INT64)
-	//Int64 int64v = 0;
-	//reader >> int64v;
-	//assert (int64v == -1234567890);
+	Int64 int64v = 0;
+	reader >> int64v;
+	assert (int64v == -1234567890);
 	
 	UInt64 uint64v = 0;
 	reader >> uint64v;
