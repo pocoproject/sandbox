@@ -44,6 +44,7 @@
 #include "Poco/Thread.h"
 #include "Poco/BinaryReader.h"
 #include "Poco/BinaryWriter.h"
+#include "Poco/Exception.h"
 
 using Poco::UInt32;
 using Poco::Int64;
@@ -53,6 +54,7 @@ using Poco::Void;
 using Poco::Thread;
 using Poco::BinaryReader;
 using Poco::BinaryWriter;
+using Poco::InvalidAccessException;
 using Poco::IO::IOPort;
 using Poco::IO::SerialConfig;
 using Poco::IO::SerialPort;
@@ -97,6 +99,18 @@ void SerialTestHW::testSerialPort()
 	SerialIO com1(_serialName1, _serialConfig);
 	SerialIO com2(_serialName2, _serialConfig);
 	
+	try
+	{
+		_serialConfig.setXoffChar(1);
+		fail ("must fail");
+	}catch (InvalidAccessException&) {}
+
+	try
+	{
+		_serialConfig.setXonChar(1);
+		fail ("must fail");
+	}catch (InvalidAccessException&) {}
+
 	com1.write('x');
 	assert('x' == com2.read());
 
