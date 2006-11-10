@@ -196,26 +196,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="IO"
-			>
-			<Filter
-				Name="Header Files"
-				>
-				<File
-					RelativePath=".\src\IOTest.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				>
-				<File
-					RelativePath=".\src\IOTest.cpp"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="_Suite"
 			>
 			<Filter
@@ -243,6 +223,58 @@
 				>
 				<File
 					RelativePath=".\src\WinDriver.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Serial"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\SerialTestHW.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestHWSuite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSuite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSW.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSWSuite.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\SerialTestHW.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestHWSuite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSuite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSW.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSWSuite.cpp"
 					>
 				</File>
 			</Filter>

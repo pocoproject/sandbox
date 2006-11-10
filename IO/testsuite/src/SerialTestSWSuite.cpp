@@ -1,5 +1,5 @@
 //
-// IOTestSuite.cpp
+// SerialTestSuite.cpp
 //
 // $Id: //poco/Main/template/suite.cpp#6 $
 //
@@ -30,15 +30,15 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
+#include "SerialTestSWSuite.h"
+#include "SerialTestSW.h"
 
 
-CppUnit::Test* IOTestSuite::suite()
+CppUnit::Test* SerialTestSWSuite::suite()
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SerialTestSuite");
 
-	pSuite->addTest(SerialTestSuite::suite());
+	pSuite->addTest(SerialTestSW::suite());
 
 	return pSuite;
 }

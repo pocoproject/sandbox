@@ -1,7 +1,9 @@
 //
-// IOTestSuite.cpp
+// SerialTestHWSuite.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/template/suite.h#6 $
+//
+// Definition of the SerialTestHWSuite class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,15 +32,18 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
+#ifndef SerialTestHWSuite_INCLUDED
+#define SerialTestHWSuite_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "CppUnit/TestSuite.h"
+
+
+class SerialTestHWSuite
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	static CppUnit::Test* suite();
+};
 
-	pSuite->addTest(SerialTestSuite::suite());
 
-	return pSuite;
-}
+#endif // SerialTestHWSuite_INCLUDED

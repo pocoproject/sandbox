@@ -46,15 +46,18 @@ namespace Poco {
 namespace IO {
 
 
+const unsigned char SerialConfig::DEFAULT_EOF=0x0D;
+
+
 SerialConfig::SerialConfig(): 
-	SerialConfigImpl(2400, 
+	SerialConfigImpl(BAUD_RATE_2400_IMPL, 
 		8, 
 		'N', 
-		ONESTART_IMPL, 
-		ONESTOP_IMPL,
-		false,
+		START_ONE_IMPL, 
+		STOP_ONE_IMPL,
+		FLOW_CTRL_HARDWARE_IMPL,
 		0, 
-		-1,
+		0,
 		true,
 		0,
 		1,
@@ -64,24 +67,24 @@ SerialConfig::SerialConfig():
 
 
 SerialConfig::SerialConfig(
-	int speed,
+	SerialConfig::BaudRate baudRate,
 	int dataBits,
 	char parity,
 	SerialConfig::StartBits startBits,
 	SerialConfig::StopBits stopBits,
-	bool useXonXoff,
+	FlowControl flowControl,
 	unsigned char xOnChar,
 	unsigned char xOffChar,
 	bool useEOF,
 	unsigned char eof,
 	int bufferSize,
 	int timeout):
-	SerialConfigImpl(speed,
+SerialConfigImpl((SerialConfigImpl::BaudRateImpl) baudRate,
 		dataBits,
 		parity,
 		(SerialConfigImpl::StartBitsImpl)startBits,
 		(SerialConfigImpl::StopBitsImpl) stopBits,
-		useXonXoff,
+		(SerialConfigImpl::FlowControlImpl) flowControl,
 		xOnChar,
 		xOffChar,
 		useEOF,
@@ -89,6 +92,24 @@ SerialConfig::SerialConfig(
 		bufferSize,
 		timeout)
 {
+}
+
+
+void SerialConfig::setXonChar(unsigned char c)
+{
+	if (SerialConfigImpl::FLOW_CTRL_HARDWARE_IMPL == getFlowControlImpl())
+		throw InvalidAccessException("Can not set XON character for hardware flow control.");
+
+	setXonCharImpl(c);
+}
+
+
+void SerialConfig::setXoffChar(unsigned char c)
+{
+	if (SerialConfigImpl::FLOW_CTRL_HARDWARE_IMPL == getFlowControlImpl())
+		throw InvalidAccessException("Can not set XOFF character for hardware flow control.");
+
+	setXoffCharImpl(c);
 }
 
 

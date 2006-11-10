@@ -1,7 +1,9 @@
 //
-// IOTestSuite.cpp
+// SerialTestHW.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/template/test.h#7 $
+//
+// Definition of the SerialTestHW class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,15 +32,52 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
+#ifndef SerialTestHW_INCLUDED
+#define SerialTestHW_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "CppUnit/TestCase.h"
+#include "Poco/BinaryReader.h"
+#include "Poco/BinaryWriter.h"
+#include "Poco/IO/IOPort.h"
+#include "Poco/IO/SerialConfig.h"
+#include "Poco/IO/SerialPort.h"
+#include "Poco/IO/IOPortStream.h"
+
+
+class SerialTestHW: public CppUnit::TestCase
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	typedef Poco::IO::IOPort<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialIO;
+	typedef Poco::IO::IOPortInputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialInputStream;
+	typedef Poco::IO::IOPortOutputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialOutputStream;
+	
+	SerialTestHW(const std::string& name);
+	~SerialTestHW();
 
-	pSuite->addTest(SerialTestSuite::suite());
+	// In order for this tests to work, two null-modem wired 
+	// serial ports are required.
+	void testSerialPort();
+	void testActiveSerialPort();
+	void testSerialStreams();
+	void testSerialBinary();
 
-	return pSuite;
-}
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+	static const unsigned char SERIAL_EOF;
+
+	void writeSerialBinary(Poco::BinaryWriter& writer);
+	void readSerialBinary(Poco::BinaryReader& reader);
+
+	Poco::IO::SerialConfig _serialConfig;
+	std::string _serialName1;
+	std::string _serialName2;
+};
+
+
+#endif // SerialTestHW_INCLUDED
