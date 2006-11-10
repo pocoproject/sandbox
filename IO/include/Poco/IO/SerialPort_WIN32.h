@@ -1,13 +1,13 @@
 //
-// IOPort_WIN32.h
+// SerialPort_WIN32.h
 //
-// $Id: //poco/1.1.0/Foundation/include/Foundation/IOPort_WIN32.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialPort_WIN32.h#1 $
 //
 // Library: IO
 // Package: Serial
 // Module:  SerialPort
 //
-// Definition of the IOPortImpl class for WIN32.
+// Definition of the SerialPortImpl class for WIN32.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.

@@ -1,5 +1,5 @@
 //
-// SerialPort_WIN32.cpp
+// SerialPort_POSIX.cpp
 //
 // $Id: //poco/Main/IO/src/SerialPort_POSIX.cpp#1 $
 //
@@ -34,9 +34,9 @@
 //
 
 
-#include "Poco/IO/SerialPort_WIN32.h"
+#include "Poco/IO/SerialPort_POSIX.h"
 #include "Poco/Exception.h"
-#include <windows.h>
+
 
 using Poco::CreateFileException;
 using Poco::IOException;
@@ -61,12 +61,7 @@ SerialPortImpl::~SerialPortImpl()
 
 void SerialPortImpl::initImpl()
 {
-	if (!SetCommState(_handle, &(_config.dcb()))) handleError(_name);
-
-	if (!SetCommTimeouts(_handle, &(_config.commTimeouts()))) handleError(_name);
-
-	DWORD bufSize = (DWORD) _config.getBufferSizeImpl();
-	SetupComm(_handle, bufSize, bufSize);
+	//TODO
 }
 
 
@@ -79,8 +74,7 @@ void SerialPortImpl::reconfigureImpl(const SerialConfigImpl& config)
 
 void SerialPortImpl::openImpl()
 {
-	_handle = CreateFile(_name.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-	if (INVALID_HANDLE_VALUE == _handle) handleError(_name);
+	//TODO
 
 	initImpl();
 }
@@ -88,7 +82,7 @@ void SerialPortImpl::openImpl()
 
 void SerialPortImpl::closeImpl()
 {
-	if (!CloseHandle(_handle)) handleError(_name);
+	//TODO
 }
 
 
@@ -104,10 +98,9 @@ int SerialPortImpl::readImpl(char* pBuffer, int length)
 {
 	if (0 == length) return 0;
 
-	DWORD read = 0;
+	int read = 0;
 
-	if (!ReadFile(_handle, pBuffer, length, &read, NULL)) 
-		handleError(_name);
+	//TODO
 
 	return read;
 }
@@ -115,19 +108,22 @@ int SerialPortImpl::readImpl(char* pBuffer, int length)
 
 std::string& SerialPortImpl::readImpl(std::string& buffer)
 {
-	DWORD read = 0;
+	int read = 0;
 	int bufSize = _config.getBufferSizeImpl();
 	char* pReadBuf = new char[bufSize+1];
 
 	buffer.clear();
 	do
     {
+		//TODO
+		/*
 		ZeroMemory(pReadBuf, bufSize+1);
+		
 		if (!ReadFile(_handle, pReadBuf, bufSize, &read, NULL)) 
 		{
 			delete[] pReadBuf;
 			handleError(_name);
-		}
+		}*/
 
 		poco_assert(read <= bufSize);
 		buffer.append(pReadBuf, read);
@@ -138,7 +134,8 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 			if (pos != buffer.npos)
 			{
 				buffer = buffer.substr(0, pos);
-				PurgeComm(_handle, PURGE_RXCLEAR);
+				//TODO
+				//PurgeComm(_handle, PURGE_RXCLEAR);
 				break;
 			}
 		}
@@ -178,15 +175,17 @@ int SerialPortImpl::writeImpl(const std::string& data)
 		if (pos != d.npos) d = d.substr(0, pos+1);
 	}
 
-	DWORD written = 0;
-	DWORD length = static_cast<DWORD>(d.length());
+	int written = 0;
+	int length = d.length();
 
+	//TODO
+	/*
 	if (!WriteFile(_handle, d.data(), length, &written, NULL) || 
 		((written != length) && (0 != written)))
 		handleError(_name);
 	else if (0 == written)
 		throw IOException("Error writing to " + _name);
-
+*/
 	return written;
 }
 
@@ -199,60 +198,20 @@ const std::string& SerialPortImpl::getNameImpl() const
 
 std::string& SerialPortImpl::getErrorText(std::string& buf)
 {
-    DWORD dwRet;
-    LPTSTR pTemp = NULL;
-
-    DWORD errCode = GetLastError();
-
-    dwRet = FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_ARGUMENT_ARRAY,
-		NULL,
-		errCode,
-		LANG_NEUTRAL,
-		pTemp,
-		0,
-		NULL);
-
-    if (dwRet && pTemp)
-    {
-		if ((std::string(pTemp).length()-2) >= 0)
-		{
-			pTemp[std::string(pTemp).length()-2] = TEXT('\0');  //remove cr and newline character
-			buf = pTemp;
-		}
-
-        LocalFree((HLOCAL) pTemp);
-    }
+    //TODO
     return buf;
 }
 
 
 void SerialPortImpl::handleError(const std::string& name)
 {
+	//TODO
+	int error = 0;
 	std::string errorText;
-	DWORD error = GetLastError();
 
 	switch (error)
 	{
-	case ERROR_FILE_NOT_FOUND:
-		throw FileNotFoundException(name, getErrorText(errorText));
-	case ERROR_ACCESS_DENIED:
-		throw FileAccessDeniedException(name, getErrorText(errorText));
-	case ERROR_ALREADY_EXISTS:
-	case ERROR_FILE_EXISTS:
-		throw FileExistsException(name, getErrorText(errorText));
-	case ERROR_FILE_READ_ONLY:
-		throw FileReadOnlyException(name, getErrorText(errorText));
-	case ERROR_CANNOT_MAKE:
-	case ERROR_INVALID_NAME:
-	case ERROR_FILENAME_EXCED_RANGE:
-		throw CreateFileException(name, getErrorText(errorText));
-	case ERROR_BROKEN_PIPE:
-	case ERROR_INVALID_USER_BUFFER:
-	case ERROR_INSUFFICIENT_BUFFER:
-		throw IOException(name, getErrorText(errorText));
-	case ERROR_NOT_ENOUGH_MEMORY:
-		throw OutOfMemoryException(name, getErrorText(errorText));
-	case ERROR_HANDLE_EOF: break;
+	//TODO
 	default:
 		throw FileException(name, getErrorText(errorText));
 	}

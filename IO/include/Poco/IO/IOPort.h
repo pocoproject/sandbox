@@ -1,7 +1,7 @@
 //
 // IOPort.h
 //
-// $Id: //poco/Main/template/class.h#8 $
+// $Id: //poco/Main/Data/include/Poco/IO/IOPort.h#1 $
 //
 // Library: IO
 // Package: IO

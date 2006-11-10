@@ -1,7 +1,7 @@
 //
 // SerialConfig.h
 //
-// $Id: //poco/Main/template/class.h#8 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialConfig.h#1 $
 //
 // Library: IO
 // Package: Serial
@@ -45,6 +45,8 @@
 
 #if defined(POCO_OS_FAMILY_WINDOWS)
 #include "Poco/IO/SerialConfig_WIN32.h"
+#elif defined(POCO_OS_FAMILY_UNIX)
+#include "Poco/IO/SerialConfig_POSIX.h"
 #endif
 
 
@@ -55,6 +57,14 @@ namespace IO {
 class IO_API SerialConfig: private SerialConfigImpl
 {
 public:
+	enum DataBits
+	{
+		DATA_BITS_FIVE = DATA_BITS_FIVE_IMPL,
+		DATA_BITS_SIX = DATA_BITS_SIX_IMPL,
+		DATA_BITS_SEVEN = DATA_BITS_SEVEN_IMPL,
+		DATA_BITS_EIGHT = DATA_BITS_EIGHT_IMPL
+	};
+
 	enum Parity
 	{
 		//on Windows, PARITY_* conflicts with
@@ -106,7 +116,7 @@ public:
 
 	SerialConfig();
 	SerialConfig(BaudRate baudRate,
-		int dataBits=8,
+		DataBits dataBits=DATA_BITS_EIGHT,
 		char parity='N',
 		StartBits startBits=START_ONE,
 		StopBits stopBits=STOP_ONE,
@@ -119,7 +129,7 @@ public:
 		int timeout=5000);
 
 	void setBaudRate(BaudRate baudRate);
-	void setDataBits(int dataBits);
+	void setDataBits(DataBits dataBits);
 	void setParity(ParityImpl parity);
 	void setParityChar(char parityChar);
 	void setStartBits(StartBits startBits);
@@ -138,7 +148,7 @@ public:
 	void setTimeout(int timeout);
 
 	BaudRate getBaudRate() const;
-	int getDataBits() const;
+	DataBits getDataBits() const;
 	ParityImpl getParity() const;
 	char getParityChar() const;
 	StartBits getStartBits() const;
@@ -166,9 +176,9 @@ inline void SerialConfig::setBaudRate(SerialConfig::BaudRate baudRate)
 }
 
 
-inline void SerialConfig::setDataBits(int dataBits)
+inline void SerialConfig::setDataBits(SerialConfig::DataBits dataBits)
 {
-	setDataBitsImpl(dataBits);
+	setDataBitsImpl((SerialConfigImpl::DataBitsImpl) dataBits);
 }
 
 
@@ -249,9 +259,9 @@ inline SerialConfig::BaudRate SerialConfig::getBaudRate() const
 }
 
 
-inline int SerialConfig::getDataBits() const
+inline SerialConfig::DataBits SerialConfig::getDataBits() const
 {
-	return getDataBitsImpl();
+	return (SerialConfig::DataBits) getDataBitsImpl();
 }
 
 

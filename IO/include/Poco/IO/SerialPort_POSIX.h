@@ -1,11 +1,13 @@
 //
-// SerialPort.cpp
+// SerialPort_POSIX.h
 //
-// $Id: //poco/Main/IO/src/SerialPort.cpp#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialPort_POSIX.h#1 $
 //
 // Library: IO
 // Package: Serial
 // Module:  SerialPort
+//
+// Definition of the SerialPortImpl class for POSIX.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,29 +36,50 @@
 //
 
 
-#include "Poco/IO/SerialPort.h"
+#ifndef IO_SerialPort_POSIX_INCLUDED
+#define IO_SerialPort_POSIX_INCLUDED
 
 
-#if defined(POCO_OS_FAMILY_WINDOWS)
-#include "SerialPort_WIN32.cpp"
-#elif defined(POCO_OS_FAMILY_UNIX)
-#include "SerialPort_POSIX.cpp"
-#endif
+#include "Poco/IO/IO.h"
+#include "Poco/IO/SerialConfig_POSIX.h"
 
 
 namespace Poco {
 namespace IO {
 
 
-SerialPort::SerialPort(const std::string& name, const SerialConfig& config):
-	SerialPortImpl(name, (SerialConfigImpl&) config)
+class IO_API SerialPortImpl
 {
-}
+protected:
+	SerialPortImpl(const std::string& name, const SerialConfigImpl& config);
+	~SerialPortImpl();
+	void initImpl();
+	void reconfigureImpl(const SerialConfigImpl& config);
+	void openImpl();
+	void closeImpl();
+	char readImpl();
+	int readImpl(char* pBuffer, int length);
+	std::string& readImpl(std::string& buffer);
+	int writeImpl(char c);
+	int writeImpl(const char* buffer, int length);
+	int writeImpl(const std::string& data);
+	const std::string& getNameImpl() const;
+	void handleError(const std::string& path);
+	static std::string& getErrorText(std::string& buf);
 
+private:
+	SerialPortImpl();
+	SerialPortImpl(const SerialPortImpl&);
+	const SerialPortImpl& operator = (const SerialPortImpl&);
 
-SerialPort::~SerialPort()
-{
-}
+	std::string _name;
+	//TODO
+	//HANDLE _handle;
+	SerialConfigImpl _config;
+};
 
 
 } } // namespace Poco::IO
+
+
+#endif // IO_SerialPort_POSIX_INCLUDED

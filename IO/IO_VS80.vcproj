@@ -244,6 +244,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\Poco\IO\SerialConfig_POSIX.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h"
 					>
 					<FileConfiguration
@@ -256,6 +260,10 @@
 				</File>
 				<File
 					RelativePath=".\include\Poco\Io\SerialPort.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialPort_POSIX.h"
 					>
 				</File>
 				<File
@@ -276,6 +284,18 @@
 				<File
 					RelativePath=".\src\SerialConfig.cpp"
 					>
+				</File>
+				<File
+					RelativePath=".\src\SerialConfig_POSIX.cpp"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\src\SerialConfig_WIN32.cpp"
@@ -300,6 +320,18 @@
 				<File
 					RelativePath=".\src\SerialPort.cpp"
 					>
+				</File>
+				<File
+					RelativePath=".\src\SerialPort_POSIX.cpp"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\src\SerialPort_WIN32.cpp"

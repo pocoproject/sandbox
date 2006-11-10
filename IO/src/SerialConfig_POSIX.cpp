@@ -1,7 +1,7 @@
 //
-// SerialConfig_WIN32.cpp
+// SerialConfig_POSIX.cpp
 //
-// $Id: //poco/Main/IO/src/SerialConfig_WIN32.cpp#1 $
+// $Id: //poco/Main/IO/src/SerialConfig_POSIX.cpp#1 $
 //
 // Library: IO
 // Package: Serial
@@ -34,7 +34,7 @@
 //
 
 
-#include "Poco/IO/SerialConfig_WIN32.h"
+#include "Poco/IO/SerialConfig_POSIX.h"
 #include "Poco/Exception.h"
 #include <sstream>
 
@@ -50,7 +50,7 @@ const int SerialConfigImpl::MSEC = 1000;
 
 
 SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
-	DataBitsImpl dataBits,
+	int dataBits,
 	char parity,
 	StartBitsImpl startBits,
 	StopBitsImpl stopBits,
@@ -64,24 +64,10 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 	_useEOF(useEOF), 
 	_bufferSize(bufferSize)
 {
-	ZeroMemory(&_dcb, sizeof(DCB));
-
-	_dcb.DCBlength = sizeof(DCB);
-	_dcb.ByteSize = dataBits;
-	_dcb.BaudRate = baudRate;
+	//TODO
 
 	setFlowControlImpl(flowControl, xOnChar, xOffChar);
-
-	setParityCharImpl(parity);
-	_dcb.fParity = (('N' != parity) && ('n' != parity));
-	_dcb.StopBits = stopBits;
-
-	if (_useEOF) _dcb.EofChar = eofChar;
-
-	ZeroMemory(&_cto, sizeof(COMMTIMEOUTS));
-	_cto.ReadIntervalTimeout = MAXDWORD ;
-	_cto.ReadTotalTimeoutMultiplier = MAXDWORD;
-	
+	setParityCharImpl(parity);	
 	setTimeoutImpl(timeout);
 }
 
@@ -92,27 +78,13 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 {
 	if (FLOW_CTRL_HARDWARE_IMPL == flowControl)
 	{
-		poco_assert(xOnChar != xOffChar);
+		poco_assert(xOnChar == xOffChar);
 
-		_dcb.fOutX = FALSE;
-		_dcb.fInX = FALSE;
-		_dcb.XonChar = 0;
-		_dcb.XoffChar = 0;
-
-		_dcb.fOutxCtsFlow = TRUE;
-		_dcb.fOutxDsrFlow = TRUE;
-		_dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
-		_dcb.fDtrControl = DTR_CONTROL_HANDSHAKE;
+		//TODO
 	}
 	else if (FLOW_CTRL_SOFTWARE_IMPL == flowControl)
 	{
-		_dcb.fOutxCtsFlow = FALSE;
-		_dcb.fOutxDsrFlow = FALSE;
-		_dcb.fRtsControl = RTS_CONTROL_DISABLE;
-		_dcb.fDtrControl = DTR_CONTROL_DISABLE;
-
-		_dcb.fOutX = TRUE;
-		_dcb.fInX = TRUE;
+		//TODO
 
 		setUseXonXoffImpl(xOnChar, xOffChar);
 	}
@@ -128,8 +100,7 @@ void SerialConfigImpl::setUseXonXoffImpl(unsigned char xOnChar,
 {
 	if (xOnChar != xOffChar)
 	{
-		_dcb.XonChar = xOnChar;
-		_dcb.XoffChar = xOffChar;
+		//TODO
 	}
 	else
 		throw InvalidAccessException("XON == XOFF - not set.");
@@ -139,19 +110,21 @@ void SerialConfigImpl::setUseXonXoffImpl(unsigned char xOnChar,
 void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
 {
 	poco_assert(FLOW_CTRL_SOFTWARE_IMPL == _flowControl);
-	_dcb.XonChar = xOn;
+	//TODO
 }
 
 
 void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
 {
 	poco_assert(FLOW_CTRL_SOFTWARE_IMPL == _flowControl);
-	_dcb.XoffChar = xOff;
+	//TODO
 }
 
 
 char SerialConfigImpl::getParityCharImpl() const
 {
+	//TODO
+	/*
 	switch (_dcb.Parity)
 	{
 	case PARITY_NONE_IMPL:
@@ -166,7 +139,7 @@ char SerialConfigImpl::getParityCharImpl() const
 		return 'S';
 	default:
 		return 'N';
-	}
+	}*/
 }
 
 
@@ -175,19 +148,19 @@ void SerialConfigImpl::setParityCharImpl(char parityChar)
 	switch (parityChar)
 	{
 	case 'n': case 'N':
-		_dcb.Parity = PARITY_NONE_IMPL; break;
+		break;//TODO
 
 	case 'o': case 'O':
-		_dcb.Parity = PARITY_ODD_IMPL; break;
+		break;//TODO
 
 	case 'e': case 'E':
-		_dcb.Parity = PARITY_EVEN_IMPL; break;
+		break;//TODO
 
 	case 'm': case 'M':
-		_dcb.Parity = PARITY_MARK_IMPL; break;
+		break;//TODO
 
 	case 's': case 'S':
-		_dcb.Parity = PARITY_SPACE_IMPL; break;
+		break;//TODO
 
 	default:
 		{

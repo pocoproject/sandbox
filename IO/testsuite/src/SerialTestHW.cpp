@@ -66,7 +66,7 @@ const unsigned char SerialTestHW::SERIAL_EOF = 0x0D;
 SerialTestHW::SerialTestHW(const std::string& name): 
 	CppUnit::TestCase(name),
 		_serialConfig(SerialConfig::BAUD_RATE_9600, 
-		8, 
+		SerialConfig::DATA_BITS_EIGHT, 
 		'N', 
 		SerialConfig::START_ONE,
 		SerialConfig::STOP_ONE,

@@ -1,7 +1,7 @@
 //
 // SerialConfig.cpp
 //
-// $Id: //poco/Main/template/class.cpp#8 $
+// $Id: //poco/Main/IO/src/SerialConfig.cpp#1 $
 //
 // Library: IO
 // Package: Serial
@@ -39,6 +39,8 @@
 
 #if defined(POCO_OS_FAMILY_WINDOWS)
 #include "SerialConfig_WIN32.cpp"
+#elif defined(POCO_OS_FAMILY_UNIX)
+#include "SerialConfig_POSIX.cpp"
 #endif
 
 
@@ -51,7 +53,7 @@ const unsigned char SerialConfig::DEFAULT_EOF=0x0D;
 
 SerialConfig::SerialConfig(): 
 	SerialConfigImpl(BAUD_RATE_2400_IMPL, 
-		8, 
+		DATA_BITS_EIGHT_IMPL, 
 		'N', 
 		START_ONE_IMPL, 
 		STOP_ONE_IMPL,
@@ -68,7 +70,7 @@ SerialConfig::SerialConfig():
 
 SerialConfig::SerialConfig(
 	SerialConfig::BaudRate baudRate,
-	int dataBits,
+	DataBits dataBits,
 	char parity,
 	SerialConfig::StartBits startBits,
 	SerialConfig::StopBits stopBits,
@@ -80,7 +82,7 @@ SerialConfig::SerialConfig(
 	int bufferSize,
 	int timeout):
 SerialConfigImpl((SerialConfigImpl::BaudRateImpl) baudRate,
-		dataBits,
+		(SerialConfigImpl::DataBitsImpl) dataBits,
 		parity,
 		(SerialConfigImpl::StartBitsImpl)startBits,
 		(SerialConfigImpl::StopBitsImpl) stopBits,

@@ -1,7 +1,7 @@
 //
 // IO.h
 //
-// $Id: //poco/Main/template/library.h#6 $
+// $Id: //poco/Main/Data/include/Poco/IO/IO.h#1 $
 //
 // Library: IO
 // Package: IO

@@ -1,7 +1,7 @@
 //
 // SerialPort.h
 //
-// $Id: //poco/1.1.0/Foundation/include/Foundation/IOPort.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialPort.h#1 $
 //
 // Library: IO
 // Package: Serial
@@ -46,6 +46,8 @@
 
 #if defined(POCO_OS_FAMILY_WINDOWS)
 #include "Poco/IO/SerialPort_WIN32.h"
+#elif defined(POCO_OS_FAMILY_UNIX)
+#include "Poco/IO/SerialPort_POSIX.h"
 #endif
 
 

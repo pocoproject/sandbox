@@ -1,13 +1,13 @@
 //
-// SerialConfig_WIN32.h
+// SerialConfig_POSIX.h
 //
-// $Id: //poco/Main/Data/include/Poco/IO/SerialConfig_WIN32.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialConfig_POSIX.h#1 $
 //
 // Library: IO
 // Package: Serial
 // Module:  SerialConfig
 //
-// Definition of the SerialConfigImpl class for WIN32.
+// Definition of the SerialConfigImpl class for POSIX.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,12 +36,12 @@
 //
 
 
-#ifndef IO_SerialConfig_WIN32_INCLUDED
-#define IO_SerialConfig_WIN32_INCLUDED
+#ifndef IO_SerialConfig_POSIX_INCLUDED
+#define IO_SerialConfig_POSIX_INCLUDED
 
 
 #include "Poco/IO/IO.h"
-#include <windows.h>
+#include <termios.h>
 
 
 namespace Poco {
@@ -53,33 +53,33 @@ class IO_API SerialConfigImpl
 public:
 	enum DataBitsImpl
 	{
-		DATA_BITS_FIVE_IMPL = 5,
-		DATA_BITS_SIX_IMPL = 6,
-		DATA_BITS_SEVEN_IMPL = 7,
-		DATA_BITS_EIGHT_IMPL = 8
+		DATA_BITS_FIVE_IMPL = CS5,
+		DATA_BITS_SIX_IMPL = CS6,
+		DATA_BITS_SEVEN_IMPL = CS7,
+		DATA_BITS_EIGHT_IMPL = CS8
 	};
 
 	enum ParityImpl
 	{
-		PARITY_NONE_IMPL = NOPARITY,
-		PARITY_ODD_IMPL = ODDPARITY,
-		PARITY_EVEN_IMPL = EVENPARITY,
-		PARITY_MARK_IMPL = MARKPARITY,
-		PARITY_SPACE_IMPL = SPACEPARITY
+		PARITY_NONE_IMPL = 2,
+		PARITY_ODD_IMPL = 1,
+		PARITY_EVEN_IMPL = 0,
+		PARITY_MARK_IMPL = -1,//unused
+		PARITY_SPACE_IMPL = -2//unused
 	};
 
 	enum StartBitsImpl
 	{
-		START_ONE_IMPL = ONESTOPBIT,
-		START_ONE5_IMPL = ONE5STOPBITS,
-		START_TWO_IMPL = TWOSTOPBITS
+		START_ONE_IMPL = 0,
+		START_ONE5_IMPL = -1,//unused
+		START_TWO_IMPL = 1
 	};
 
 	enum StopBitsImpl
 	{
-		STOP_ONE_IMPL = ONESTOPBIT,
-		STOP_ONE5_IMPL = ONE5STOPBITS,
-		STOP_TWO_IMPL = TWOSTOPBITS
+		STOP_ONE_IMPL = 1,
+		STOP_ONE5_IMPL = -1,//unused
+		STOP_TWO_IMPL = 2
 	};
 
 	enum FlowControlImpl
@@ -90,20 +90,20 @@ public:
 
 	enum BaudRateImpl
 	{
-		BAUD_RATE_110_IMPL = CBR_110,
-		BAUD_RATE_300_IMPL = CBR_300,
-		BAUD_RATE_600_IMPL = CBR_600,
-		BAUD_RATE_1200_IMPL = CBR_1200,
-		BAUD_RATE_2400_IMPL = CBR_2400,
-		BAUD_RATE_4800_IMPL = CBR_4800,
-		BAUD_RATE_9600_IMPL = CBR_9600,
-		BAUD_RATE_14400_IMPL = CBR_14400,
-		BAUD_RATE_19200_IMPL = CBR_19200,
-		BAUD_RATE_38400_IMPL = CBR_38400,
-		BAUD_RATE_57600_IMPL = CBR_57600,
-		BAUD_RATE_115200_IMPL = CBR_115200,
-		BAUD_RATE_128000_IMPL = CBR_128000,
-		BAUD_RATE_256000_IMPL = CBR_256000
+		BAUD_RATE_110_IMPL = B110,
+		BAUD_RATE_300_IMPL = B300,
+		BAUD_RATE_600_IMPL = B600,
+		BAUD_RATE_1200_IMPL = B1200,
+		BAUD_RATE_2400_IMPL = B2400,
+		BAUD_RATE_4800_IMPL = B4800,
+		BAUD_RATE_9600_IMPL = B9600,
+		BAUD_RATE_14400_IMPL = -1,//not used
+		BAUD_RATE_19200_IMPL = B19200,
+		BAUD_RATE_38400_IMPL = B38400,
+		BAUD_RATE_57600_IMPL = B57600,
+		BAUD_RATE_115200_IMPL = B115200,
+		BAUD_RATE_128000_IMPL = -2,//not used
+		BAUD_RATE_256000_IMPL = -3//not used
 	};
 
 protected:
@@ -111,7 +111,7 @@ protected:
 
 	SerialConfigImpl(
 		BaudRateImpl baudRate,
-		DataBitsImpl dataBits,
+		int dataBits,
 		char parity,
 		StartBitsImpl startBits,
 		StopBitsImpl stopBits,
@@ -124,7 +124,7 @@ protected:
 		int timeout);
 
 	void setBaudRateImpl(BaudRateImpl baudRate);
-	void setDataBitsImpl(DataBitsImpl dataBits);
+	void setDataBitsImpl(int dataBits);
 	void setParityImpl(ParityImpl parity);
 	void setParityCharImpl(char parityChar);
 	void setStartBitsImpl(StartBitsImpl startBits);
@@ -142,8 +142,8 @@ protected:
 	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
 
-	BaudRateImpl getBaudRateImpl() const;
-	DataBitsImpl getDataBitsImpl() const;
+	int getBaudRateImpl() const;
+	int getDataBitsImpl() const;
 	ParityImpl getParityImpl() const;
 	char getParityCharImpl() const;
 	StartBitsImpl getStartBitsImpl() const;
@@ -158,14 +158,9 @@ protected:
 	int getTimeoutSecondsImpl() const;
 	int getTimeoutImpl() const;
 
-	DCB& dcb();
-	COMMTIMEOUTS& commTimeouts();
-
 private:
 	SerialConfigImpl();
 
-	DCB _dcb;
-	COMMTIMEOUTS _cto;
 	FlowControlImpl _flowControl;
 	bool _useEOF;
 	int _bufferSize;
@@ -179,92 +174,91 @@ private:
 //
 inline void SerialConfigImpl::setBaudRateImpl(SerialConfigImpl::BaudRateImpl baudRate)
 {
-	_dcb.BaudRate = baudRate;
+	//TODO
 }
 
 
-inline void SerialConfigImpl::setDataBitsImpl(DataBitsImpl dataBits)
+inline void SerialConfigImpl::setDataBitsImpl(int dataBits)
 {
-	_dcb.ByteSize = dataBits;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
 {
-	_dcb.fParity = (parity != PARITY_NONE_IMPL);
-	_dcb.Parity = parity;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setStartBitsImpl(SerialConfigImpl::StartBitsImpl startBits)
 {
-	_dcb.StopBits = startBits;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setStopBitsImpl(SerialConfigImpl::StopBitsImpl stopBits)
 {
-	_dcb.StopBits = stopBits;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setUseEOFImpl(bool useEOF)
 {
-	_useEOF = useEOF;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setEOFCharImpl(unsigned char eof)
 {
-	_dcb.EofChar = eof;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setBufferSizeImpl(int size)
 {
-	_bufferSize = size;
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
 {
-	setTimeoutImpl(timeout*MSEC);
+	//TODO
 }
 
 
 inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 {
-	_cto.ReadTotalTimeoutConstant = timeout;
+	//TODO
 }
 
 
-inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
+inline int SerialConfigImpl::getBaudRateImpl() const
 {
-	return (SerialConfigImpl::BaudRateImpl) _dcb.BaudRate;
+	return 0;//TODO
 }
 
 
-inline SerialConfigImpl::DataBitsImpl SerialConfigImpl::getDataBitsImpl() const
+inline int SerialConfigImpl::getDataBitsImpl() const
 {
-	return (DataBitsImpl) _dcb.ByteSize;
+	return 0;//TODO
 }
 
 
 inline SerialConfigImpl::ParityImpl SerialConfigImpl::getParityImpl() const
 {
-	return (SerialConfigImpl::ParityImpl) _dcb.Parity;
+	return (SerialConfigImpl::ParityImpl) 0;//TODO
 }
 
 
 inline SerialConfigImpl::StartBitsImpl SerialConfigImpl::getStartBitsImpl() const
 {
-	return (SerialConfigImpl::StartBitsImpl) _dcb.StopBits;
+	return (SerialConfigImpl::StartBitsImpl) 0;//TODO
 }
 
 
 inline SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
 {
-	return (SerialConfigImpl::StopBitsImpl) _dcb.StopBits;
+	return (SerialConfigImpl::StopBitsImpl) 0;//TODO
 }
 
 
@@ -276,19 +270,19 @@ inline SerialConfigImpl::FlowControlImpl SerialConfigImpl::getFlowControlImpl() 
 
 inline bool SerialConfigImpl::getUseXonXoffImpl() const
 {
-	return (_dcb.XonChar != _dcb.XoffChar);
+	return false;//TODO
 }
 
 
 inline unsigned char SerialConfigImpl::getXonCharImpl() const
 {
-	return _dcb.XonChar;
+	return 0;//TODO
 }
 
 
 inline unsigned char SerialConfigImpl::getXoffCharImpl() const
 {
-	return _dcb.XoffChar;
+	return 0;//TODO
 }
 
 
@@ -300,7 +294,7 @@ inline bool SerialConfigImpl::getUseEOFImpl() const
 
 inline unsigned char SerialConfigImpl::getEOFCharImpl() const
 {
-	return _dcb.EofChar;
+	return 0;//TODO
 }
 
 
@@ -318,23 +312,11 @@ inline int SerialConfigImpl::getTimeoutSecondsImpl() const
 
 inline int SerialConfigImpl::getTimeoutImpl() const
 {
-	return _cto.ReadTotalTimeoutConstant;
-}
-
-
-inline DCB& SerialConfigImpl::dcb()
-{
-	return _dcb;
-}
-
-
-inline COMMTIMEOUTS& SerialConfigImpl::commTimeouts()
-{
-	return _cto;
+	return 0;//TODO
 }
 
 
 } } // namespace Poco::IO
 
 
-#endif // IO_SerialConfig_WIN32_INCLUDED
+#endif // IO_SerialConfig_POSIX_INCLUDED

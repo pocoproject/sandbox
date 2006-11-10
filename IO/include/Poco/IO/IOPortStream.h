@@ -1,7 +1,7 @@
 //
 // IOPortStream.h
 //
-// $Id: //poco/1.2/Foundation/include/Poco/IOPortStream.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/IOPortStream.h#1 $
 //
 // Library: IO
 // Package: IO
