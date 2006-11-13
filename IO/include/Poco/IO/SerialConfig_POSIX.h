@@ -51,6 +51,10 @@ namespace IO {
 class IO_API SerialConfigImpl
 {
 public:
+	static const int TENTH_SEC = 10;
+	static const int MILLI_SEC = 1000;
+	static const int NOT_SUPPORTED = -1;
+
 	enum DataBitsImpl
 	{
 		DATA_BITS_FIVE_IMPL = CS5,
@@ -64,21 +68,21 @@ public:
 		PARITY_NONE_IMPL = 2,
 		PARITY_ODD_IMPL = 1,
 		PARITY_EVEN_IMPL = 0,
-		PARITY_MARK_IMPL = -1,//unused
-		PARITY_SPACE_IMPL = -2//unused
+		PARITY_MARK_IMPL = NOT_SUPPORTED,
+		PARITY_SPACE_IMPL = NOT_SUPPORTED
 	};
 
 	enum StartBitsImpl
 	{
 		START_ONE_IMPL = 0,
-		START_ONE5_IMPL = -1,//unused
+		START_ONE5_IMPL = NOT_SUPPORTED,
 		START_TWO_IMPL = 1
 	};
 
 	enum StopBitsImpl
 	{
 		STOP_ONE_IMPL = 1,
-		STOP_ONE5_IMPL = -1,//unused
+		STOP_ONE5_IMPL = NOT_SUPPORTED,
 		STOP_TWO_IMPL = 2
 	};
 
@@ -97,21 +101,22 @@ public:
 		BAUD_RATE_2400_IMPL = B2400,
 		BAUD_RATE_4800_IMPL = B4800,
 		BAUD_RATE_9600_IMPL = B9600,
-		BAUD_RATE_14400_IMPL = -1,//not used
+		BAUD_RATE_14400_IMPL = NOT_SUPPORTED,
 		BAUD_RATE_19200_IMPL = B19200,
 		BAUD_RATE_38400_IMPL = B38400,
 		BAUD_RATE_57600_IMPL = B57600,
 		BAUD_RATE_115200_IMPL = B115200,
-		BAUD_RATE_128000_IMPL = -2,//not used
-		BAUD_RATE_256000_IMPL = -3//not used
+		BAUD_RATE_128000_IMPL = NOT_SUPPORTED,
+		BAUD_RATE_230400_IMPL  = B230400,
+		BAUD_RATE_256000_IMPL = NOT_SUPPORTED,
+		BAUD_RATE_460800_IMPL  = B460800
 	};
 
 protected:
-	static const int MSEC;
 
 	SerialConfigImpl(
 		BaudRateImpl baudRate,
-		int dataBits,
+		DataBitsImpl dataBits,
 		char parity,
 		StartBitsImpl startBits,
 		StopBitsImpl stopBits,
@@ -124,7 +129,7 @@ protected:
 		int timeout);
 
 	void setBaudRateImpl(BaudRateImpl baudRate);
-	void setDataBitsImpl(int dataBits);
+	void setDataBitsImpl(DataBitsImpl dataBits);
 	void setParityImpl(ParityImpl parity);
 	void setParityCharImpl(char parityChar);
 	void setStartBitsImpl(StartBitsImpl startBits);
@@ -142,8 +147,8 @@ protected:
 	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
 
-	int getBaudRateImpl() const;
-	int getDataBitsImpl() const;
+	BaudRateImpl getBaudRateImpl() const;
+	DataBitsImpl getDataBitsImpl() const;
 	ParityImpl getParityImpl() const;
 	char getParityCharImpl() const;
 	StartBitsImpl getStartBitsImpl() const;
@@ -161,9 +166,9 @@ protected:
 private:
 	SerialConfigImpl();
 
+	termios _termios;
 	FlowControlImpl _flowControl;
 	bool _useEOF;
-	int _bufferSize;
 
 	friend class SerialPortImpl;
 };
@@ -172,33 +177,10 @@ private:
 //
 // inlines
 //
-inline void SerialConfigImpl::setBaudRateImpl(SerialConfigImpl::BaudRateImpl baudRate)
-{
-	//TODO
-}
-
-
-inline void SerialConfigImpl::setDataBitsImpl(int dataBits)
-{
-	//TODO
-}
-
-
-inline void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
-{
-	//TODO
-}
 
 
 inline void SerialConfigImpl::setStartBitsImpl(SerialConfigImpl::StartBitsImpl startBits)
 {
-	//TODO
-}
-
-
-inline void SerialConfigImpl::setStopBitsImpl(SerialConfigImpl::StopBitsImpl stopBits)
-{
-	//TODO
 }
 
 
@@ -216,49 +198,31 @@ inline void SerialConfigImpl::setEOFCharImpl(unsigned char eof)
 
 inline void SerialConfigImpl::setBufferSizeImpl(int size)
 {
-	//TODO
+	_termios.c_cc[VMIN] = size;
 }
 
 
 inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
 {
-	//TODO
+	_termios.c_cc[VTIME] = timeout * TENTH_SEC;
 }
 
 
 inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 {
-	//TODO
+	setTimeoutSecondsImpl(timeout * MILLI_SEC);
 }
 
 
-inline int SerialConfigImpl::getBaudRateImpl() const
+inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
 {
-	return 0;//TODO
-}
-
-
-inline int SerialConfigImpl::getDataBitsImpl() const
-{
-	return 0;//TODO
-}
-
-
-inline SerialConfigImpl::ParityImpl SerialConfigImpl::getParityImpl() const
-{
-	return (SerialConfigImpl::ParityImpl) 0;//TODO
+	return (BaudRateImpl) _termios.c_ospeed;
 }
 
 
 inline SerialConfigImpl::StartBitsImpl SerialConfigImpl::getStartBitsImpl() const
 {
 	return (SerialConfigImpl::StartBitsImpl) 0;//TODO
-}
-
-
-inline SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
-{
-	return (SerialConfigImpl::StopBitsImpl) 0;//TODO
 }
 
 
@@ -300,19 +264,19 @@ inline unsigned char SerialConfigImpl::getEOFCharImpl() const
 
 inline int SerialConfigImpl::getBufferSizeImpl() const
 {
-	return _bufferSize;
+	return _termios.c_cc[VMIN];
 }
 
 
 inline int SerialConfigImpl::getTimeoutSecondsImpl() const
 {
-	return getTimeoutImpl()*MSEC;
+	return getTimeoutImpl() * MILLI_SEC;
 }
 
 
 inline int SerialConfigImpl::getTimeoutImpl() const
 {
-	return 0;//TODO
+	return _termios.c_cc[VTIME] * MILLI_SEC / TENTH_SEC;
 }
 
 

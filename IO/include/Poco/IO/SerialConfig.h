@@ -111,7 +111,9 @@ public:
 		BAUD_RATE_57600 = BAUD_RATE_57600_IMPL,
 		BAUD_RATE_115200 = BAUD_RATE_115200_IMPL,
 		BAUD_RATE_128000 = BAUD_RATE_128000_IMPL,
-		BAUD_RATE_256000 = BAUD_RATE_256000_IMPL
+		BAUD_RATE_230400 = BAUD_RATE_230400_IMPL,
+		BAUD_RATE_256000 = BAUD_RATE_256000_IMPL,
+		BAUD_RATE_460800 = BAUD_RATE_460800_IMPL
 	};
 
 	SerialConfig();
@@ -170,10 +172,6 @@ public:
 //
 // inlines
 //
-inline void SerialConfig::setBaudRate(SerialConfig::BaudRate baudRate)
-{
-	setBaudRateImpl((SerialConfigImpl::BaudRateImpl) baudRate);
-}
 
 
 inline void SerialConfig::setDataBits(SerialConfig::DataBits dataBits)

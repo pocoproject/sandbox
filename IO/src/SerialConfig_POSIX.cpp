@@ -46,11 +46,8 @@ namespace Poco {
 namespace IO {
 
 
-const int SerialConfigImpl::MSEC = 1000;
-
-
 SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
-	int dataBits,
+	DataBitsImpl dataBits,
 	char parity,
 	StartBitsImpl startBits,
 	StopBitsImpl stopBits,
@@ -61,16 +58,50 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 	unsigned char eofChar,
 	int bufferSize,
 	int timeout):  
-	_useEOF(useEOF), 
-	_bufferSize(bufferSize)
+	_useEOF(useEOF)
 {
-	//TODO
+	
+	memset(&_termios, 0, sizeof(_termios)) ;
 
+	setBaudRateImpl(baudRate);
+	setDataBitsImpl(dataBits);
+	setStopBitsImpl(stopBits);
+	setParityCharImpl(parity);
 	setFlowControlImpl(flowControl, xOnChar, xOffChar);
-	setParityCharImpl(parity);	
+	setBufferSizeImpl(bufferSize);
+
 	setTimeoutImpl(timeout);
 }
 
+
+void SerialConfigImpl::setBaudRateImpl(SerialConfigImpl::BaudRateImpl baudRate)
+{
+	if (0 != cfsetospeed(&_termios, baudRate) ||
+		0 != cfsetispeed(&_termios, baudRate))
+		throw SystemException("Can not set baud rate");
+}
+
+
+void SerialConfigImpl::setDataBitsImpl(SerialConfigImpl::DataBitsImpl dataBits)
+{
+	_termios.c_cflag &= ~(CSIZE);
+	_termios.c_cflag |= dataBits;
+}
+
+
+SerialConfigImpl::DataBitsImpl SerialConfigImpl::getDataBitsImpl() const
+{
+	if (_termios.c_cflag & DATA_BITS_EIGHT_IMPL)
+		return DATA_BITS_EIGHT_IMPL;
+	else if (_termios.c_cflag & DATA_BITS_SEVEN_IMPL)
+		return DATA_BITS_SEVEN_IMPL;
+	else if (_termios.c_cflag & DATA_BITS_SIX_IMPL)
+		return DATA_BITS_SIX_IMPL;
+	else if (_termios.c_cflag & DATA_BITS_FIVE_IMPL)
+		return DATA_BITS_FIVE_IMPL;
+
+	throw InvalidAccessException("Number of data bits not set");
+}
 
 void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flowControl,
 		unsigned char xOnChar,
@@ -78,15 +109,13 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 {
 	if (FLOW_CTRL_HARDWARE_IMPL == flowControl)
 	{
-		poco_assert(xOnChar == xOffChar);
-
-		//TODO
+		_termios.c_cflag |= CRTSCTS;
+		_termios.c_cflag &= ~(IXON | IXOFF);
 	}
 	else if (FLOW_CTRL_SOFTWARE_IMPL == flowControl)
 	{
-		//TODO
-
-		setUseXonXoffImpl(xOnChar, xOffChar);
+		_termios.c_cflag |= (IXON | IXOFF); 
+		_termios.c_cflag &= ~CRTSCTS;
 	}
 	else
 		throw InvalidArgumentException("Invalid argument supplied. Flow control not set.");
@@ -123,23 +152,17 @@ void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
 
 char SerialConfigImpl::getParityCharImpl() const
 {
-	//TODO
-	/*
-	switch (_dcb.Parity)
+	if (_termios.c_iflag & ~(INPCK))
+		return 'N';
+	else
 	{
-	case PARITY_NONE_IMPL:
-		return 'N';
-	case PARITY_ODD_IMPL:
-		return 'O';
-	case PARITY_EVEN_IMPL:
-		return 'E';
-	case PARITY_MARK_IMPL:
-		return 'M';
-	case PARITY_SPACE_IMPL:
-		return 'S';
-	default:
-		return 'N';
-	}*/
+		if (_termios.c_cflag & (PARODD & PARENB))
+			return 'O';
+		else if (_termios.c_cflag & (~(PARODD) & PARENB))
+			return 'E';
+	}
+
+	throw InvalidAccessException("Parity not set");
 }
 
 
@@ -148,19 +171,20 @@ void SerialConfigImpl::setParityCharImpl(char parityChar)
 	switch (parityChar)
 	{
 	case 'n': case 'N':
-		break;//TODO
+		_termios.c_cflag &= ~(PARENB);  // clear parity enable
+		_termios.c_iflag &= ~(INPCK);   // disable input parity checking
+		return;
 
 	case 'o': case 'O':
-		break;//TODO
+		_termios.c_cflag |= (PARODD | PARENB); // enable parity, set to ODD
+		_termios.c_iflag |= INPCK;      // enable input parity checking
+		return;
 
 	case 'e': case 'E':
-		break;//TODO
-
-	case 'm': case 'M':
-		break;//TODO
-
-	case 's': case 'S':
-		break;//TODO
+		_termios.c_cflag |= PARENB;     // enable parity, default is EVEN
+		_termios.c_cflag &= ~(PARODD);  // ensure PARODD is clear
+		_termios.c_iflag |= INPCK;      // enable input parity checking
+		return;
 
 	default:
 		{
@@ -169,6 +193,61 @@ void SerialConfigImpl::setParityCharImpl(char parityChar)
 			throw InvalidArgumentException(os.str());
 		}
 	}
+}
+
+
+void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
+{
+	switch (parity)
+	{
+	case PARITY_NONE_IMPL:
+		return setParityCharImpl('N');
+	case PARITY_ODD_IMPL:
+		return setParityCharImpl('O');
+	case PARITY_EVEN_IMPL:
+		return setParityCharImpl('E');
+	}
+
+	throw InvalidArgumentException("Wrong parity.");
+}
+
+
+SerialConfigImpl::ParityImpl SerialConfigImpl::getParityImpl() const
+{
+	ParityImpl p;
+
+	switch (getParityCharImpl())
+	{
+	case 'N':
+		p = PARITY_NONE_IMPL;
+		break;
+	case 'O':
+		p = PARITY_ODD_IMPL;
+		break;
+	case 'E':
+		p = PARITY_EVEN_IMPL;
+		break;
+	}
+
+	return p;
+}
+
+
+void SerialConfigImpl::setStopBitsImpl(SerialConfigImpl::StopBitsImpl stopBits)
+{
+	if (STOP_TWO_IMPL == stopBits)
+		_termios.c_cflag |= CSTOPB;
+	else
+		_termios.c_cflag &= ~(CSTOPB);
+}
+
+
+SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
+{
+	if (_termios.c_cflag & CSTOPB)
+		return STOP_TWO_IMPL;
+	else
+		return STOP_ONE_IMPL;
 }
 
 

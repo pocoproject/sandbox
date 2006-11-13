@@ -97,6 +97,15 @@ SerialConfigImpl((SerialConfigImpl::BaudRateImpl) baudRate,
 }
 
 
+void SerialConfig::setBaudRate(SerialConfig::BaudRate baudRate)
+{
+	if (SerialConfigImpl::NOT_SUPPORTED == baudRate)
+		throw InvalidArgumentException("Baud rate not supported.");
+
+	setBaudRateImpl((SerialConfigImpl::BaudRateImpl) baudRate);
+}
+
+
 void SerialConfig::setXonChar(unsigned char c)
 {
 	if (SerialConfigImpl::FLOW_CTRL_HARDWARE_IMPL == getFlowControlImpl())
