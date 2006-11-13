@@ -60,7 +60,6 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 	int timeout):  
 	_useEOF(useEOF)
 {
-	
 	memset(&_termios, 0, sizeof(_termios)) ;
 
 	setBaudRateImpl(baudRate);
@@ -69,7 +68,6 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 	setParityCharImpl(parity);
 	setFlowControlImpl(flowControl, xOnChar, xOffChar);
 	setBufferSizeImpl(bufferSize);
-
 	setTimeoutImpl(timeout);
 }
 
@@ -103,6 +101,7 @@ SerialConfigImpl::DataBitsImpl SerialConfigImpl::getDataBitsImpl() const
 	throw InvalidAccessException("Number of data bits not set");
 }
 
+
 void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flowControl,
 		unsigned char xOnChar,
 		unsigned char xOffChar)
@@ -124,30 +123,7 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 }
 
 
-void SerialConfigImpl::setUseXonXoffImpl(unsigned char xOnChar,
-		unsigned char xOffChar)
-{
-	if (xOnChar != xOffChar)
-	{
-		//TODO
-	}
-	else
-		throw InvalidAccessException("XON == XOFF - not set.");
-}
 
-
-void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
-{
-	poco_assert(FLOW_CTRL_SOFTWARE_IMPL == _flowControl);
-	//TODO
-}
-
-
-void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
-{
-	poco_assert(FLOW_CTRL_SOFTWARE_IMPL == _flowControl);
-	//TODO
-}
 
 
 char SerialConfigImpl::getParityCharImpl() const

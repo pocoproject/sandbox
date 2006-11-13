@@ -41,6 +41,7 @@
 
 
 #include "Poco/IO/IO.h"
+#include "Poco/Exception.h"
 #include <termios.h>
 
 
@@ -181,6 +182,7 @@ private:
 
 inline void SerialConfigImpl::setStartBitsImpl(SerialConfigImpl::StartBitsImpl startBits)
 {
+	throw Poco::InvalidAccessException("Operation not supported.");
 }
 
 
@@ -214,6 +216,25 @@ inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 }
 
 
+inline void SerialConfigImpl::setUseXonXoffImpl(unsigned char,
+		unsigned char)
+{
+	setFlowControlImpl(FLOW_CTRL_SOFTWARE_IMPL, 0, 0);
+}
+
+
+inline void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
+{
+	throw Poco::InvalidAccessException("Operation not supported.");
+}
+
+
+inline void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
+{
+	throw Poco::InvalidAccessException("Operation not supported.");
+}
+
+
 inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
 {
 	return (BaudRateImpl) _termios.c_ospeed;
@@ -222,7 +243,7 @@ inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
 
 inline SerialConfigImpl::StartBitsImpl SerialConfigImpl::getStartBitsImpl() const
 {
-	return (SerialConfigImpl::StartBitsImpl) 0;//TODO
+	throw Poco::InvalidAccessException("Operation not supported.");
 }
 
 
@@ -234,19 +255,19 @@ inline SerialConfigImpl::FlowControlImpl SerialConfigImpl::getFlowControlImpl() 
 
 inline bool SerialConfigImpl::getUseXonXoffImpl() const
 {
-	return false;//TODO
+	return FLOW_CTRL_SOFTWARE_IMPL == _flowControl;
 }
 
 
 inline unsigned char SerialConfigImpl::getXonCharImpl() const
 {
-	return 0;//TODO
+	throw Poco::InvalidAccessException("Operation not supported.");
 }
 
 
 inline unsigned char SerialConfigImpl::getXoffCharImpl() const
 {
-	return 0;//TODO
+	throw Poco::InvalidAccessException("Operation not supported.");
 }
 
 
