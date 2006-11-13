@@ -51,6 +51,9 @@ namespace IO {
 class IO_API SerialConfigImpl
 {
 public:
+	static const int MSEC = 1000;
+	static const int NOT_SUPPORTED = -1;
+
 	enum DataBitsImpl
 	{
 		DATA_BITS_FIVE_IMPL = 5,
@@ -90,6 +93,7 @@ public:
 
 	enum BaudRateImpl
 	{
+		BAUD_RATE_NS_IMPL = -1,//not supported
 		BAUD_RATE_110_IMPL = CBR_110,
 		BAUD_RATE_300_IMPL = CBR_300,
 		BAUD_RATE_600_IMPL = CBR_600,
@@ -103,11 +107,12 @@ public:
 		BAUD_RATE_57600_IMPL = CBR_57600,
 		BAUD_RATE_115200_IMPL = CBR_115200,
 		BAUD_RATE_128000_IMPL = CBR_128000,
-		BAUD_RATE_256000_IMPL = CBR_256000
+		BAUD_RATE_230400_IMPL  = BAUD_RATE_NS_IMPL,
+		BAUD_RATE_256000_IMPL = CBR_256000,
+		BAUD_RATE_460800_IMPL  = BAUD_RATE_NS_IMPL
 	};
 
 protected:
-	static const int MSEC;
 
 	SerialConfigImpl(
 		BaudRateImpl baudRate,

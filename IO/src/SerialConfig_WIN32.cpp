@@ -46,9 +46,6 @@ namespace Poco {
 namespace IO {
 
 
-const int SerialConfigImpl::MSEC = 1000;
-
-
 SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 	DataBitsImpl dataBits,
 	char parity,
