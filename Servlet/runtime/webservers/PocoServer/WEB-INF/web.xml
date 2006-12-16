@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-srv>
+  <!-- General description of your web application -->
+  <display-name>PoCo Web Application Server</display-name>
+
+  <context-param>
+    <param-name>webmaster</param-name>
+    <param-value>pero@peraja.com</param-value>
+    <description>
+        The EMAIL address of the administrator to whom questions
+        and comments about this application should be addressed.
+    </description>
+  </context-param>
+  <context-param>
+    <param-name>My Company</param-name>
+    <param-value>ACME, Inc</param-value>
+  </context-param>
+  <context-param>
+    <param-name>My Location</param-name>
+    <param-value>Mechanicsville, NY</param-value>
+  </context-param>
+  <context-param>
+    <!-- path relative to WEB-INF directory -->
+    <param-name>log.properties</param-name>
+    <param-value>log/propertiesD</param-value>
+  </context-param>
+
+  <!-- Server definitions and their initialization
+       parameters. -->
+  <server>
+    <server-name>PocoServer</server-name>
+    <server-lib>PocoServer</server-lib>
+    <load-on-startup>0</load-on-startup>
+    <description>Poco web server.</description>
+    <alias-mapping>
+      <alias>/Backbase/</alias>
+      <directory>${system.env.POCO_BASE}/Servlet/runtime/files/js/Backbase/Development/Backbase/</directory>
+    </alias-mapping>
+    <!-- Addresses (interfaces) where web server listens are optional. 
+         If none is specified, server will listen on all available interfaces.
+         The port portion of the adress can be omitted, in which case the
+         server will listen on port 80. Invalid address entries are ignored. -->
+    <!--
+    <param-name>address0</param-name>
+    <param-value>localhost:80</param-value>
+    <param-name>address1</param-name>
+    <param-value>192.168.52.88:80</param-value>-->
+    <!-- directory where the web server looks for global files (Javascript, html etc.) -->
+    <param-name>global.dir</param-name>
+    <param-value>${system.env.POCO_BASE}/Servlet/runtime/files</param-value>
+  </server>
+  
+</web-srv>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<web-app>
+	<!-- General description of your web application -->
+	<display-name>Servlet Test Application</display-name>
+	<context-param>
+		<param-name>webmaster</param-name>
+		<param-value>pero@peraja.com</param-value>
+		<description>
+        The EMAIL address of the administrator to whom questions
+        and comments about this application should be addressed.
+    </description>
+	</context-param>
+	<context-param>
+		<param-name>My Company</param-name>
+		<param-value>ACME, Inc.</param-value>
+	</context-param>
+	<context-param>
+		<param-name>My Location</param-name>
+		<param-value>Mechanicsville, NY</param-value>
+	</context-param>
+	<context-param>
+		<!-- path relative to WEB-INF directory -->
+		<param-name>log.properties</param-name>
+		<param-value>log/propertiesD</param-value>
+	</context-param>
+	<!-- Servlet definitions for the servlets that make up
+       the web application, and their initialization
+       parameters. -->
+	<servlet>
+		<description>A singleton test servlet.</description>
+		<display-name>Singleton Servlet</display-name>
+		<servlet-name>SingletonTestServlet</servlet-name>
+		<servlet-class>SingletonTestServlet</servlet-class>
+		<servlet-lib>TestServlet</servlet-lib>
+		<init-param>
+			<param-name>is_session_interpreted</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<description>A test servlet.</description>
+		<display-name>Test Servlet</display-name>
+		<servlet-name>TestServlet</servlet-name>
+		<servlet-class>TestServlet</servlet-class>
+		<servlet-lib>TestServlet</servlet-lib>
+		<init-param>
+			<param-name>is_session_interpreted</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<load-on-startup>-1</load-on-startup>
+	</servlet>
+	<servlet>
+		<description>Default servlet.</description>
+		<display-name>Default Test Servlet</display-name>
+		<servlet-name>DefaultTestServlet</servlet-name>
+		<servlet-class>DefaultTestServlet</servlet-class>
+		<servlet-lib>TestServlet</servlet-lib>
+		<init-param>
+			<param-name>is_session_interpreted</param-name>
+			<param-value>1</param-value>
+			<param-name>dummy_param</param-name>
+			<param-value>~!@#$%^&amp;&quot;qwertyuiop[]asdfghjkl;'zxcvbnm,./*QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM?&lt;&gt;</param-value>
+		</init-param>
+		<load-on-startup>-1</load-on-startup>
+	</servlet>
+	<servlet>
+		<description>Java Script Pages servlet (T.B.D. and not to be confused with Java Server Pages).</description>
+		<display-name>JSP Test Servlet</display-name>
+		<servlet-name>JSPTestServlet</servlet-name>
+		<servlet-class>JSPTestServlet</servlet-class>
+		<servlet-lib>TestServlet</servlet-lib>
+		<init-param>
+			<param-name>is_session_interpreted</param-name>
+			<param-value>1</param-value>
+			<param-name>authenticate</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<load-on-startup>-1</load-on-startup>
+	</servlet>
+  <servlet>
+    <description>Forward test servlet.</description>
+    <display-name>Forward Test Servlet</display-name>
+    <servlet-name>ForwardTestServlet</servlet-name>
+    <servlet-class>ForwardTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>Forwarded test servlet.</description>
+    <display-name>Forwarded Test Servlet</display-name>
+    <servlet-name>ForwardedTestServlet</servlet-name>
+    <servlet-class>ForwardedTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>Include test servlet.</description>
+    <display-name>Include Test Servlet</display-name>
+    <servlet-name>IncludeTestServlet</servlet-name>
+    <servlet-class>IncludeTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>Included test servlet.</description>
+    <display-name>Included Test Servlet</display-name>
+    <servlet-name>IncludedTestServlet</servlet-name>
+    <servlet-class>IncludedTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+  <servlet>
+    <description>Refresh test servlet.</description>
+    <display-name>Refresh Test Servlet</display-name>
+    <servlet-name>RefreshTestServlet</servlet-name>
+    <servlet-class>RefreshTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+	<servlet-mapping>
+		<servlet-name>DefaultTestServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>TestServlet</servlet-name>
+		<url-pattern>/Test/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>JSPTestServlet</servlet-name>
+		<url-pattern>*.jsp</url-pattern>
+	</servlet-mapping>
+	<filter>
+		<description>A test login filter.</description>
+		<display-name>Test Login Filter</display-name>
+		<filter-name>TestFilter</filter-name>
+		<filter-class>TestFilter</filter-class>
+		<filter-lib>TestFilter</filter-lib>
+		<init-param>
+			<param-name>do_authentication</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</filter>
+	<filter-mapping>
+		<filter-name>TestFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>TestFilter</filter-name>
+		<servlet-class>TestServlet</servlet-class>
+	</filter-mapping>
+	<!-- one entry only (any subsequent entries are disregarded) -->
+	<session-config>
+		<!-- timeout is in minutes (-1 means no timeout) -->
+		<session-timeout>30</session-timeout>
+    <max-session-count>1000</max-session-count>
+	</session-config>
+	<mime-mapping>
+		<extension>txt</extension>
+		<mime-type>text/plain</mime-type>
+	</mime-mapping>
+</web-app>
