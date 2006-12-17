@@ -13,7 +13,6 @@ endif
 
 .DEFAULT all:
 	$(MAKE) -C Servlet $(MAKECMDGOALS)
-	$(MAKE) -C ServletEx $(MAKECMDGOALS)
 	$(MAKE) -C Container $(MAKECMDGOALS)
 	$(MAKE) -C Molto $(MAKECMDGOALS)
 	$(MAKE) -C PocoServer $(MAKECMDGOALS)
