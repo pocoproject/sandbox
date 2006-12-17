@@ -128,9 +128,9 @@ public:
 	void addIntHeader(const std::string& name, int value);
 
 private:
-	HttpServletResponse&          _resp;
-	ServletOutputStream* _pNoBody;
-	Poco::NullOutputStream        _nullOutputStream;
+	HttpServletResponse&   _resp;
+	ServletOutputStream*   _pNoBody;
+	Poco::NullOutputStream _nullOutputStream;
 };
 
 

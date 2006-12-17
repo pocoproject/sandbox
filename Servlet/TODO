@@ -2,7 +2,7 @@
 - Servlet: Object/Attributes (This is a design decision. Currently, there is only improvised functionality provided.)
 - Servlet::HttpServlet::ResourceBundle
 - Servlet::ServletContext::getResourceAsStream()
-- Servlet::Servlet::HttpServletRequest (PocoServer) character encoding
+- Servlet::Servlet::HttpServletRequest/HttpServletRequest (PocoServer) encoding,locale,buffer size
 - Container: Built-in servlets - default servlet mapping and CGI servlet (probably best through Poco::Process stdio redirection)
 - General: create/update comments
 - General: review and tidy up the code
