@@ -44,7 +44,7 @@
 				ProgramDatabaseFile="$(OutDir)\Poco$(ProjectName)d.pdb"
 				SubSystem="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\$(ProjectName)d.lib"
+				ImportLibrary="..\lib\Poco$(ProjectName)d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -100,7 +100,7 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\$(ProjectName).lib"
+				ImportLibrary="..\lib\Poco$(ProjectName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
