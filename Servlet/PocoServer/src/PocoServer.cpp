@@ -65,6 +65,7 @@
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTMLForm.h"
+#include "Poco/Net/NetException.h"
 #include "Poco/Util/Application.h"
 #include <sstream>
 
@@ -84,6 +85,7 @@ using Poco::Net::HTTPRequestHandlerFactory;
 using Poco::Net::HTTPClientSession;
 using Poco::Net::HTMLForm;
 using Poco::Net::NameValueCollection;
+using Poco::Net::NetException;
 using Poco::Util::Application;
 using Poco::Servlet::Ex::HttpServletDispatcher;
 using Poco::Servlet::Ex::HttpServerConfig;
@@ -221,6 +223,12 @@ public:
 
 				_dispatcher.dispatch(req, res);
 			}
+		}
+		catch(NetException& ex)
+		{
+			std::string err = ex.displayText();
+			if (_pLogger) _pLogger->error(err);
+			return;
 		}
 		catch(Exception& ex)
 		{
