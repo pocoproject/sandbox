@@ -21,7 +21,7 @@
 	<context-param>
 		<!-- path relative to WEB-INF directory -->
 		<param-name>log.properties</param-name>
-		<param-value>log/propertiesD</param-value>
+		<param-value>log/propertiesd</param-value>
 	</context-param>
 	<!-- Servlet definitions for the servlets that make up
        the web application, and their initialization
