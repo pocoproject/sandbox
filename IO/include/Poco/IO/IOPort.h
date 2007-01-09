@@ -56,7 +56,7 @@ class IOPort
 {
 public:
 	IOPort(const std::string& name, const C& config): 
-		_port(name, config), _reader(_sstream), _writer(_sstream)
+		_port(name, config)
 		/// Creates the I/O port.
 	{
 	}
@@ -138,9 +138,6 @@ private:
 	const P& operator = (const P&);
 
 	P _port;
-	std::stringstream _sstream;
-	BinaryReader _reader;
-	BinaryWriter _writer;
 };
 
 
