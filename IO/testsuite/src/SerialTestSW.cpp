@@ -63,18 +63,18 @@ const unsigned char SerialTestSW::SERIAL_EOF = 0x0D;
 
 SerialTestSW::SerialTestSW(const std::string& name): 
 	CppUnit::TestCase(name),
-		_serialConfig(SerialConfig::BAUD_RATE_9600, 
-		SerialConfig::DATA_BITS_EIGHT, 
-		'N', 
-		SerialConfig::START_ONE,
-		SerialConfig::STOP_ONE,
-		SerialConfig::FLOW_CTRL_SOFTWARE,
-		0x11,//xOn
-		0x13,//xOff
-		true,//use EOF
-		SERIAL_EOF,//EOF 
-		10,//buffer size
-		1000)//timeout
+	_serialConfig(SerialConfig::BAUD_RATE_9600, 
+	SerialConfig::DATA_BITS_EIGHT, 
+	'N', 
+	SerialConfig::START_ONE,
+	SerialConfig::STOP_ONE,
+	SerialConfig::FLOW_CTRL_SOFTWARE,
+	0x11,//xOn
+	0x13,//xOff
+	true,//use EOF
+	SERIAL_EOF,//EOF 
+	10,//buffer size
+	1000)//timeout
 {
 #if defined(POCO_OS_FAMILY_WINDOWS)
 	_serialName1 = "COM1";

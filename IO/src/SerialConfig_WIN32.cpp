@@ -89,8 +89,6 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 {
 	if (FLOW_CTRL_HARDWARE_IMPL == flowControl)
 	{
-		poco_assert(xOnChar != xOffChar);
-
 		_dcb.fOutX = FALSE;
 		_dcb.fInX = FALSE;
 		_dcb.XonChar = 0;
@@ -120,8 +118,7 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 }
 
 
-void SerialConfigImpl::setUseXonXoffImpl(unsigned char xOnChar,
-		unsigned char xOffChar)
+void SerialConfigImpl::setUseXonXoffImpl(unsigned char xOnChar,	unsigned char xOffChar)
 {
 	if (xOnChar != xOffChar)
 	{
