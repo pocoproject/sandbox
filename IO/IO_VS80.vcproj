@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
 				StringPooling="true"
 				MinimalRebuild="true"
@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib"
+				AdditionalDependencies="PocoFoundationd.lib PocoNetd.lib"
 				OutputFile="..\bin\PocoIOd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -135,7 +135,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
 				GeneratePreprocessedFile="0"
 				KeepComments="false"
@@ -162,7 +162,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib"
+				AdditionalDependencies="PocoFoundation.lib PocoNet.lib"
 				OutputFile="..\bin\PocoIO.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -206,13 +206,25 @@
 	</References>
 	<Files>
 		<Filter
-			Name="IO"
+			Name="IOCore"
 			>
 			<Filter
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\include\Poco\Io\ActivePort.h"
+					RelativePath=".\include\Poco\IO\AbstractChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ActiveChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Channel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ChannelStream.h"
 					>
 				</File>
 				<File
@@ -220,17 +232,29 @@
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\Io\IOPort.h"
+					RelativePath=".\include\Poco\IO\Protocol.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\IOPortStream.h"
+					RelativePath=".\include\Poco\IO\ProtocolStream.h"
 					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				>
+				<File
+					RelativePath=".\src\ChannelStream.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\Protocol.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ProtocolStream.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -239,6 +263,18 @@
 			<Filter
 				Name="Header Files"
 				>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel_POSIX.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h"
+					>
+				</File>
 				<File
 					RelativePath=".\include\Poco\Io\SerialConfig.h"
 					>
@@ -258,29 +294,54 @@
 						/>
 					</FileConfiguration>
 				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialPort.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialPort_POSIX.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialPort_WIN32.h"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				>
+				<File
+					RelativePath=".\src\SerialChannel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\SerialChannel_POSIX.cpp"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\SerialChannel_WIN32.cpp"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath=".\src\SerialConfig.cpp"
 					>
@@ -317,41 +378,33 @@
 						/>
 					</FileConfiguration>
 				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Net"
+			>
+			<Filter
+				Name="Header Files"
+				>
 				<File
-					RelativePath=".\src\SerialPort.cpp"
+					RelativePath=".\include\Poco\IO\NetChannel.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\SerialPort_POSIX.cpp"
+					RelativePath=".\include\Poco\IO\NetConfig.h"
 					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\NetChannel.cpp"
+					>
 				</File>
 				<File
-					RelativePath=".\src\SerialPort_WIN32.cpp"
+					RelativePath=".\src\NetConfig.cpp"
 					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>

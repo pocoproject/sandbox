@@ -35,13 +35,12 @@
 #include "CppUnit/TestSuite.h"
 #include "Poco/Types.h"
 #include "Poco/ActiveResult.h"
-#include "Poco/IO/IOPort.h"
+#include "Poco/IO/Channel.h"
 #include "Poco/IO/SerialConfig.h"
-#include "Poco/IO/SerialPort.h"
-#include "Poco/IO/ActivePort.h"
+#include "Poco/IO/SerialChannel.h"
+#include "Poco/IO/ActiveChannel.h"
 #include "Poco/Void.h"
 #include "Poco/Types.h"
-#include "Poco/Thread.h"
 #include "Poco/BinaryReader.h"
 #include "Poco/BinaryWriter.h"
 #include "Poco/Exception.h"
@@ -51,14 +50,14 @@ using Poco::Int64;
 using Poco::UInt64;
 using Poco::ActiveResult;
 using Poco::Void;
-using Poco::Thread;
 using Poco::BinaryReader;
 using Poco::BinaryWriter;
 using Poco::InvalidAccessException;
-using Poco::IO::IOPort;
+using Poco::IO::Channel;
 using Poco::IO::SerialConfig;
-using Poco::IO::SerialPort;
-using Poco::IO::ActivePort;
+using Poco::IO::SerialChannel;
+using Poco::IO::ActiveChannel;
+using Poco::IO::Serial;
 
 
 const unsigned char SerialTestHW::SERIAL_EOF = 0x0D;
@@ -94,10 +93,10 @@ SerialTestHW::~SerialTestHW()
 }
 
 
-void SerialTestHW::testSerialPort()
+void SerialTestHW::testSerialChannel()
 {
-	SerialIO com1(_serialName1, _serialConfig);
-	SerialIO com2(_serialName2, _serialConfig);
+	Serial com1(_serialName1, _serialConfig);
+	Serial com2(_serialName2, _serialConfig);
 	
 	try
 	{
@@ -122,8 +121,7 @@ void SerialTestHW::testSerialPort()
 	assert(10 == com2.read(str).length());	
 	assert("1234567890" == str);
 
-	assert(5 == com1.write(str.c_str(), 5));
-	Thread::sleep(100);
+	assert(5 == com1.write(const_cast<char*>(str.c_str()), 5));
 	char chr[5] = "";
 	assert(3 == com2.read(chr, 3));	
 	assert('1' == chr[0]);
@@ -147,15 +145,15 @@ void SerialTestHW::testSerialPort()
 }
 
 
-void SerialTestHW::testActiveSerialPort()
+void SerialTestHW::testActiveSerialChannel()
 {
-	SerialPort com1(_serialName1, _serialConfig);
-	SerialPort com2(_serialName2, _serialConfig);
+	SerialChannel com1(_serialName1, _serialConfig);
+	SerialChannel com2(_serialName2, _serialConfig);
 	std::string str1 = "1234567890";
 	std::string str2 = "";
 	
-	ActivePort<SerialPort> activePort1(com1);
-	ActivePort<SerialPort> activePort2(com2);
+	ActiveChannel<SerialChannel> activePort1(com1);
+	ActiveChannel<SerialChannel> activePort2(com2);
 	ActiveResult<int> result1 = activePort1.write(str1);
 	result1.wait();
 	Void v;
@@ -167,8 +165,8 @@ void SerialTestHW::testActiveSerialPort()
 
 void SerialTestHW::testSerialStreams()
 {
-	SerialIO com1(_serialName1, _serialConfig);
-	SerialIO com2(_serialName2, _serialConfig);
+	Serial com1(_serialName1, _serialConfig);
+	Serial com2(_serialName2, _serialConfig);
 	SerialOutputStream sos(com1);
 	SerialInputStream sis(com2);
 
@@ -186,8 +184,8 @@ void SerialTestHW::testSerialStreams()
 
 void SerialTestHW::testSerialBinary()
 {
-	SerialIO com1(_serialName1, _serialConfig);
-	SerialIO com2(_serialName2, _serialConfig);
+	Serial com1(_serialName1, _serialConfig);
+	Serial com2(_serialName2, _serialConfig);
 
 	SerialOutputStream sos(com1);
 	SerialInputStream sis(com2);
@@ -354,8 +352,8 @@ CppUnit::Test* SerialTestHW::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SerialTestHW");
 
-	CppUnit_addTest(pSuite, SerialTestHW, testSerialPort);
-	CppUnit_addTest(pSuite, SerialTestHW, testActiveSerialPort);
+	CppUnit_addTest(pSuite, SerialTestHW, testSerialChannel);
+	CppUnit_addTest(pSuite, SerialTestHW, testActiveSerialChannel);
 	CppUnit_addTest(pSuite, SerialTestHW, testSerialStreams);
 	CppUnit_addTest(pSuite, SerialTestHW, testSerialBinary);
 

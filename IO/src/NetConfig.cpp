@@ -1,13 +1,11 @@
 //
-// SerialPort_WIN32.h
+// NetConfig.cpp
 //
-// $Id: //poco/Main/Data/include/Poco/IO/SerialPort_WIN32.h#1 $
+// $Id: //poco/Main/IO/src/NetConfig.cpp#1 $
 //
 // Library: IO
-// Package: Serial
-// Module:  SerialPort
-//
-// Definition of the SerialPortImpl class for WIN32.
+// Package: Net
+// Module:  NetConfig
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,50 +34,36 @@
 //
 
 
-#ifndef IO_SerialPort_WIN32_INCLUDED
-#define IO_SerialPort_WIN32_INCLUDED
+#include "Poco/IO/NetConfig.h"
+#include "Poco/Net/Socket.h"
+#include "Poco/Net/SocketImpl.h"
+#include "Poco/Timespan.h"
+#include "Poco/Exception.h"
 
 
-#include "Poco/IO/IO.h"
-#include "Poco/IO/SerialConfig_WIN32.h"
-#include <windows.h>
+using Poco::Net::Socket;
+using Poco::Net::SocketImpl;
+using Poco::Timespan;
+using Poco::InvalidArgumentException;
 
 
 namespace Poco {
 namespace IO {
 
 
-class IO_API SerialPortImpl
+NetConfig::NetConfig(const std::string& address, 
+	long msecTimeout, 
+	NetConfig::ChannelType type): 
+	_timeout(msecTimeout * Timespan::MILLISECONDS),
+	_address(address),
+	_type(type)
 {
-protected:
-	SerialPortImpl(const std::string& name, const SerialConfigImpl& config);
-	~SerialPortImpl();
-	void initImpl();
-	void reconfigureImpl(const SerialConfigImpl& config);
-	void openImpl();
-	void closeImpl();
-	char readImpl();
-	int readImpl(char* pBuffer, int length);
-	std::string& readImpl(std::string& buffer);
-	int writeImpl(char c);
-	int writeImpl(const char* buffer, int length);
-	int writeImpl(const std::string& data);
-	const std::string& getNameImpl() const;
-	void handleError(const std::string& path);
-	static std::string& getErrorText(std::string& buf);
+}
 
-private:
-	SerialPortImpl();
-	SerialPortImpl(const SerialPortImpl&);
-	const SerialPortImpl& operator = (const SerialPortImpl&);
 
-	std::string _name;
-	HANDLE _handle;
-	SerialConfigImpl _config;
-};
+NetConfig::~NetConfig()
+{
+}
 
 
 } } // namespace Poco::IO
-
-
-#endif // IO_SerialPort_WIN32_INCLUDED

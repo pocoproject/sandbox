@@ -1,9 +1,13 @@
 //
-// SerialTestHW.h
+// AbstractChannel.h
 //
-// $Id: //poco/Main/template/test.h#7 $
+// $Id: //poco/Main/Data/include/Poco/IO/AbstractChannel.h#1 $
 //
-// Definition of the SerialTestHW class.
+// Library: IO
+// Package: IO
+// Module:  AbstractChannel
+//
+// Definition of the AbstractChannel class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,51 +36,61 @@
 //
 
 
-#ifndef SerialTestHW_INCLUDED
-#define SerialTestHW_INCLUDED
+#ifndef IO_AbstractChannel_INCLUDED
+#define IO_AbstractChannel_INCLUDED
 
 
 #include "Poco/IO/IO.h"
-#include "CppUnit/TestCase.h"
-#include "Poco/BinaryReader.h"
-#include "Poco/BinaryWriter.h"
-#include "Poco/IO/Channel.h"
-#include "Poco/IO/SerialConfig.h"
-#include "Poco/IO/SerialChannel.h"
-#include "Poco/IO/ChannelStream.h"
+#include "Poco/RefCountedObject.h"
 
 
-class SerialTestHW: public CppUnit::TestCase
+namespace Poco {
+namespace IO {
+
+
+class AbstractChannel: public Poco::RefCountedObject
+	/// The AbstractChannel class provides methods for working with a hardware I/O channel.
 {
 public:
-	typedef Poco::IO::ChannelInputStream SerialInputStream;
-	typedef Poco::IO::ChannelOutputStream SerialOutputStream;
-	
-	SerialTestHW(const std::string& name);
-	~SerialTestHW();
 
-	// In order for this tests to work, two null-modem wired 
-	// serial ports are required.
-	void testSerialChannel();
-	void testActiveSerialChannel();
-	void testSerialStreams();
-	void testSerialBinary();
+	virtual ~AbstractChannel()
+		/// Destroys the abstract channel.
+	{
+	}
+		
+	virtual void init() = 0;
+		/// Initializes the channel.
 
-	void setUp();
-	void tearDown();
+	virtual void open() = 0;
+		/// Opens the channel.
 
-	static CppUnit::Test* suite();
+	virtual void close() = 0;
+		/// Closes the channel.
 
-private:
-	static const unsigned char SERIAL_EOF;
+	virtual char read() = 0;
+		/// Reads one character from the channel.
 
-	void writeSerialBinary(Poco::BinaryWriter& writer);
-	void readSerialBinary(Poco::BinaryReader& reader);
+	virtual int read(char* buffer, std::size_t length) = 0;
+		/// Reads a string of characters from the channel.
 
-	Poco::IO::SerialConfig _serialConfig;
-	std::string _serialName1;
-	std::string _serialName2;
+	virtual std::string& read(std::string& buffer) = 0;
+		/// Reads a string of characters from the channel.
+
+	virtual int write(char c) = 0;
+		/// Writes a character to the channel.
+
+	virtual int write(const char* buffer, std::size_t length) = 0;
+		/// Writes a string of characters to the channel.
+
+	virtual int write(const std::string& data) = 0;
+		/// Writes a string of characters to the channel.
+
+	virtual const std::string& getName() const = 0;
+		/// Returns the channel name.
 };
 
 
-#endif // SerialTestHW_INCLUDED
+} } // namespace Poco::IO
+
+
+#endif // IO_AbstractChannel_INCLUDED

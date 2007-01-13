@@ -1,7 +1,9 @@
 //
-// IOTestSuite.cpp
+// ProtocolTest.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/template/test.h#7 $
+//
+// Definition of the ProtocolTest class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +32,34 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef ProtocolTest_INCLUDED
+#define ProtocolTest_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "Poco/IO/SerialConfig.h"
+#include "CppUnit/TestCase.h"
+
+
+class ProtocolTest: public CppUnit::TestCase
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	ProtocolTest(const std::string& name);
+	~ProtocolTest();
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+	void testOne();
+	void testTwo();
 
-	return pSuite;
-}
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+	Poco::IO::SerialConfig _serialConfig;
+	std::string _serialName1;
+	std::string _serialName2;
+};
+
+
+#endif // ProtocolTest_INCLUDED

@@ -1,15 +1,11 @@
 //
-// SerialPort_POSIX.h
+// TestProtocol.h
 //
-// $Id: //poco/Main/Data/include/Poco/IO/SerialPort_POSIX.h#1 $
+// $Id: //poco/1.2/Net/testsuite/src/TestProtocol.h#1 $
 //
-// Library: IO
-// Package: Serial
-// Module:  SerialPort
+// Definition of the TestProtocol class.
 //
-// Definition of the SerialPortImpl class for POSIX.
-//
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2005-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -36,50 +32,31 @@
 //
 
 
-#ifndef IO_SerialPort_POSIX_INCLUDED
-#define IO_SerialPort_POSIX_INCLUDED
+#ifndef TestProtocol_INCLUDED
+#define TestProtocol_INCLUDED
 
 
-#include "Poco/IO/IO.h"
-#include "Poco/IO/SerialConfig_POSIX.h"
+#include "Poco/IO/Protocol.h"
+#include "Poco/IO/AbstractChannel.h"
 
 
-namespace Poco {
-namespace IO {
-
-
-class IO_API SerialPortImpl
+class TestProtocol: public Poco::IO::Protocol
+	/// A test protocol.
 {
-protected:
-	SerialPortImpl(const std::string& name, const SerialConfigImpl& config);
-	~SerialPortImpl();
-	void initImpl();
-	void reconfigureImpl(const SerialConfigImpl& config);
-	void openImpl();
-	void closeImpl();
-	char readImpl();
-	int readImpl(char* pBuffer, int length);
-	std::string& readImpl(std::string& buffer);
-	int writeImpl(char c);
-	int writeImpl(const char* buffer, int length);
-	int writeImpl(const std::string& data);
-	const std::string& getNameImpl() const;
-	void handleError(const std::string& path);
-	static std::string& getErrorText(std::string& buf);
+public:
+	TestProtocol(Poco::IO::AbstractChannel* pChannel, int number);
+
+	virtual ~TestProtocol();
+
+	static const std::string WRITE_BEGIN;
+	static const std::string WRITE_END;
 
 private:
-	SerialPortImpl();
-	SerialPortImpl(const SerialPortImpl&);
-	const SerialPortImpl& operator = (const SerialPortImpl&);
+	std::string& wrap(std::string& data);
+	std::string& unwrap(std::string& data);
 
-	std::string _name;
-	//TODO
-	//HANDLE _handle;
-	SerialConfigImpl _config;
+	int _number;
 };
 
 
-} } // namespace Poco::IO
-
-
-#endif // IO_SerialPort_POSIX_INCLUDED
+#endif // TestProtocol_INCLUDED

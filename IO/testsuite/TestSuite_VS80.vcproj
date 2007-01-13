@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\Net\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CppUnitd.lib WinTestRunnerd.lib PocoFoundationd.lib"
+				AdditionalDependencies="CppUnitd.lib WinTestRunnerd.lib PocoFoundationd.lib PocoNetd.lib"
 				OutputFile="bin/TestSuited.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -131,7 +131,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\Net\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CppUnit.lib WinTestRunner.lib PocoFoundation.lib"
+				AdditionalDependencies="CppUnit.lib WinTestRunner.lib PocoFoundation.lib PocoNet.lib"
 				OutputFile="bin/TestSuite.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -275,6 +275,86 @@
 				</File>
 				<File
 					RelativePath=".\src\SerialTestSWSuite.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Protocol"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\ProtocolTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ProtocolTestSuite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\TestProtocol.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\ProtocolTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ProtocolTestSuite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\TestProtocol.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Net"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\EchoServer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NetTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NetTestSuite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\UDPEchoServer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\EchoServer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NetTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NetTestSuite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\UDPEchoServer.cpp"
 					>
 				</File>
 			</Filter>

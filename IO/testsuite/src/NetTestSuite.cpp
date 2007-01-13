@@ -1,5 +1,5 @@
 //
-// IOTestSuite.cpp
+// NetTestSuite.cpp
 //
 // $Id: //poco/Main/template/suite.cpp#6 $
 //
@@ -30,19 +30,15 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
 #include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#include "NetTest.h"
 
 
-CppUnit::Test* IOTestSuite::suite()
+CppUnit::Test* NetTestSuite::suite()
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("NetTestSuite");
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+	pSuite->addTest(NetTest::suite());
 
 	return pSuite;
 }

@@ -229,6 +229,33 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="Protocols"
+			Filter="">
+			<Filter
+				Name="Header Files"
+				Filter="">
+				<File
+					RelativePath=".\include\Poco\IO\Protocol.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ProtocolImpl.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ProtocolStream.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				Filter="">
+				<File
+					RelativePath=".\src\Protocol.cpp">
+				</File>
+				<File
+					RelativePath=".\src\ProtocolImpl.cpp">
+				</File>
+			</Filter>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

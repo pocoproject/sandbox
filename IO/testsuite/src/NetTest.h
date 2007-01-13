@@ -1,7 +1,9 @@
 //
-// IOTestSuite.cpp
+// NetTest.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/template/test.h#7 $
+//
+// Definition of the NetTest class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +32,48 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef NetTest_INCLUDED
+#define NetTest_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "CppUnit/TestCase.h"
+#include "Poco/BinaryReader.h"
+#include "Poco/BinaryWriter.h"
+#include "Poco/IO/Channel.h"
+#include "Poco/IO/NetConfig.h"
+#include "Poco/IO/NetChannel.h"
+#include "Poco/IO/ChannelStream.h"
+
+
+class NetTest: public CppUnit::TestCase
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	typedef Poco::IO::ChannelInputStream NetInputStream;
+	typedef Poco::IO::ChannelOutputStream NetOutputStream;
+	
+	NetTest(const std::string& name);
+	~NetTest();
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+	void testNetChannelStream();
+	void testActiveNetChannelStream();
+	void testNetStreamsStream();
+	void testNetBinaryStream();
 
-	return pSuite;
-}
+	void testNetChannelDatagram();
+	void testActiveNetChannelDatagram();
+	void testNetStreamsDatagram();
+	void testNetBinaryDatagram();
+
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+	void writeNetBinary(Poco::BinaryWriter& writer);
+	void readNetBinary(Poco::BinaryReader& reader);
+};
+
+
+#endif // NetTest_INCLUDED

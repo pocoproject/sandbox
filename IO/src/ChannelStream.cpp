@@ -1,9 +1,13 @@
 //
-// IOTestSuite.cpp
+// DigestStream.cpp
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/1.2/IO/src/ChannelStream.cpp#1 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: IO
+// Package: IO
+// Module:  ChannelStream
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,19 +34,55 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#include "Poco/IO/ChannelStream.h"
 
 
-CppUnit::Test* IOTestSuite::suite()
+namespace Poco {
+namespace IO {
+
+
+ChannelStreamBuf::ChannelStreamBuf(AbstractChannel& channel): _channel(channel)
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
-
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
-
-	return pSuite;
 }
+
+
+ChannelStreamBuf::~ChannelStreamBuf()
+{
+}
+
+
+ChannelIOS::ChannelIOS(AbstractChannel& channel, openmode mode) :_buf(channel)
+{
+	poco_ios_init(&_buf);
+}
+	
+
+ChannelIOS::~ChannelIOS()
+{
+}
+
+
+ChannelOutputStream::ChannelOutputStream(AbstractChannel& channel):
+	ChannelIOS(channel, std::ios::out),
+	std::ostream(&_buf)
+{
+}
+
+
+ChannelOutputStream::~ChannelOutputStream()
+{
+}
+
+
+ChannelInputStream::ChannelInputStream(AbstractChannel& channel):
+	ChannelIOS(channel, std::ios::in),
+	std::istream(&_buf)
+{
+}
+
+ChannelInputStream::~ChannelInputStream()
+{
+}
+
+
+} } // namespace Poco::IO

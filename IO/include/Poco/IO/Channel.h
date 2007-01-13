@@ -1,13 +1,13 @@
 //
-// IOPort.h
+// Channel.h
 //
-// $Id: //poco/Main/Data/include/Poco/IO/IOPort.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/Channel.h#1 $
 //
 // Library: IO
 // Package: IO
-// Module:  IOPort
+// Module:  Channel
 //
-// Definition of the IOPort class.
+// Definition of the Channel class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,14 +36,12 @@
 //
 
 
-#ifndef IO_IOPort_INCLUDED
-#define IO_IOPort_INCLUDED
+#ifndef IO_Channel_INCLUDED
+#define IO_Channel_INCLUDED
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/BinaryReader.h"
-#include "Poco/BinaryWriter.h"
-#include <sstream>
+#include "Poco/IO/AbstractChannel.h"
 
 
 namespace Poco {
@@ -51,97 +49,96 @@ namespace IO {
 
 
 template <class P, class C>
-class IOPort
-	/// The IOPort class provides methods for working with a hardware I/O port.
+class Channel: public AbstractChannel
+	/// The Channel class is implementation of AbstractChannel.
 {
 public:
-	IOPort(const std::string& name, const C& config): 
-		_port(name, config)
-		/// Creates the I/O port.
+	Channel(const std::string& name, const C& config): _channel(name, config)
+		/// Creates the I/O channel.
 	{
 	}
 
-	virtual ~IOPort()
-		/// Destroys the I/O port.
+	virtual ~Channel()
+		/// Destroys the I/O channel.
 	{
 	}
 		
 	void init()
-		/// Initializes the port.
+		/// Initializes the channel.
 	{
-		return _port.init();
+		return _channel.init();
 	}
 
 	void reconfigure(const C& config)
-		/// Initializes the port.
+		/// Initializes the channel.
 	{
-		return _port.reconfigure(config);
+		return _channel.reconfigure(config);
 	}
 
 	void open()
-		/// Opens the port.
+		/// Opens the channel.
 	{
-		return _port.open();
+		return _channel.open();
 	}
 
 	void close()
-		/// Closes the port.
+		/// Closes the channel.
 	{
-		return _port.close();
+		return _channel.close();
 	}
 
 	char read()
-		/// Reads one character from the port.
+		/// Reads one character from the channel.
 	{
-		return _port.read();
+		return _channel.read();
 	}
 
-	int read(char* buffer, int length)
-		/// Reads a string of characters from the port.
+	int read(char* buffer, std::size_t length)
+		/// Reads a string of characters from the channel.
 	{
-		return _port.read(buffer, length);
+		return _channel.read(buffer, length);
 	}
 
 	std::string& read(std::string& buffer)
-		/// Reads a string of characters from the port.
+		/// Reads a string of characters from the channel.
 	{
-		return _port.read(buffer);
+		return _channel.read(buffer);
 	}
 
 	int write(char c)
-		/// Writes a character to the port.
+		/// Writes a character to the channel.
 	{
-		return _port.write(c);
+		return _channel.write(c);
 	}
 
-	int write(const char* buffer, int length)
-		/// Writes a string of characters to the port.
+	int write(const char* buffer, std::size_t length)
+		/// Writes a string of characters to the channel.
 	{
-		return _port.write(buffer, length);
+		return _channel.write(buffer, length);
 	}
 
 	int write(const std::string& data)
-		/// Writes a string of characters to the port.
+		/// Writes a string of characters to the channel.
 	{
-		return _port.write(data);
+		return _channel.write(data);
 	}
 
 	const std::string& getName() const
-		/// Returns the port name.
+		/// Returns the channel name.
 	{
-		return _port.getName();
+		return _channel.getName();
 	}
 
 private:
-	IOPort();
-	IOPort(const P&);
+	Channel();
+	Channel(const P&);
 	const P& operator = (const P&);
 
-	P _port;
+	P _channel;
 };
 
 
 } } // namespace Poco::IO
 
 
-#endif // IO_IOPort_INCLUDED
+#endif // IO_Channel_INCLUDED

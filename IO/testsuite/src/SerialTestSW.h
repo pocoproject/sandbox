@@ -40,26 +40,25 @@
 #include "CppUnit/TestCase.h"
 #include "Poco/BinaryReader.h"
 #include "Poco/BinaryWriter.h"
-#include "Poco/IO/IOPort.h"
+#include "Poco/IO/Channel.h"
 #include "Poco/IO/SerialConfig.h"
-#include "Poco/IO/SerialPort.h"
-#include "Poco/IO/IOPortStream.h"
+#include "Poco/IO/SerialChannel.h"
+#include "Poco/IO/ChannelStream.h"
 
 
 class SerialTestSW: public CppUnit::TestCase
 {
 public:
-	typedef Poco::IO::IOPort<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialIO;
-	typedef Poco::IO::IOPortInputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialInputStream;
-	typedef Poco::IO::IOPortOutputStream<Poco::IO::SerialPort, Poco::IO::SerialConfig> SerialOutputStream;
+	typedef Poco::IO::ChannelInputStream SerialInputStream;
+	typedef Poco::IO::ChannelOutputStream SerialOutputStream;
 	
 	SerialTestSW(const std::string& name);
 	~SerialTestSW();
 
 	// In order for this tests to work, two null-modem wired 
 	// serial ports are required.
-	void testSerialPort();
-	void testActiveSerialPort();
+	void testSerialChannel();
+	void testActiveSerialChannel();
 	void testSerialStreams();
 	void testSerialBinary();
 

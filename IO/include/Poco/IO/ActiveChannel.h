@@ -1,7 +1,13 @@
 //
-// IOTestSuite.cpp
+// ActiveChannel.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/Data/include/Poco/IO/ActiveChannel.h#1 $
+//
+// Library: IO
+// Package: IO
+// Module:  ActiveChannel
+//
+// Definition of the ActiveChannel class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +36,55 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef IO_ActiveChannel_INCLUDED
+#define IO_ActiveChannel_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "Poco/ActiveMethod.h"
+#include "Poco/Void.h"
+
+
+namespace Poco {
+namespace IO {
+
+
+template <class P>
+class ActiveChannel
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	ActiveChannel(P& channel):
+		read(this, &ActiveChannel::readImp),
+		write(this, &ActiveChannel::writeImp),
+		_channel(channel)
+	{
+	}
+	
+	~ActiveChannel()
+	{
+	}
+	
+	Poco::ActiveMethod<std::string, Void, ActiveChannel> read;
+	Poco::ActiveMethod<int, std::string, ActiveChannel> write;
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+protected:
+	std::string readImp(const Void& v)
+	{	
+		std::string buffer;
+		return _channel.read(buffer);
+	}
+	
+	int writeImp(const std::string& data)
+	{	
+		return _channel.write(data);
+	}
 
-	return pSuite;
-}
+private:
+	P& _channel;
+};
+
+
+} } // namespace Poco::IO
+
+
+#endif // IO_ActiveChannel_INCLUDED

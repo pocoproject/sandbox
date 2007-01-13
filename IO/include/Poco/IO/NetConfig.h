@@ -1,7 +1,13 @@
 //
-// IOTestSuite.cpp
+// NetConfig.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/Data/include/Poco/IO/NetConfig.h#1 $
+//
+// Library: IO
+// Package: Net
+// Module:  NetConfig
+//
+// Definition of the NetConfig class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +36,74 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef IO_NetConfig_INCLUDED
+#define IO_NetConfig_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "Poco/Net/SocketAddress.h"
+#include "Poco/Timespan.h"
+#include "Poco/Exception.h"
+
+
+namespace Poco {
+namespace IO {
+
+
+class IO_API NetConfig
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	enum ChannelType
+	{
+		STREAM,
+		DATAGRAM
+	};
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+	NetConfig(const std::string& address, 
+		long msecTimeout=5000, 
+		ChannelType type=STREAM);
 
-	return pSuite;
+	~NetConfig();
+
+	const ChannelType type() const;
+
+	const Poco::Timespan& timeout() const;
+
+	const Poco::Net::SocketAddress& address() const;
+
+private:
+	NetConfig();
+
+	ChannelType              _type;
+	Poco::Timespan           _timeout;
+	Poco::Net::SocketAddress _address;
+};
+
+
+//
+// inlines
+//
+
+
+inline const NetConfig::ChannelType NetConfig::type() const
+{
+	return _type;
 }
+
+
+inline const Poco::Timespan& NetConfig::timeout() const
+{
+	return _timeout;
+}
+
+
+inline const Poco::Net::SocketAddress& NetConfig::address() const
+{
+	return _address;
+}
+
+
+} } // namespace Poco::IO
+
+
+#endif // IO_NetConfig_INCLUDED

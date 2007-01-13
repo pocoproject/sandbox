@@ -1,9 +1,13 @@
 //
-// IOTestSuite.cpp
+// Protocol.cpp
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/1.2/IO/src/Protocol.cpp#2 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: IO
+// Package: Protocol
+// Module:  Protocol
+//
+// Copyright (c) 2005-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,19 +34,74 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#include "Poco/IO/Protocol.h"
+#include "Poco/SharedPtr.h"
 
 
-CppUnit::Test* IOTestSuite::suite()
+using Poco::SharedPtr;
+
+
+namespace Poco {
+namespace IO {
+
+
+Protocol::Protocol(AbstractChannel* pChannel): 
+	_pChannel(pChannel), 
+	_pNext(0), 
+	_pBuffer(new std::string())
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
-
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
-
-	return pSuite;
 }
+
+
+Protocol::Protocol(const Protocol& other)
+{
+	if (&other != this) *this = other;
+}
+
+	
+Protocol& Protocol::operator = (const Protocol& other)
+{
+	if (&other != this)
+	{
+		_pNext = other._pNext;
+		_pChannel = other._pChannel;
+		_pBuffer = other._pBuffer;
+	}
+
+	return *this;
+}
+
+
+Protocol::~Protocol()
+{
+	_pNext = 0;
+}
+
+
+int Protocol::write(const char* buffer, std::size_t length, bool doSend)
+{
+	std::string buf(buffer, length);
+	if (_pNext) _pNext->wrap(buf);
+	writeRaw(wrap(buf));
+	if (doSend) send();
+	return (int) buf.size();
+}
+
+
+void Protocol::setNext(Protocol* pNewNext)
+{
+	_pNext = pNewNext;
+
+	if (_pNext) 
+	{
+		if (_pNext->_pChannel != _pChannel)
+			_pNext->_pChannel = _pChannel;
+		if (_pNext->_pBuffer != _pBuffer)
+			_pNext->_pBuffer = _pBuffer;
+
+		poco_assert (_pNext->_pNext != _pNext);
+	}
+}
+
+
+} } // namespace Poco::IO

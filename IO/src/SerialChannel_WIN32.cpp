@@ -1,11 +1,11 @@
 //
-// SerialPort_WIN32.cpp
+// SerialChannel_WIN32.cpp
 //
-// $Id: //poco/Main/IO/src/SerialPort_POSIX.cpp#1 $
+// $Id: //poco/Main/IO/src/SerialChannel_POSIX.cpp#1 $
 //
 // Library: IO
 // Package: Serial
-// Module:  SerialPort
+// Module:  SerialChannel
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,7 +34,7 @@
 //
 
 
-#include "Poco/IO/SerialPort_WIN32.h"
+#include "Poco/IO/SerialChannel_WIN32.h"
 #include "Poco/Exception.h"
 #include <windows.h>
 
@@ -46,20 +46,20 @@ namespace Poco {
 namespace IO {
 
 
-SerialPortImpl::SerialPortImpl(const std::string& name, const SerialConfigImpl& config): 
+SerialChannelImpl::SerialChannelImpl(const std::string& name, const SerialConfigImpl& config): 
 	_name(name), _config(config)
 {
 	openImpl();
 }
 
 
-SerialPortImpl::~SerialPortImpl()
+SerialChannelImpl::~SerialChannelImpl()
 {
 	closeImpl();
 }
 
 
-void SerialPortImpl::initImpl()
+void SerialChannelImpl::initImpl()
 {
 	if (!SetCommState(_handle, &(_config.dcb()))) handleError(_name);
 
@@ -70,14 +70,14 @@ void SerialPortImpl::initImpl()
 }
 
 
-void SerialPortImpl::reconfigureImpl(const SerialConfigImpl& config)
+void SerialChannelImpl::reconfigureImpl(const SerialConfigImpl& config)
 {
 	_config = config;
 	initImpl();
 }
 
 
-void SerialPortImpl::openImpl()
+void SerialChannelImpl::openImpl()
 {
 	_handle = CreateFile(_name.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
 	if (INVALID_HANDLE_VALUE == _handle) handleError(_name);
@@ -86,13 +86,13 @@ void SerialPortImpl::openImpl()
 }
 
 
-void SerialPortImpl::closeImpl()
+void SerialChannelImpl::closeImpl()
 {
 	if (!CloseHandle(_handle)) handleError(_name);
 }
 
 
-char SerialPortImpl::readImpl()
+char SerialChannelImpl::readImpl()
 {
 	char readBuf = 0;
 	readImpl(&readBuf, 1);
@@ -100,37 +100,42 @@ char SerialPortImpl::readImpl()
 }
 
 
-int SerialPortImpl::readImpl(char* pBuffer, int length)
+int SerialChannelImpl::readImpl(char* pBuffer, std::size_t length)
 {
 	if (0 == length) return 0;
 
-	DWORD read = 0;
-
-	if (!ReadFile(_handle, pBuffer, length, &read, NULL)) 
-		handleError(_name);
-
-	return read;
+	std::string buf;
+	readImpl(buf, length);
+	std::size_t len = length;
+	if (buf.size() < length) len = buf.size();
+	strncpy(pBuffer, buf.c_str(), len);
+	return (int) len;
 }
 
 
-std::string& SerialPortImpl::readImpl(std::string& buffer)
+std::string& SerialChannelImpl::readImpl(std::string& buffer, std::size_t length)
 {
-	DWORD read = 0;
-	int bufSize = _config.getBufferSizeImpl();
+	buffer.clear();
+	int bufSize = length ? (int) length : (int) _config.getBufferSizeImpl();
+	if (0 == bufSize) return buffer;
 	char* pReadBuf = new char[bufSize+1];
-
+	DWORD read = 0;
+	DWORD readCount = 0;
 	buffer.clear();
 	do
     {
 		ZeroMemory(pReadBuf, bufSize+1);
-		if (!ReadFile(_handle, pReadBuf, bufSize, &read, NULL)) 
+		if (!ReadFile(_handle, pReadBuf + readCount, bufSize - readCount, &read, NULL)) 
 		{
 			delete[] pReadBuf;
 			handleError(_name);
 		}
+		else if (0 == read) break;
 
-		poco_assert(read <= bufSize);
-		buffer.append(pReadBuf, read);
+		poco_assert(read <= bufSize - readCount);
+		buffer.append(pReadBuf + readCount, read);
+
+		if (length) readCount += read;
 		
 		if (_config.getUseEOFImpl()) 
 		{
@@ -142,20 +147,22 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 				break;
 			}
 		}
-	}while(0 != read);
+
+		if (length && readCount >= length) break;
+	}while(true);
 
 	delete[] pReadBuf;
 	return buffer;
 }
 
 
-int SerialPortImpl::writeImpl(char c)
+int SerialChannelImpl::writeImpl(char c)
 {
 	return writeImpl(&c, 1);
 }
 
 
-int SerialPortImpl::writeImpl(const char* pBuffer, int length)
+int SerialChannelImpl::writeImpl(const char* pBuffer, std::size_t length)
 {
 	if (0 == length) return 0;
 
@@ -166,7 +173,7 @@ int SerialPortImpl::writeImpl(const char* pBuffer, int length)
 }
 
 
-int SerialPortImpl::writeImpl(const std::string& data)
+int SerialChannelImpl::writeImpl(const std::string& data)
 {
 	if (0 == data.length()) return 0;
 
@@ -191,13 +198,13 @@ int SerialPortImpl::writeImpl(const std::string& data)
 }
 
 
-const std::string& SerialPortImpl::getNameImpl() const
+const std::string& SerialChannelImpl::getNameImpl() const
 {
 	return _name;
 }
 
 
-std::string& SerialPortImpl::getErrorText(std::string& buf)
+std::string& SerialChannelImpl::getErrorText(std::string& buf)
 {
     DWORD dwRet;
     LPTSTR pTemp = NULL;
@@ -226,7 +233,7 @@ std::string& SerialPortImpl::getErrorText(std::string& buf)
 }
 
 
-void SerialPortImpl::handleError(const std::string& name)
+void SerialChannelImpl::handleError(const std::string& name)
 {
 	std::string errorText;
 	DWORD error = GetLastError();

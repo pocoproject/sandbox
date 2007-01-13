@@ -1,13 +1,9 @@
 //
-// ActivePort.h
+// ProtocolTestSuite.h
 //
-// $Id: //poco/Main/Data/include/Poco/IO/ActivePort.h#1 $
+// $Id: //poco/Main/template/suite.h#6 $
 //
-// Library: IO
-// Package: IO
-// Module:  ActivePort
-//
-// Definition of the ActivePort class.
+// Definition of the ProtocolTestSuite class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,55 +32,18 @@
 //
 
 
-#ifndef IO_ActivePort_INCLUDED
-#define IO_ActivePort_INCLUDED
+#ifndef ProtocolTestSuite_INCLUDED
+#define ProtocolTestSuite_INCLUDED
 
 
-#include "Poco/IO/IO.h"
-#include "Poco/ActiveMethod.h"
-#include "Poco/Void.h"
+#include "CppUnit/TestSuite.h"
 
 
-namespace Poco {
-namespace IO {
-
-
-template <class P>
-class ActivePort
+class ProtocolTestSuite
 {
 public:
-	ActivePort(P& port):
-		read(this, &ActivePort::readImp),
-		write(this, &ActivePort::writeImp),
-		_port(port)
-	{
-	}
-	
-	~ActivePort()
-	{
-	}
-	
-	Poco::ActiveMethod<std::string, Void, ActivePort> read;
-	Poco::ActiveMethod<int, std::string, ActivePort> write;
-
-protected:
-	std::string readImp(const Void& v)
-	{	
-		std::string buffer;
-		return _port.read(buffer);
-	}
-	
-	int writeImp(const std::string& data)
-	{	
-		return _port.write(data);
-	}
-
-private:
-	P& _port;
+	static CppUnit::Test* suite();
 };
 
 
-} } // namespace Poco::IO
-
-
-#endif // IO_ActivePort_INCLUDED
+#endif // ProtocolTestSuite_INCLUDED

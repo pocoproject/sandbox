@@ -1,7 +1,9 @@
 //
-// IOTestSuite.cpp
+// NetTestSuite.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/template/suite.h#6 $
+//
+// Definition of the NetTestSuite class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +32,18 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef NetTestSuite_INCLUDED
+#define NetTestSuite_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "CppUnit/TestSuite.h"
+
+
+class NetTestSuite
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+public:
+	static CppUnit::Test* suite();
+};
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
 
-	return pSuite;
-}
+#endif // NetTestSuite_INCLUDED

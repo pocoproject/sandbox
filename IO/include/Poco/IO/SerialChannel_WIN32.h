@@ -1,11 +1,13 @@
 //
-// SerialPort.cpp
+// SerialChannel_WIN32.h
 //
-// $Id: //poco/Main/IO/src/SerialPort.cpp#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialChannel_WIN32.h#1 $
 //
 // Library: IO
 // Package: Serial
-// Module:  SerialPort
+// Module:  SerialChannel
+//
+// Definition of the SerialChannelImpl class for WIN32.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,29 +36,50 @@
 //
 
 
-#include "Poco/IO/SerialPort.h"
+#ifndef IO_SerialChannel_WIN32_INCLUDED
+#define IO_SerialChannel_WIN32_INCLUDED
 
 
-#if defined(POCO_OS_FAMILY_WINDOWS)
-#include "SerialPort_WIN32.cpp"
-#elif defined(POCO_OS_FAMILY_UNIX)
-#include "SerialPort_POSIX.cpp"
-#endif
+#include "Poco/IO/IO.h"
+#include "Poco/IO/SerialConfig_WIN32.h"
+#include <windows.h>
 
 
 namespace Poco {
 namespace IO {
 
 
-SerialPort::SerialPort(const std::string& name, const SerialConfig& config):
-	SerialPortImpl(name, (SerialConfigImpl&) config)
+class IO_API SerialChannelImpl
 {
-}
+protected:
+	SerialChannelImpl(const std::string& name, const SerialConfigImpl& config);
+	~SerialChannelImpl();
+	void initImpl();
+	void reconfigureImpl(const SerialConfigImpl& config);
+	void openImpl();
+	void closeImpl();
+	char readImpl();
+	int readImpl(char* pBuffer, std::size_t length);
+	std::string& readImpl(std::string& buffer, std::size_t length = 0);
+	int writeImpl(char c);
+	int writeImpl(const char* buffer, std::size_t length);
+	int writeImpl(const std::string& data);
+	const std::string& getNameImpl() const;
+	void handleError(const std::string& path);
+	static std::string& getErrorText(std::string& buf);
 
+private:
+	SerialChannelImpl();
+	SerialChannelImpl(const SerialChannelImpl&);
+	const SerialChannelImpl& operator = (const SerialChannelImpl&);
 
-SerialPort::~SerialPort()
-{
-}
+	std::string _name;
+	HANDLE _handle;
+	SerialConfigImpl _config;
+};
 
 
 } } // namespace Poco::IO
+
+
+#endif // IO_SerialChannel_WIN32_INCLUDED

@@ -1,7 +1,11 @@
 //
-// IOTestSuite.cpp
+// SerialChannel.cpp
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/IO/src/SerialChannel.cpp#1 $
+//
+// Library: IO
+// Package: Serial
+// Module:  SerialChannel
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +34,29 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#include "Poco/IO/SerialChannel.h"
 
 
-CppUnit::Test* IOTestSuite::suite()
+#if defined(POCO_OS_FAMILY_WINDOWS)
+#include "SerialChannel_WIN32.cpp"
+#elif defined(POCO_OS_FAMILY_UNIX)
+#include "SerialChannel_POSIX.cpp"
+#endif
+
+
+namespace Poco {
+namespace IO {
+
+
+SerialChannel::SerialChannel(const std::string& name, const SerialConfig& config):
+	SerialChannelImpl(name, (SerialConfigImpl&) config)
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
-
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
-
-	return pSuite;
 }
+
+
+SerialChannel::~SerialChannel()
+{
+}
+
+
+} } // namespace Poco::IO

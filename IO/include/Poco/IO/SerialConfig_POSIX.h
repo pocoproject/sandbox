@@ -171,7 +171,7 @@ private:
 	FlowControlImpl _flowControl;
 	bool _useEOF;
 
-	friend class SerialPortImpl;
+	friend class SerialChannelImpl;
 };
 
 

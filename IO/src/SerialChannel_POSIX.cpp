@@ -1,11 +1,11 @@
 //
-// SerialPort_POSIX.cpp
+// SerialChannel_POSIX.cpp
 //
-// $Id: //poco/Main/IO/src/SerialPort_POSIX.cpp#1 $
+// $Id: //poco/Main/IO/src/SerialChannel_POSIX.cpp#1 $
 //
 // Library: IO
 // Package: Serial
-// Module:  SerialPort
+// Module:  SerialChannel
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,7 +34,7 @@
 //
 
 
-#include "Poco/IO/SerialPort_POSIX.h"
+#include "Poco/IO/SerialChannel_POSIX.h"
 #include "Poco/Exception.h"
 
 
@@ -46,33 +46,33 @@ namespace Poco {
 namespace IO {
 
 
-SerialPortImpl::SerialPortImpl(const std::string& name, const SerialConfigImpl& config): 
+SerialChannelImpl::SerialChannelImpl(const std::string& name, const SerialConfigImpl& config): 
 	_name(name), _config(config)
 {
 	openImpl();
 }
 
 
-SerialPortImpl::~SerialPortImpl()
+SerialChannelImpl::~SerialChannelImpl()
 {
 	closeImpl();
 }
 
 
-void SerialPortImpl::initImpl()
+void SerialChannelImpl::initImpl()
 {
 	//TODO
 }
 
 
-void SerialPortImpl::reconfigureImpl(const SerialConfigImpl& config)
+void SerialChannelImpl::reconfigureImpl(const SerialConfigImpl& config)
 {
 	_config = config;
 	initImpl();
 }
 
 
-void SerialPortImpl::openImpl()
+void SerialChannelImpl::openImpl()
 {
 	//TODO
 
@@ -80,13 +80,13 @@ void SerialPortImpl::openImpl()
 }
 
 
-void SerialPortImpl::closeImpl()
+void SerialChannelImpl::closeImpl()
 {
 	//TODO
 }
 
 
-char SerialPortImpl::readImpl()
+char SerialChannelImpl::readImpl()
 {
 	char readBuf = 0;
 	readImpl(&readBuf, 1);
@@ -94,7 +94,7 @@ char SerialPortImpl::readImpl()
 }
 
 
-int SerialPortImpl::readImpl(char* pBuffer, int length)
+int SerialChannelImpl::readImpl(char* pBuffer, std::size_t length)
 {
 	if (0 == length) return 0;
 
@@ -106,10 +106,13 @@ int SerialPortImpl::readImpl(char* pBuffer, int length)
 }
 
 
-std::string& SerialPortImpl::readImpl(std::string& buffer)
+std::string& SerialChannelImpl::readImpl(std::string& buffer, std::size_t length)
 {
+	buffer.clear();
 	int read = 0;
-	int bufSize = _config.getBufferSizeImpl();
+	int bufSize = length ? length : _config.getBufferSizeImpl();
+	if (0 == bufSize) return buffer;
+
 	char* pReadBuf = new char[bufSize+1];
 
 	buffer.clear();
@@ -146,13 +149,13 @@ std::string& SerialPortImpl::readImpl(std::string& buffer)
 }
 
 
-int SerialPortImpl::writeImpl(char c)
+int SerialChannelImpl::writeImpl(char c)
 {
 	return writeImpl(&c, 1);
 }
 
 
-int SerialPortImpl::writeImpl(const char* pBuffer, int length)
+int SerialChannelImpl::writeImpl(const char* pBuffer, std::size_t length)
 {
 	if (0 == length) return 0;
 
@@ -163,7 +166,7 @@ int SerialPortImpl::writeImpl(const char* pBuffer, int length)
 }
 
 
-int SerialPortImpl::writeImpl(const std::string& data)
+int SerialChannelImpl::writeImpl(const std::string& data)
 {
 	if (0 == data.length()) return 0;
 
@@ -190,20 +193,20 @@ int SerialPortImpl::writeImpl(const std::string& data)
 }
 
 
-const std::string& SerialPortImpl::getNameImpl() const
+const std::string& SerialChannelImpl::getNameImpl() const
 {
 	return _name;
 }
 
 
-std::string& SerialPortImpl::getErrorText(std::string& buf)
+std::string& SerialChannelImpl::getErrorText(std::string& buf)
 {
     //TODO
     return buf;
 }
 
 
-void SerialPortImpl::handleError(const std::string& name)
+void SerialChannelImpl::handleError(const std::string& name)
 {
 	//TODO
 	int error = 0;

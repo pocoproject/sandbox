@@ -1,13 +1,13 @@
 //
-// SerialPort.h
+// NetChannel.h
 //
-// $Id: //poco/Main/Data/include/Poco/IO/SerialPort.h#1 $
+// $Id: //poco/Main/Data/include/Poco/IO/NetChannel.h#1 $
 //
 // Library: IO
-// Package: Serial
-// Module:  SerialPort
+// Package: Net
+// Module:  NetChannel
 //
-// Definition of the SerialPort class.
+// Definition of the NetChannel class.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,112 +36,99 @@
 //
 
 
-#ifndef IO_SerialPort_INCLUDED
-#define IO_SerialPort_INCLUDED
+#ifndef IO_NetChannel_INCLUDED
+#define IO_NetChannel_INCLUDED
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IO/SerialConfig.h"
-
-
-#if defined(POCO_OS_FAMILY_WINDOWS)
-#include "Poco/IO/SerialPort_WIN32.h"
-#elif defined(POCO_OS_FAMILY_UNIX)
-#include "Poco/IO/SerialPort_POSIX.h"
-#endif
+#include "Poco/IO/Channel.h"
+#include "Poco/IO/NetConfig.h"
+#include "Poco/Net/Socket.h"
+#include "Poco/Net/SocketImpl.h"
+#include "Poco/Net/StreamSocket.h"
+#include "Poco/Net/DatagramSocket.h"
 
 
 namespace Poco {
 namespace IO {
 
 
-class IO_API SerialPort: private SerialPortImpl
+class IO_API NetChannel
 {
 public:
-	SerialPort(const std::string& name, const SerialConfig& config);
-	~SerialPort();
+	NetChannel(const std::string& name, const NetConfig& config);
+	~NetChannel();
 	void init();
-	void reconfigure(const SerialConfig& config);
+	void reconfigure(const NetConfig& config);
 	void open();
 	void close();
 	char read();
-	int read(char* pBuffer, int length);
+	int read(char* pBuffer, std::size_t length);
 	std::string& read(std::string& buffer);
 	int write(char c);
-	int write(const char* pBuffer, int length);
+	int write(const char* pBuffer, std::size_t length);
 	int write(const std::string& data);
 	const std::string& getName() const;
+	
+	bool NetChannel::isStream();
+	bool NetChannel::isDatagram();
 
 private:
-	SerialPort(const SerialPort&);
-	const SerialPort& operator=(const SerialPort&);
+	NetChannel(const NetChannel&);
+	const NetChannel& operator=(const NetChannel&);
+
+	Poco::Net::SocketImpl* socketImpl();
+
+	std::string        _name;
+	NetConfig          _config;
+	Poco::Net::Socket* _pSocket;
 };
 
 
 //
 // inlines
 //
-inline void SerialPort::reconfigure(const SerialConfig& config)
+
+
+inline void NetChannel::init()
 {
-	reconfigureImpl((SerialConfigImpl&) config);
 }
 
 
-inline void SerialPort::open()
+inline Poco::Net::SocketImpl* NetChannel::socketImpl()
 {
-	openImpl();
+	return _pSocket->impl();
 }
 
 
-inline void SerialPort::close()
+inline void NetChannel::close()
 {
-	closeImpl();
+	socketImpl()->close();
 }
 
 
-inline char SerialPort::read()
+inline const std::string& NetChannel::getName() const
 {
-	return readImpl();
+	return _name;
 }
 
 
-inline int SerialPort::read(char* pBuffer, int length)
+inline bool NetChannel::isStream()
 {
-	return readImpl(pBuffer, length);
+	return NetConfig::STREAM == _config.type();
 }
 
 
-inline std::string& SerialPort::read(std::string& buffer)
+inline bool NetChannel::isDatagram()
 {
-	return readImpl(buffer);
+	return NetConfig::DATAGRAM == _config.type();
 }
 
 
-inline int  SerialPort::write(char c)
-{
-	return writeImpl(c);
-}
-
-
-inline int SerialPort::write(const char* pBuffer, int length)
-{
-	return writeImpl(pBuffer, length);
-}
-
-
-inline int SerialPort::write(const std::string& data)
-{
-	return writeImpl(data);
-}
-
-
-inline const std::string& SerialPort::getName() const
-{
-	return getNameImpl();
-}
+typedef Channel<NetChannel, NetConfig> Network;
 
 
 } } // namespace Poco::IO
 
 
-#endif // IO_SerialPort_INCLUDED
+#endif // IO_NetChannel_INCLUDED
