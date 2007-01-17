@@ -61,8 +61,10 @@ namespace Container {
 ServletContextImpl::ServletContextImpl(const std::string& rootDir,
 	HttpServletDispatcher& dispatcher, 
 	Logger* pLogger):
-_pLogger(pLogger), _rootDir(rootDir), _name(Path(_rootDir)[Path(_rootDir).depth()-1]),
-_servletDispatcher(dispatcher)
+	_pLogger(pLogger), 
+	_rootDir(rootDir), 
+	_name(Path(_rootDir)[Path(_rootDir).depth()-1]),
+	_servletDispatcher(dispatcher)
 {
 }
 

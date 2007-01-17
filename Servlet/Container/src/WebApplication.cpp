@@ -481,31 +481,38 @@ bool WebApplication::extractEntities(ConfigImpl& config, const std::string& enti
 	int cntpar = 0;
 	std::string name = "";
 	value = "";
+	int initPos = 0;
 
 	do
 	{
-		ss.str("");
-		ss << entityName << "[" << pos << "].init-param.param-name[" << cntpar << "]";
-		name = _pConf->getString(ss.str(), "");
-		if("" == name)
-			break;
-		
-		ss.str("");
-		ss << entityName << "[" << pos << "].init-param.param-value[" << cntpar << "]";
-		value = _pConf->getString(ss.str(), "");
-		
-		if(_pLogger)
+		do
 		{
 			ss.str("");
-			ss << "Init parameter: " << name << '=' << value;
-			_pLogger->information(ss.str());
-		}
+			ss << entityName << "[" << pos << "].init-param[" << initPos << "].param-name[" << cntpar << "]";
+			name = _pConf->getString(ss.str(), "");
+			if ("" == name) break;
+			
+			ss.str("");
+			ss << entityName << "[" << pos << "].init-param[" << initPos << "].param-value[" << cntpar << "]";
+			value = _pConf->getString(ss.str(), "");
+			
+			if(_pLogger)
+			{
+				ss.str("");
+				ss << "Init parameter: " << name << '=' << value;
+				_pLogger->information(ss.str());
+			}
 
-		config.setInitParameter(name, value);
+			config.setInitParameter(name, value);
 
-		++cntpar;
-		name = value = "";
-	}while(true);
+			++cntpar;
+			name = value = "";
+		}while (true);
+
+		if ((0 == cntpar) && ("" == name)) break;
+		cntpar = 0;
+		++initPos;
+	}while (true);
 
 	return true;
 }

@@ -62,8 +62,24 @@
 			<param-name>dummy_param</param-name>
 			<param-value>~!@#$%^&amp;&quot;qwertyuiop[]asdfghjkl;'zxcvbnm,./*QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM?&lt;&gt;</param-value>
 		</init-param>
+    <init-param>
+      <param-name>another_dummy_param</param-name>
+      <param-value>1234567890</param-value>
+    </init-param>
 		<load-on-startup>-1</load-on-startup>
 	</servlet>
+  <servlet>
+    <description>Form servlet.</description>
+    <display-name>Form Test Servlet</display-name>
+    <servlet-name>FormTestServlet</servlet-name>
+    <servlet-class>FormTestServlet</servlet-class>
+    <servlet-lib>TestServlet</servlet-lib>
+    <init-param>
+      <param-name>is_session_interpreted</param-name>
+      <param-value>1</param-value>
+    </init-param>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
 	<servlet>
 		<description>Java Script Pages servlet (T.B.D. and not to be confused with Java Server Pages).</description>
 		<display-name>JSP Test Servlet</display-name>

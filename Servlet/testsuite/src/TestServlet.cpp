@@ -225,6 +225,61 @@ void DefaultTestServlet::doPost(HttpServletRequest& req, HttpServletResponse& re
 }
 
 
+//FormTestServlet
+
+FormTestServlet::FormTestServlet():_counter(0)
+{
+}
+
+
+FormTestServlet::~FormTestServlet()
+{
+}
+
+
+void FormTestServlet::doGet(HttpServletRequest& req, HttpServletResponse& resp)
+{
+	ServletOutputStream& ostr = resp.getOutputStream();
+
+	ostr <<
+		"<html>\n"
+		"<head>\n"
+		"<title>POCO Form Server Sample</title>\n"
+		"</head>\n"
+		"<body>\n"
+		"<h1>POCO Form Server Sample</h1>\n"
+		"<h2>GET Form</h2>\n"
+		"<form method=\"GET\" action=\"/ServletTest/FormTestServlet\">\n"
+		"<input type=\"text\" name=\"text\" size=\"31\">\n"
+		"<input type=\"submit\" value=\"GET\">\n"
+		"</form>\n"
+		"<h2>POST Form</h2>\n"
+		"<form method=\"POST\" action=\"/ServletTest/FormTestServlet\">\n"
+		"<input type=\"text\" name=\"text\" size=\"31\">\n"
+		"<input type=\"submit\" value=\"POST\">\n"
+		"</form>\n";
+		
+	ostr << "<h2>Request</h2><p>\n";
+	ostr << "Method: " << req.getMethod() << "<br>\n";
+	ostr << "URI: " << req.getRequestURI() << "<br>\n";
+	
+	std::vector<std::string> names = req.getParameterNames();
+	std::vector<std::string>::iterator it = names.begin();
+	for(; it != names.end(); ++it)
+		ostr << *it << ":" << req.getParameter(*it);
+
+	ostr << "</p>";
+
+	ostr << "</body>\n";
+}
+
+
+void FormTestServlet::doPost(HttpServletRequest& req, HttpServletResponse& resp)
+{
+	doGet(req, resp);
+}
+
+
 //JSPTestServlet
 
 JSPTestServlet::JSPTestServlet():_counter(0)

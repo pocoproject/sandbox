@@ -98,6 +98,19 @@ class POCO_SERVLETTEST_DLL_API DefaultTestServlet : public HttpServlet
 };
 
 
+class POCO_SERVLETTEST_DLL_API FormTestServlet : public HttpServlet
+{
+ public: 
+	FormTestServlet();
+	~FormTestServlet();
+	void doGet(HttpServletRequest& req, HttpServletResponse& resp);
+	void doPost(HttpServletRequest& req, HttpServletResponse& resp);
+
+ private:
+	int _counter;
+};
+
+
 class POCO_SERVLETTEST_DLL_API JSPTestServlet : public HttpServlet
 {
  public: 

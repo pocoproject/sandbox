@@ -86,17 +86,12 @@ PocoHttpServletRequest::~PocoHttpServletRequest()
 
 void PocoHttpServletRequest::assignParameters()
 {
-	HTMLForm form;
+	HTMLForm form(_request, _request.stream());
 
-	if(HTTPRequest::HTTP_GET == _request.getMethod())
+	NameValueCollection::ConstIterator it = form.begin();
+	for(; it != form.end(); ++it)
 	{
-		form.load(_request);
-		NameValueCollection::ConstIterator it = form.begin();
-
-		for(; it != form.end(); ++it)
-		{
-			_parameters.insert(make_pair(it->first, it->second));
-		}
+		_parameters.insert(make_pair(it->first, it->second));
 	}
 }
 
@@ -105,7 +100,7 @@ const Object* PocoHttpServletRequest::getAttribute(const std::string& name) cons
 { 
 	AttributeMap::const_iterator it = _attributes.find(name);
 	if(it != _attributes.end()) return it->second;
-	else 												return 0;
+	else return 0;
 }
 
 

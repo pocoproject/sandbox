@@ -47,6 +47,7 @@ POCO_BEGIN_MANIFEST(Poco::Servlet::HttpServlet)
 	using Poco::Servlet::TestServlet;
 	using Poco::Servlet::SingletonTestServlet;
 	using Poco::Servlet::DefaultTestServlet;
+	using Poco::Servlet::FormTestServlet;
 	using Poco::Servlet::JSPTestServlet;
 	using Poco::Servlet::ForwardTestServlet;
 	using Poco::Servlet::ForwardedTestServlet;
@@ -57,6 +58,7 @@ POCO_BEGIN_MANIFEST(Poco::Servlet::HttpServlet)
 	POCO_EXPORT_CLASS(TestServlet)
 	POCO_EXPORT_SINGLETON(SingletonTestServlet)
 	POCO_EXPORT_CLASS(DefaultTestServlet)
+	POCO_EXPORT_CLASS(FormTestServlet)
 	POCO_EXPORT_CLASS(JSPTestServlet)
 	POCO_EXPORT_CLASS(ForwardTestServlet)
 	POCO_EXPORT_CLASS(ForwardedTestServlet)
