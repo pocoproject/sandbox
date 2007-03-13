@@ -36,7 +36,7 @@
 
 CppUnit::Test* ProtocolTestSuite::suite()
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SerialTestSuite");
+	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("ProtocolTestSuite");
 
 	pSuite->addTest(ProtocolTest::suite());
 

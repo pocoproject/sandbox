@@ -93,30 +93,30 @@ public:
 		FLOW_CTRL_SOFTWARE_IMPL
 	};
 
-	enum BaudRateImpl
+	enum BPSRateImpl
 	{
-		BAUD_RATE_110_IMPL = B110,
-		BAUD_RATE_300_IMPL = B300,
-		BAUD_RATE_600_IMPL = B600,
-		BAUD_RATE_1200_IMPL = B1200,
-		BAUD_RATE_2400_IMPL = B2400,
-		BAUD_RATE_4800_IMPL = B4800,
-		BAUD_RATE_9600_IMPL = B9600,
-		BAUD_RATE_14400_IMPL = NOT_SUPPORTED,
-		BAUD_RATE_19200_IMPL = B19200,
-		BAUD_RATE_38400_IMPL = B38400,
-		BAUD_RATE_57600_IMPL = B57600,
-		BAUD_RATE_115200_IMPL = B115200,
-		BAUD_RATE_128000_IMPL = NOT_SUPPORTED,
-		BAUD_RATE_230400_IMPL  = B230400,
-		BAUD_RATE_256000_IMPL = NOT_SUPPORTED,
-		BAUD_RATE_460800_IMPL  = B460800
+		BPS_110_IMPL = B110,
+		BPS_300_IMPL = B300,
+		BPS_600_IMPL = B600,
+		BPS_1200_IMPL = B1200,
+		BPS_2400_IMPL = B2400,
+		BPS_4800_IMPL = B4800,
+		BPS_9600_IMPL = B9600,
+		BPS_14400_IMPL = NOT_SUPPORTED,
+		BPS_19200_IMPL = B19200,
+		BPS_38400_IMPL = B38400,
+		BPS_57600_IMPL = B57600,
+		BPS_115200_IMPL = B115200,
+		BPS_128000_IMPL = NOT_SUPPORTED,
+		BPS_230400_IMPL  = B230400,
+		BPS_256000_IMPL = NOT_SUPPORTED,
+		BPS_460800_IMPL  = B460800
 	};
 
 protected:
 
 	SerialConfigImpl(
-		BaudRateImpl baudRate,
+		BPSRateImpl bpsRate,
 		DataBitsImpl dataBits,
 		char parity,
 		StartBitsImpl startBits,
@@ -129,7 +129,7 @@ protected:
 		int bufferSize,
 		int timeout);
 
-	void setBaudRateImpl(BaudRateImpl baudRate);
+	void setBPSRateImpl(BPSRateImpl bpsRate);
 	void setDataBitsImpl(DataBitsImpl dataBits);
 	void setParityImpl(ParityImpl parity);
 	void setParityCharImpl(char parityChar);
@@ -148,7 +148,7 @@ protected:
 	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
 
-	BaudRateImpl getBaudRateImpl() const;
+	BPSRateImpl getBPSRateImpl() const;
 	DataBitsImpl getDataBitsImpl() const;
 	ParityImpl getParityImpl() const;
 	char getParityCharImpl() const;
@@ -235,9 +235,9 @@ inline void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
 }
 
 
-inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
+inline SerialConfigImpl::BPSRateImpl SerialConfigImpl::getBPSRateImpl() const
 {
-	return (BaudRateImpl) _termios.c_ospeed;
+	return (BPSRateImpl) _termios.c_ospeed;
 }
 
 

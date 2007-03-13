@@ -48,7 +48,16 @@ const std::string TestProtocol::WRITE_BEGIN = "<data%d>";
 const std::string TestProtocol::WRITE_END = "</data%d>";
 
 
-TestProtocol::TestProtocol(AbstractChannel* pChannel, int number): Protocol(pChannel), _number(number)
+TestProtocol::TestProtocol(AbstractChannel* pChannel, int number): 
+	Protocol(format("TestProtocol%d", number), pChannel), 
+	_number(number)
+{
+}
+
+
+TestProtocol::TestProtocol(int number): 
+	Protocol(format("TestProtocol%d", number)), 
+	_number(number)
 {
 }
 
@@ -58,24 +67,34 @@ TestProtocol::~TestProtocol()
 }
 
 
-std::string& TestProtocol::wrap(std::string& data)
+std::string& TestProtocol::wrap()
 {
-	std::string buf = format(WRITE_BEGIN, _number);
+	std::string& data = buffer();
+	std::string buf; 
+	format(buf, WRITE_BEGIN, _number);
+
 	buf += data;
 	buf.append(format(WRITE_END, _number));
 	return data = buf;
 }
 
 
-std::string& TestProtocol::unwrap(std::string& data)
+std::string& TestProtocol::unwrap()
 {
-	std::string::size_type posBegin = data.find(format(WRITE_BEGIN, _number)) + WRITE_BEGIN.size() - 1;
-	if (std::string::npos == posBegin) throw InvalidArgumentException();
+	std::string& buf = buffer();
+	std::string begin = format(WRITE_BEGIN, _number);
+	std::string end = format(WRITE_END, _number);
 
-	std::string::size_type posEnd = data.find(format(WRITE_END, _number));
+	std::string::size_type posBegin = buf.find(begin);
+	if (std::string::npos == posBegin) throw InvalidArgumentException();
+	else posBegin += begin.size();
+
+	std::string::size_type posEnd = buf.find(end);
 	if (std::string::npos == posEnd) throw InvalidArgumentException();
 
-	data.assign(data.begin() + posBegin, data.begin() + posEnd);
-	return data;
+	poco_assert (posBegin < posEnd);
+
+	_data.assign(buf.begin() + posBegin, buf.begin() + posEnd);
+	return _data;
 }
 

@@ -34,6 +34,7 @@
 #include "SerialTestSuite.h"
 #include "NetTestSuite.h"
 #include "ProtocolTestSuite.h"
+#include "DF1ProtocolTestSuite.h"
 
 
 CppUnit::Test* IOTestSuite::suite()

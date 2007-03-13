@@ -91,31 +91,31 @@ public:
 		FLOW_CTRL_SOFTWARE_IMPL
 	};
 
-	enum BaudRateImpl
+	enum BPSRateImpl
 	{
-		BAUD_RATE_NS_IMPL = -1,//not supported
-		BAUD_RATE_110_IMPL = CBR_110,
-		BAUD_RATE_300_IMPL = CBR_300,
-		BAUD_RATE_600_IMPL = CBR_600,
-		BAUD_RATE_1200_IMPL = CBR_1200,
-		BAUD_RATE_2400_IMPL = CBR_2400,
-		BAUD_RATE_4800_IMPL = CBR_4800,
-		BAUD_RATE_9600_IMPL = CBR_9600,
-		BAUD_RATE_14400_IMPL = CBR_14400,
-		BAUD_RATE_19200_IMPL = CBR_19200,
-		BAUD_RATE_38400_IMPL = CBR_38400,
-		BAUD_RATE_57600_IMPL = CBR_57600,
-		BAUD_RATE_115200_IMPL = CBR_115200,
-		BAUD_RATE_128000_IMPL = CBR_128000,
-		BAUD_RATE_230400_IMPL  = BAUD_RATE_NS_IMPL,
-		BAUD_RATE_256000_IMPL = CBR_256000,
-		BAUD_RATE_460800_IMPL  = BAUD_RATE_NS_IMPL
+		BPS_NS_IMPL = -1,//not supported
+		BPS_110_IMPL = CBR_110,
+		BPS_300_IMPL = CBR_300,
+		BPS_600_IMPL = CBR_600,
+		BPS_1200_IMPL = CBR_1200,
+		BPS_2400_IMPL = CBR_2400,
+		BPS_4800_IMPL = CBR_4800,
+		BPS_9600_IMPL = CBR_9600,
+		BPS_14400_IMPL = CBR_14400,
+		BPS_19200_IMPL = CBR_19200,
+		BPS_38400_IMPL = CBR_38400,
+		BPS_57600_IMPL = CBR_57600,
+		BPS_115200_IMPL = CBR_115200,
+		BPS_128000_IMPL = CBR_128000,
+		BPS_230400_IMPL  = BPS_NS_IMPL,
+		BPS_256000_IMPL = CBR_256000,
+		BPS_460800_IMPL  = BPS_NS_IMPL
 	};
 
 protected:
 
 	SerialConfigImpl(
-		BaudRateImpl baudRate,
+		BPSRateImpl bpsRate,
 		DataBitsImpl dataBits,
 		char parity,
 		StartBitsImpl startBits,
@@ -128,7 +128,7 @@ protected:
 		int bufferSize,
 		int timeout);
 
-	void setBaudRateImpl(BaudRateImpl baudRate);
+	void setBPSRateImpl(BPSRateImpl bpsRate);
 	void setDataBitsImpl(DataBitsImpl dataBits);
 	void setParityImpl(ParityImpl parity);
 	void setParityCharImpl(char parityChar);
@@ -147,7 +147,7 @@ protected:
 	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
 
-	BaudRateImpl getBaudRateImpl() const;
+	BPSRateImpl getBPSRateImpl() const;
 	DataBitsImpl getDataBitsImpl() const;
 	ParityImpl getParityImpl() const;
 	char getParityCharImpl() const;
@@ -182,9 +182,9 @@ private:
 //
 // inlines
 //
-inline void SerialConfigImpl::setBaudRateImpl(SerialConfigImpl::BaudRateImpl baudRate)
+inline void SerialConfigImpl::setBPSRateImpl(SerialConfigImpl::BPSRateImpl bpsRate)
 {
-	_dcb.BaudRate = baudRate;
+	_dcb.BaudRate = bpsRate;
 }
 
 
@@ -243,9 +243,9 @@ inline void SerialConfigImpl::setTimeoutImpl(int timeout)
 }
 
 
-inline SerialConfigImpl::BaudRateImpl SerialConfigImpl::getBaudRateImpl() const
+inline SerialConfigImpl::BPSRateImpl SerialConfigImpl::getBPSRateImpl() const
 {
-	return (SerialConfigImpl::BaudRateImpl) _dcb.BaudRate;
+	return (SerialConfigImpl::BPSRateImpl) _dcb.BaudRate;
 }
 
 

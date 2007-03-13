@@ -96,28 +96,28 @@ public:
 		FLOW_CTRL_SOFTWARE = FLOW_CTRL_SOFTWARE_IMPL
 	};
 
-	enum BaudRate
+	enum BPSRate
 	{
-		BAUD_RATE_110 = BAUD_RATE_110_IMPL,
-		BAUD_RATE_300 = BAUD_RATE_300_IMPL,
-		BAUD_RATE_600 = BAUD_RATE_600_IMPL,
-		BAUD_RATE_1200 = BAUD_RATE_1200_IMPL,
-		BAUD_RATE_2400 = BAUD_RATE_2400_IMPL,
-		BAUD_RATE_4800 = BAUD_RATE_4800_IMPL,
-		BAUD_RATE_9600 = BAUD_RATE_9600_IMPL,
-		BAUD_RATE_14400 = BAUD_RATE_14400_IMPL,
-		BAUD_RATE_19200 = BAUD_RATE_19200_IMPL,
-		BAUD_RATE_38400 = BAUD_RATE_38400_IMPL,
-		BAUD_RATE_57600 = BAUD_RATE_57600_IMPL,
-		BAUD_RATE_115200 = BAUD_RATE_115200_IMPL,
-		BAUD_RATE_128000 = BAUD_RATE_128000_IMPL,
-		BAUD_RATE_230400 = BAUD_RATE_230400_IMPL,
-		BAUD_RATE_256000 = BAUD_RATE_256000_IMPL,
-		BAUD_RATE_460800 = BAUD_RATE_460800_IMPL
+		BPS_110 = BPS_110_IMPL,
+		BPS_300 = BPS_300_IMPL,
+		BPS_600 = BPS_600_IMPL,
+		BPS_1200 = BPS_1200_IMPL,
+		BPS_2400 = BPS_2400_IMPL,
+		BPS_4800 = BPS_4800_IMPL,
+		BPS_9600 = BPS_9600_IMPL,
+		BPS_14400 = BPS_14400_IMPL,
+		BPS_19200 = BPS_19200_IMPL,
+		BPS_38400 = BPS_38400_IMPL,
+		BPS_57600 = BPS_57600_IMPL,
+		BPS_115200 = BPS_115200_IMPL,
+		BPS_128000 = BPS_128000_IMPL,
+		BPS_230400 = BPS_230400_IMPL,
+		BPS_256000 = BPS_256000_IMPL,
+		BPS_460800 = BPS_460800_IMPL
 	};
 
 	SerialConfig();
-	SerialConfig(BaudRate baudRate,
+	SerialConfig(BPSRate bpsRate,
 		DataBits dataBits=DATA_BITS_EIGHT,
 		char parity='N',
 		StartBits startBits=START_ONE,
@@ -130,7 +130,7 @@ public:
 		int bufferSize=1,
 		int timeout=5000);
 
-	void setBaudRate(BaudRate baudRate);
+	void setBPSRate(BPSRate bpsRate);
 	void setDataBits(DataBits dataBits);
 	void setParity(ParityImpl parity);
 	void setParityChar(char parityChar);
@@ -149,7 +149,7 @@ public:
 	void setTimeoutSeconds(int timeout);
 	void setTimeout(int timeout);
 
-	BaudRate getBaudRate() const;
+	BPSRate getBPSRate() const;
 	DataBits getDataBits() const;
 	ParityImpl getParity() const;
 	char getParityChar() const;
@@ -251,9 +251,9 @@ inline void SerialConfig::setTimeout(int timeout)
 }
 
 
-inline SerialConfig::BaudRate SerialConfig::getBaudRate() const
+inline SerialConfig::BPSRate SerialConfig::getBPSRate() const
 {
-	return (SerialConfig::BaudRate) getBaudRateImpl();
+	return (SerialConfig::BPSRate) getBPSRateImpl();
 }
 
 

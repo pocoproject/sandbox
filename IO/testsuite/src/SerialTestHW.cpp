@@ -64,7 +64,7 @@ const unsigned char SerialTestHW::SERIAL_EOF = 0x0D;
 
 SerialTestHW::SerialTestHW(const std::string& name): 
 	CppUnit::TestCase(name),
-	_serialConfig(SerialConfig::BAUD_RATE_9600, 
+	_serialConfig(SerialConfig::BPS_9600, 
 	SerialConfig::DATA_BITS_EIGHT, 
 	'N', 
 	SerialConfig::START_ONE,
@@ -93,7 +93,7 @@ SerialTestHW::~SerialTestHW()
 }
 
 
-void SerialTestHW::testSerialChannel()
+void SerialTestHW::testChannel()
 {
 	Serial com1(_serialName1, _serialConfig);
 	Serial com2(_serialName2, _serialConfig);
@@ -136,7 +136,7 @@ void SerialTestHW::testSerialChannel()
 
 	SerialConfig config(_serialConfig);
 	config.setBufferSize(1);
-	config.setBaudRate(SerialConfig::BAUD_RATE_2400);
+	config.setBPSRate(SerialConfig::BPS_2400);
 	com1.reconfigure(config);
 	com2.reconfigure(config);
 	com1.write(str);
@@ -145,7 +145,7 @@ void SerialTestHW::testSerialChannel()
 }
 
 
-void SerialTestHW::testActiveSerialChannel()
+void SerialTestHW::testActiveChannel()
 {
 	SerialChannel com1(_serialName1, _serialConfig);
 	SerialChannel com2(_serialName2, _serialConfig);
@@ -163,7 +163,7 @@ void SerialTestHW::testActiveSerialChannel()
 }
 
 
-void SerialTestHW::testSerialStreams()
+void SerialTestHW::testStreams()
 {
 	Serial com1(_serialName1, _serialConfig);
 	Serial com2(_serialName2, _serialConfig);
@@ -182,7 +182,7 @@ void SerialTestHW::testSerialStreams()
 }
 
 
-void SerialTestHW::testSerialBinary()
+void SerialTestHW::testBinary()
 {
 	Serial com1(_serialName1, _serialConfig);
 	Serial com2(_serialName2, _serialConfig);
@@ -193,12 +193,12 @@ void SerialTestHW::testSerialBinary()
 	BinaryWriter bw(sos);
 	BinaryReader br(sis);
 
-	writeSerialBinary(bw);
-	readSerialBinary(br);
+	writeBinary(bw);
+	readBinary(br);
 }
 
 
-void SerialTestHW::writeSerialBinary(BinaryWriter& writer)
+void SerialTestHW::writeBinary(BinaryWriter& writer)
 {
 	writer << true;
 	writer << false;
@@ -243,7 +243,7 @@ void SerialTestHW::writeSerialBinary(BinaryWriter& writer)
 }
 
 
-void SerialTestHW::readSerialBinary(BinaryReader& reader)
+void SerialTestHW::readBinary(BinaryReader& reader)
 {
 	bool b = false;
 	reader >> b;
@@ -352,10 +352,10 @@ CppUnit::Test* SerialTestHW::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SerialTestHW");
 
-	CppUnit_addTest(pSuite, SerialTestHW, testSerialChannel);
-	CppUnit_addTest(pSuite, SerialTestHW, testActiveSerialChannel);
-	CppUnit_addTest(pSuite, SerialTestHW, testSerialStreams);
-	CppUnit_addTest(pSuite, SerialTestHW, testSerialBinary);
+	CppUnit_addTest(pSuite, SerialTestHW, testChannel);
+	CppUnit_addTest(pSuite, SerialTestHW, testActiveChannel);
+	CppUnit_addTest(pSuite, SerialTestHW, testStreams);
+	CppUnit_addTest(pSuite, SerialTestHW, testBinary);
 
 	return pSuite;
 }

@@ -49,6 +49,8 @@ public:
 
 	void testOne();
 	void testTwo();
+	void testChain();
+	void testStreams();
 
 	void setUp();
 	void tearDown();

@@ -36,71 +36,286 @@
 
 #include "Poco/IO/Protocol.h"
 #include "Poco/SharedPtr.h"
+#include "Poco/Exception.h"
+#include "Poco/Mutex.h"
+#include "Poco/Exception.h"
+#include "Poco/Format.h"
 
 
 using Poco::SharedPtr;
+using Poco::Mutex;
+using Poco::format;
+using Poco::CircularReferenceException;
+using Poco::NotFoundException;
+using Poco::NullPointerException;
+using Poco::NotFoundException;
+using Poco::IllegalStateException;
 
 
 namespace Poco {
 namespace IO {
 
 
-Protocol::Protocol(AbstractChannel* pChannel): 
-	_pChannel(pChannel), 
-	_pNext(0), 
-	_pBuffer(new std::string())
+Protocol::Protocol(const std::string& name, AbstractChannel* pChannel): 
+	_name(name),
+	_pParent(0),
+	_pChannel(pChannel),
+	_pProtocols(new ProtocolVec()),
+	_pBuffer(new ProtocolData()),
+	_established(false)
 {
+	poco_check_ptr (_pChannel);
+	poco_check_ptr (_pProtocols);
+	poco_check_ptr (_pBuffer);
+
+	_pProtocols->push_back(this);
 }
 
 
-Protocol::Protocol(const Protocol& other)
+Protocol::Protocol(const std::string& name): 
+	_name(name),
+	_pParent(0),
+	_pChannel(0), 
+	_pProtocols(0),
+	_pBuffer(0),
+	_established(false)
 {
-	if (&other != this) *this = other;
-}
-
-	
-Protocol& Protocol::operator = (const Protocol& other)
-{
-	if (&other != this)
-	{
-		_pNext = other._pNext;
-		_pChannel = other._pChannel;
-		_pBuffer = other._pBuffer;
-	}
-
-	return *this;
 }
 
 
 Protocol::~Protocol()
 {
-	_pNext = 0;
-}
-
-
-int Protocol::write(const char* buffer, std::size_t length, bool doSend)
-{
-	std::string buf(buffer, length);
-	if (_pNext) _pNext->wrap(buf);
-	writeRaw(wrap(buf));
-	if (doSend) send();
-	return (int) buf.size();
-}
-
-
-void Protocol::setNext(Protocol* pNewNext)
-{
-	_pNext = pNewNext;
-
-	if (_pNext) 
+	if (isRoot())
 	{
-		if (_pNext->_pChannel != _pChannel)
-			_pNext->_pChannel = _pChannel;
-		if (_pNext->_pBuffer != _pBuffer)
-			_pNext->_pBuffer = _pBuffer;
+		ProtocolVec& rProtocols = protocols();
+		ProtocolVec::iterator it = rProtocols.begin();
+		for (; it != rProtocols.end(); ) 
+		{
+			if (this != *it) 
+			{
+				delete *it;
+				it = rProtocols.erase(it);
+			}
+			else ++it;
+		}
 
-		poco_assert (_pNext->_pNext != _pNext);
+		for (int i = _pChannel->referenceCount(); i > 0; --i)
+			_pChannel->release();
+
+		delete _pProtocols;
+		delete _pBuffer;
 	}
+}
+
+
+void Protocol::setChannel(AbstractChannel* pChannel)
+{
+	poco_check_ptr (pChannel);
+	if (!_pParent) 
+	{
+		_pChannel = pChannel;
+		if (!_pProtocols) 
+		{
+			_pProtocols = new ProtocolVec();
+			_pProtocols->push_back(this);
+		}
+		if (!_pBuffer) 
+			_pBuffer = new ProtocolData();
+	}
+	else _pParent->setChannel(pChannel);
+}
+
+
+int Protocol::send()
+{
+	int ret = channel().write(buffer());
+	clear();
+	return ret;
+}
+
+
+std::string& Protocol::receive(std::string& buf)
+{
+	channel().read(buffer());
+	return buf = data();
+}
+
+
+int Protocol::read(char* pBuffer, std::size_t length)
+{
+	std::string str;
+	receive(str);
+
+	memset(pBuffer, 0, length);
+	std::size_t len = str.size() > length ? length : str.size();
+	memcpy(pBuffer, str.data(), len);
+
+	return (int) len;
+}
+
+
+int Protocol::write(const char* buf, std::size_t length, bool doSend)
+{
+	buffer().assign(buf, length);
+
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	for (; it != itEnd; ++it) if (this == *it) break;
+	for (; it != itEnd; ++it) (*it)->wrap();
+
+	int ret = 0;
+	if (doSend) ret = send();
+	return ret ? ret : (int) buffer().size();
+}
+
+
+std::string& Protocol::data()
+{
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::reverse_iterator rIt = rProtocols.rbegin();
+	ProtocolVec::reverse_iterator rItEnd = rProtocols.rend();
+	for (; rIt != rItEnd; ++rIt) 
+	{
+		if (this == *rIt) return (*rIt)->unwrap();
+		(*rIt)->unwrap();
+	}
+
+	throw IllegalStateException("Protocol not part of it's own chain.");
+}
+
+
+void Protocol::add(Protocol* pProtocol)
+{
+	if (0 == pProtocol) throw NullPointerException();
+	if (this == pProtocol) throw CircularReferenceException();
+
+	Mutex::ScopedLock lock(_mutex);
+
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	for (; it != itEnd; ++it)
+	{
+		if (*it == pProtocol)
+			throw CircularReferenceException();
+		else if ((*it)->name() == pProtocol->name())
+			throw InvalidArgumentException(format("A protocol named %s already exists.", pProtocol->name()));
+	}
+
+	if (pProtocol->_pParent) 
+		pProtocol->detachImpl(false);
+	pProtocol->_pChannel = 0;
+	pProtocol->_pBuffer = 0;
+	pProtocol->_pParent = this;
+	pProtocol->_pProtocols = 0;
+	protocols().push_back(pProtocol);
+}
+
+
+void Protocol::remove(const std::string& name)
+{
+	if (name == _name) throw InvalidAccessException();
+
+	Mutex::ScopedLock lock(_mutex);
+
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	ProtocolVec::iterator itPrev = it;
+	for (; it != itEnd; ++it)
+	{
+		if (name == (*it)->name())
+		{
+			if (*it != this)
+			{
+				delete *it;
+				it = rProtocols.erase(it);
+				if (it != rProtocols.end() && it != rProtocols.begin())
+					(*it)->_pParent = *itPrev;
+				return;
+			}
+			else throw InvalidArgumentException("Can not remove self.");
+
+			return;
+		}
+		itPrev = it;
+	}
+
+	throw NotFoundException(name);
+}
+
+
+void Protocol::detachImpl(bool destroy)
+{
+	if (_pParent) 
+	{
+		_mutex.lock();
+		ProtocolVec& rProtocols = protocols();
+		ProtocolVec::iterator it = rProtocols.begin();
+		ProtocolVec::iterator itEnd = rProtocols.end();
+		ProtocolVec::iterator itPrev = it;
+		for (; it != itEnd; ++it) 
+		{
+			if (this == *it) 
+			{
+				it = rProtocols.erase(it);
+				if (it != rProtocols.end() && it != rProtocols.begin())
+					(*it)->_pParent = *itPrev;
+				if (destroy) 
+				{
+					_mutex.unlock();
+					delete this;
+					return;
+				}
+			}
+			itPrev = it;
+		}
+		_mutex.unlock();
+	}
+}
+
+
+int Protocol::establish()
+{
+	int ret = 0;
+
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	for (; it != itEnd; ++it) 
+	{
+		if (this != *it && !(*it)->isEstablished()) 
+			ret += (*it)->establish();
+	}
+
+	return ret;
+}
+
+
+void Protocol::terminate()
+{
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	for (; it != itEnd; ++it) 
+	{
+		if (this != *it && (*it)->isEstablished()) 
+		{
+			(*it)->terminate();
+			(*it)->_established = false;
+		}
+	}
+}
+
+
+void Protocol::setEstablished(bool established)
+{
+	ProtocolVec& rProtocols = protocols();
+	ProtocolVec::iterator it = rProtocols.begin();
+	ProtocolVec::iterator itEnd = rProtocols.end();
+	for (; it != itEnd; ++it) 
+		(*it)->_established = established;
 }
 
 

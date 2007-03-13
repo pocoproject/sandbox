@@ -52,7 +52,7 @@ const unsigned char SerialConfig::DEFAULT_EOF=0x0D;
 
 
 SerialConfig::SerialConfig(): 
-	SerialConfigImpl(BAUD_RATE_2400_IMPL, 
+	SerialConfigImpl(BPS_2400_IMPL, 
 		DATA_BITS_EIGHT_IMPL, 
 		'N', 
 		START_ONE_IMPL, 
@@ -69,7 +69,7 @@ SerialConfig::SerialConfig():
 
 
 SerialConfig::SerialConfig(
-	SerialConfig::BaudRate baudRate,
+	SerialConfig::BPSRate bpsRate,
 	DataBits dataBits,
 	char parity,
 	SerialConfig::StartBits startBits,
@@ -81,7 +81,7 @@ SerialConfig::SerialConfig(
 	unsigned char eof,
 	int bufferSize,
 	int timeout):
-SerialConfigImpl((SerialConfigImpl::BaudRateImpl) baudRate,
+SerialConfigImpl((SerialConfigImpl::BPSRateImpl) bpsRate,
 		(SerialConfigImpl::DataBitsImpl) dataBits,
 		parity,
 		(SerialConfigImpl::StartBitsImpl)startBits,
@@ -97,12 +97,12 @@ SerialConfigImpl((SerialConfigImpl::BaudRateImpl) baudRate,
 }
 
 
-void SerialConfig::setBaudRate(SerialConfig::BaudRate baudRate)
+void SerialConfig::setBPSRate(SerialConfig::BPSRate bpsRate)
 {
-	if (SerialConfigImpl::NOT_SUPPORTED == baudRate)
+	if (SerialConfigImpl::NOT_SUPPORTED == bpsRate)
 		throw InvalidArgumentException("Baud rate not supported.");
 
-	setBaudRateImpl((SerialConfigImpl::BaudRateImpl) baudRate);
+	setBPSRateImpl((SerialConfigImpl::BPSRateImpl) bpsRate);
 }
 
 

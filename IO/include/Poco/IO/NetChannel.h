@@ -77,6 +77,8 @@ private:
 	NetChannel(const NetChannel&);
 	const NetChannel& operator=(const NetChannel&);
 
+	Poco::Net::Socket& newSocket();
+	Poco::Net::Socket& socket();
 	Poco::Net::SocketImpl* socketImpl();
 
 	std::string        _name;
@@ -95,15 +97,25 @@ inline void NetChannel::init()
 }
 
 
+inline Poco::Net::Socket& NetChannel::socket()
+{
+	if (!_pSocket) return newSocket();
+
+	return *_pSocket;
+}
+
+
 inline Poco::Net::SocketImpl* NetChannel::socketImpl()
 {
-	return _pSocket->impl();
+	return socket().impl();
 }
 
 
 inline void NetChannel::close()
 {
 	socketImpl()->close();
+	delete _pSocket;
+	_pSocket = 0;
 }
 
 

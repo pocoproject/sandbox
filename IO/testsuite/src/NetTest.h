@@ -55,15 +55,15 @@ public:
 	NetTest(const std::string& name);
 	~NetTest();
 
-	void testNetChannelStream();
-	void testActiveNetChannelStream();
-	void testNetStreamsStream();
-	void testNetBinaryStream();
+	void testChannelStream();
+	void testActiveChannelStream();
+	void testStreamsStream();
+	void testBinaryStream();
 
-	void testNetChannelDatagram();
-	void testActiveNetChannelDatagram();
-	void testNetStreamsDatagram();
-	void testNetBinaryDatagram();
+	void testChannelDatagram();
+	void testActiveChannelDatagram();
+	void testStreamsDatagram();
+	void testBinaryDatagram();
 
 	void setUp();
 	void tearDown();
@@ -71,8 +71,8 @@ public:
 	static CppUnit::Test* suite();
 
 private:
-	void writeNetBinary(Poco::BinaryWriter& writer);
-	void readNetBinary(Poco::BinaryReader& reader);
+	void writeBinary(Poco::BinaryWriter& writer);
+	void readBinary(Poco::BinaryReader& reader);
 };
 
 

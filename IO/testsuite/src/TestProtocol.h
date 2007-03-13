@@ -45,6 +45,7 @@ class TestProtocol: public Poco::IO::Protocol
 {
 public:
 	TestProtocol(Poco::IO::AbstractChannel* pChannel, int number);
+	TestProtocol(/*TestProtocol* pProtocol,*/ int number);
 
 	virtual ~TestProtocol();
 
@@ -52,10 +53,11 @@ public:
 	static const std::string WRITE_END;
 
 private:
-	std::string& wrap(std::string& data);
-	std::string& unwrap(std::string& data);
+	std::string& wrap();
+	std::string& unwrap();
 
 	int _number;
+	std::string _data;
 };
 
 

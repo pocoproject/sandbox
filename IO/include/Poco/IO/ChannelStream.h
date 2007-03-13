@@ -125,39 +125,6 @@ public:
 };
 
 
-///
-/// inlines
-///
-
-
-/// ChannelStreamBuf
-
-inline void ChannelStreamBuf::close()
-{
-	_channel.close();
-}
-
-
-inline UnbufferedStreamBuf::int_type ChannelStreamBuf::readFromDevice()
-{
-	return charToInt(_channel.read());
-}
-
-
-inline UnbufferedStreamBuf::int_type ChannelStreamBuf::writeToDevice(char c)
-{
-	return _channel.write(c);
-}
-
-
-/// ChannelIOS
-
-inline ChannelStreamBuf* ChannelIOS::rdbuf()
-{
-	return &_buf;
-}
-
-
 } } // namespace Poco::IO
 
 

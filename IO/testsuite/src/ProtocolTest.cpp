@@ -31,24 +31,32 @@
 
 
 #include "ProtocolTest.h"
-#include "Poco/IO/Protocol.h"
 #include "TestProtocol.h"
+#include "Poco/IO/Protocol.h"
+#include "Poco/IO/ProtocolStream.h"
 #include "Poco/IO/SerialConfig.h"
 #include "Poco/IO/SerialChannel.h"
 #include "Poco/AutoPtr.h"
+#include "Poco/Exception.h"
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
+#include <sstream>
 
 
 using Poco::IO::SerialConfig;
 using Poco::IO::SerialChannel;
+using Poco::IO::ProtocolInputStream;
+using Poco::IO::ProtocolOutputStream;
 using Poco::IO::Serial;
 using Poco::AutoPtr;
+using Poco::CircularReferenceException;
+using Poco::NullPointerException;
+using Poco::NotFoundException;
 
 
 ProtocolTest::ProtocolTest(const std::string& name): 
 	CppUnit::TestCase(name),
-	_serialConfig(SerialConfig::BAUD_RATE_9600, 
+	_serialConfig(SerialConfig::BPS_9600, 
 	SerialConfig::DATA_BITS_EIGHT, 
 	'N', 
 	SerialConfig::START_ONE,
@@ -79,8 +87,11 @@ ProtocolTest::~ProtocolTest()
 
 void ProtocolTest::testOne()
 {
-	TestProtocol tp1(new Serial(_serialName1, _serialConfig), 1);
-	TestProtocol tp2(new Serial(_serialName2, _serialConfig), 1);
+	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
+	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
+
+	TestProtocol tp1(pCom1, 1);
+	TestProtocol tp2(pCom2, 1);
 
 	std::string rawData = "<data1>123</data1>";
 
@@ -105,16 +116,18 @@ void ProtocolTest::testOne()
 
 void ProtocolTest::testTwo()
 {
-	AutoPtr<Serial> pCom1 = new Serial(_serialName1, _serialConfig);
-	AutoPtr<Serial> pCom2 = new Serial(_serialName2, _serialConfig);
+	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
+	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
 
 	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
-	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 2);
+	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
+	TestProtocol* pTp3 = new TestProtocol(2); 
+	TestProtocol* pTp4 = new TestProtocol(2); 
 
-	pTp1->setNext(new TestProtocol(pCom1, 2));
-	pTp2->setNext(new TestProtocol(pCom2, 1));
+	pTp1->add(pTp3);
+	pTp2->add(pTp4);
 
-	std::string rawData = "<data1><data2>123</data2></data1>";
+	std::string rawData = "<data2><data1>123</data1></data2>";
 
 	pTp1->write("123", 3);
 	assert (pTp1->readRaw() == rawData);
@@ -132,6 +145,163 @@ void ProtocolTest::testTwo()
 	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
+
+	str.clear();
+	pTp2->send();
+	pTp1->receive(str);
+	assert ("123" == str);
+
+	try
+	{
+		pTp3->add(pTp1);
+		fail ("must fail");
+	}
+	catch (CircularReferenceException&) {}
+
+	try
+	{
+		pTp3->add(pTp3);
+		fail ("must fail");
+	}
+	catch (CircularReferenceException&) {}
+
+	try
+	{
+		pTp3->add(0);
+		fail ("must fail");
+	}
+	catch (NullPointerException&) {}
+
+	try
+	{
+		pTp3->remove("xyz");
+		fail ("must fail");
+	}
+	catch (NotFoundException&) {}
+
+	rawData = "<data2>321</data2>";
+
+	pTp3->write("321", 3);
+	std::string s = pTp3->readRaw();
+	assert (pTp3->readRaw() == rawData);
+	pTp3->send();
+	assert (pTp3->readRaw() == "");
+	str.clear();
+	pTp4->receive(str);
+	assert (pTp4->readRaw() == rawData);
+	assert ("321" == str);
+    pTp4->clear();
+	assert (pTp4->readRaw() == "");
+
+	pTp1->detach();//does nothing for a root protocol
+	pTp1->remove("TestProtocol2");
+	pTp4->detach();
+
+	rawData = "<data1>123</data1>";
+
+	pTp1->write("123", 3);
+	assert (pTp1->readRaw() == rawData);
+	pTp1->send();
+	assert (pTp1->readRaw() == "");
+	str.clear();
+	pTp2->receive(str);
+	assert (pTp2->readRaw() == rawData);
+	assert ("123" == str);
+    pTp2->clear();
+	assert (pTp2->readRaw() == "");
+
+	pTp1->write("123");
+	assert (pTp1->readRaw() == "");
+	pTp2->receive(str);
+	assert (pTp2->readRaw() == rawData);
+	assert ("123" == str);
+
+	rawData = "<data1>321</data1>";
+
+	str.clear();
+	pTp1->write("321");
+	assert (pTp1->readRaw() == "");
+	pTp2->receive(str);
+	assert (pTp2->readRaw() == rawData);
+	assert ("321" == str);
+
+	pTp1->add(new TestProtocol(2));
+	pTp2->add(new TestProtocol(2));
+
+	rawData = "<data2><data1>456</data1></data2>";
+
+	str.clear();
+	pTp1->write("456");
+	assert (pTp1->readRaw() == "");
+	pTp2->receive(str);
+	assert (pTp2->readRaw() == rawData);
+	assert ("456" == str);
+}
+
+
+void ProtocolTest::testChain()
+{
+	const int channels = 10;
+	TestProtocol tp1(0);
+	TestProtocol tp2(0);
+
+	tp1.setChannel(new Serial(_serialName1, _serialConfig));
+	tp2.setChannel(new Serial(_serialName2, _serialConfig));
+	
+	std::ostringstream pre;
+	std::ostringstream post;
+	post << "</data0>";
+	int i = 1;
+	for (; i < channels; ++i)
+	{
+		tp1.add(new TestProtocol(i)); 
+		tp2.add(new TestProtocol(i)); 
+		pre << "<data" << channels - i << '>';
+		post << "</data" << i << '>';
+	}
+	pre << "<data0>";
+
+	std::string pr = pre.str();;
+	std::string po = post.str();
+	std::string str;
+	tp1.write("1234567890");
+	tp2.receive(str);
+
+	assert (pre.str() + str + post.str() == tp2.readRaw());
+	assert ("1234567890" == str);
+}
+
+
+void ProtocolTest::testStreams()
+{
+	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
+	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
+
+	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
+	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
+	TestProtocol* pTp3 = new TestProtocol(2);
+	TestProtocol* pTp4 = new TestProtocol(2);
+	pTp1->add(pTp3);
+	pTp2->add(pTp4);
+
+	ProtocolOutputStream sos(pTp1);
+	ProtocolInputStream sis(pTp2);
+
+	sos << "1234567890" << std::endl;
+	std::string str;
+	sis >> str;
+	assert("1234567890" == str);
+
+	std::string rawData = "<data2><data1>0987654321</data1></data2>";
+	pTp1->writeRaw(rawData); pTp3->send();
+	sis >> str;
+	assert("0987654321" == str);
+
+	str.clear();
+	sos << "5432109876" << std::flush;
+	pTp2->receive(str);
+	assert (pTp2->readRaw() == "<data2><data1>5432109876</data1></data2>");
+	assert ("5432109876" == str);
 }
 
 
@@ -151,6 +321,8 @@ CppUnit::Test* ProtocolTest::suite()
 
 	CppUnit_addTest(pSuite, ProtocolTest, testOne);
 	CppUnit_addTest(pSuite, ProtocolTest, testTwo);
+	CppUnit_addTest(pSuite, ProtocolTest, testChain);
+	CppUnit_addTest(pSuite, ProtocolTest, testStreams);
 
 	return pSuite;
 }

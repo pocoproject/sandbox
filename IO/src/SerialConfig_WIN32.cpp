@@ -46,7 +46,7 @@ namespace Poco {
 namespace IO {
 
 
-SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
+SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	DataBitsImpl dataBits,
 	char parity,
 	StartBitsImpl startBits,
@@ -65,7 +65,7 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 
 	_dcb.DCBlength = sizeof(DCB);
 	_dcb.ByteSize = dataBits;
-	_dcb.BaudRate = baudRate;
+	_dcb.BaudRate = bpsRate;
 
 	setFlowControlImpl(flowControl, xOnChar, xOffChar);
 

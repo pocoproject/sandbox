@@ -46,7 +46,7 @@ namespace Poco {
 namespace IO {
 
 
-SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
+SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	DataBitsImpl dataBits,
 	char parity,
 	StartBitsImpl startBits,
@@ -62,7 +62,7 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 {
 	memset(&_termios, 0, sizeof(_termios)) ;
 
-	setBaudRateImpl(baudRate);
+	setBPSRateImpl(bpsRate);
 	setDataBitsImpl(dataBits);
 	setStopBitsImpl(stopBits);
 	setParityCharImpl(parity);
@@ -72,10 +72,10 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BaudRateImpl baudRate,
 }
 
 
-void SerialConfigImpl::setBaudRateImpl(SerialConfigImpl::BaudRateImpl baudRate)
+void SerialConfigImpl::setBPSRateImpl(SerialConfigImpl::BPSRateImpl bpsRate)
 {
-	if (0 != cfsetospeed(&_termios, baudRate) ||
-		0 != cfsetispeed(&_termios, baudRate))
+	if (0 != cfsetospeed(&_termios, bpsRate) ||
+		0 != cfsetispeed(&_termios, bpsRate))
 		throw SystemException("Can not set baud rate");
 }
 

@@ -51,6 +51,24 @@ ChannelStreamBuf::~ChannelStreamBuf()
 }
 
 
+void ChannelStreamBuf::close()
+{
+	_channel.close();
+}
+
+
+UnbufferedStreamBuf::int_type ChannelStreamBuf::readFromDevice()
+{
+	return charToInt(_channel.read());
+}
+
+
+UnbufferedStreamBuf::int_type ChannelStreamBuf::writeToDevice(char c)
+{
+	return _channel.write(c);
+}
+
+
 ChannelIOS::ChannelIOS(AbstractChannel& channel, openmode mode) :_buf(channel)
 {
 	poco_ios_init(&_buf);
@@ -59,6 +77,12 @@ ChannelIOS::ChannelIOS(AbstractChannel& channel, openmode mode) :_buf(channel)
 
 ChannelIOS::~ChannelIOS()
 {
+}
+
+
+ChannelStreamBuf* ChannelIOS::rdbuf()
+{
+	return &_buf;
 }
 
 

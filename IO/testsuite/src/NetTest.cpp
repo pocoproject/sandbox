@@ -120,7 +120,7 @@ NetTest::~NetTest()
 }
 
 
-void NetTest::testNetChannelStream()
+void NetTest::testChannelStream()
 {
 	ServerSocket svs(0);
 	TCPServer srv(new TCPServerConnectionFactoryImpl<EchoConnection>(), svs);
@@ -149,7 +149,7 @@ void NetTest::testNetChannelStream()
 }
 
 
-void NetTest::testActiveNetChannelStream()
+void NetTest::testActiveChannelStream()
 {
 	ServerSocket svs(0);
 	TCPServer srv(new TCPServerConnectionFactoryImpl<EchoConnection>(), svs);
@@ -171,7 +171,7 @@ void NetTest::testActiveNetChannelStream()
 }
 
 
-void NetTest::testNetStreamsStream()
+void NetTest::testStreamsStream()
 {
 	ServerSocket svs(0);
 	TCPServer srv(new TCPServerConnectionFactoryImpl<EchoConnection>(), svs);
@@ -195,7 +195,7 @@ void NetTest::testNetStreamsStream()
 }
 
 
-void NetTest::testNetBinaryStream()
+void NetTest::testBinaryStream()
 {
 	ServerSocket svs(0);
 	TCPServer srv(new TCPServerConnectionFactoryImpl<EchoConnection>(), svs);
@@ -210,12 +210,12 @@ void NetTest::testNetBinaryStream()
 	BinaryWriter bw(sos);
 	BinaryReader br(sis);
 
-	writeNetBinary(bw);
-	readNetBinary(br);
+	writeBinary(bw);
+	readBinary(br);
 }
 
 
-void NetTest::testNetChannelDatagram()
+void NetTest::testChannelDatagram()
 {
 	UDPEchoServer echoServer;
 	
@@ -228,11 +228,11 @@ void NetTest::testNetChannelDatagram()
 	int n = network.read(buffer, sizeof(buffer));
 	assert (n > 0);
 	assert (std::string(buffer, n) == data);
-	network.close();
+	//network.close();
 }
 
 
-void NetTest::testActiveNetChannelDatagram()
+void NetTest::testActiveChannelDatagram()
 {
 	UDPEchoServer echoServer;
 	
@@ -252,7 +252,7 @@ void NetTest::testActiveNetChannelDatagram()
 }
 
 
-void NetTest::testNetStreamsDatagram()
+void NetTest::testStreamsDatagram()
 {
 	UDPEchoServer echoServer;
 	
@@ -274,7 +274,7 @@ void NetTest::testNetStreamsDatagram()
 }
 
 
-void NetTest::testNetBinaryDatagram()
+void NetTest::testBinaryDatagram()
 {
 	UDPEchoServer echoServer;
 	
@@ -287,12 +287,12 @@ void NetTest::testNetBinaryDatagram()
 	BinaryWriter bw(sos);
 	BinaryReader br(sis);
 
-	writeNetBinary(bw);
-	readNetBinary(br);
+	writeBinary(bw);
+	readBinary(br);
 }
 
 
-void NetTest::writeNetBinary(BinaryWriter& writer)
+void NetTest::writeBinary(BinaryWriter& writer)
 {
 	writer << true;
 	writer << false;
@@ -337,7 +337,7 @@ void NetTest::writeNetBinary(BinaryWriter& writer)
 }
 
 
-void NetTest::readNetBinary(BinaryReader& reader)
+void NetTest::readBinary(BinaryReader& reader)
 {
 	bool b = false;
 	reader >> b;
@@ -446,14 +446,14 @@ CppUnit::Test* NetTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("NetTest");
 
-	CppUnit_addTest(pSuite, NetTest, testNetChannelStream);
-	CppUnit_addTest(pSuite, NetTest, testActiveNetChannelStream);
-	CppUnit_addTest(pSuite, NetTest, testNetStreamsStream);
-	CppUnit_addTest(pSuite, NetTest, testNetBinaryStream);
-	CppUnit_addTest(pSuite, NetTest, testNetChannelDatagram);
-	CppUnit_addTest(pSuite, NetTest, testActiveNetChannelDatagram);
-	CppUnit_addTest(pSuite, NetTest, testNetStreamsDatagram);
-	CppUnit_addTest(pSuite, NetTest, testNetBinaryDatagram);
+	CppUnit_addTest(pSuite, NetTest, testChannelStream);
+	CppUnit_addTest(pSuite, NetTest, testActiveChannelStream);
+	CppUnit_addTest(pSuite, NetTest, testStreamsStream);
+	CppUnit_addTest(pSuite, NetTest, testBinaryStream);
+	CppUnit_addTest(pSuite, NetTest, testChannelDatagram);
+	CppUnit_addTest(pSuite, NetTest, testActiveChannelDatagram);
+	CppUnit_addTest(pSuite, NetTest, testStreamsDatagram);
+	CppUnit_addTest(pSuite, NetTest, testBinaryDatagram);
 
 	return pSuite;
 }

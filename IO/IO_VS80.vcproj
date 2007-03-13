@@ -231,28 +231,12 @@
 					RelativePath=".\include\Poco\IO\IO.h"
 					>
 				</File>
-				<File
-					RelativePath=".\include\Poco\IO\Protocol.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\ProtocolStream.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				>
 				<File
 					RelativePath=".\src\ChannelStream.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\Protocol.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ProtocolStream.cpp"
 					>
 				</File>
 			</Filter>
@@ -404,6 +388,34 @@
 				</File>
 				<File
 					RelativePath=".\src\NetConfig.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Protocol"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\include\Poco\IO\Protocol.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ProtocolStream.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\Protocol.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ProtocolStream.cpp"
 					>
 				</File>
 			</Filter>

@@ -45,6 +45,8 @@
 #include "Poco/RefCountedObject.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/SharedPtr.h"
+#include "Poco/Mutex.h"
+#include <vector>
 
 
 namespace Poco {
@@ -53,76 +55,136 @@ namespace IO {
 
 class IO_API Protocol: public Poco::RefCountedObject
 	/// Protocol is the common base class for protocol classes.
+	/// A protocol can be standalone or it can be part of a chain.
+	/// When part of a chain, protocol can be either root protocol or just ordinary member of the chain.
+	/// Root protocol is the lowest-level protocol in the chain owning the chain's one-and-only channel 
+	/// and internal buffer storage. 
+	/// Both root channel and buffer are used by all subsequent (higher-level) chain members.
+	///
+	/// A protocol is attached to another protocol by invoking the parent's add(Protocol*) method.
+	/// An attached protocol can be detached from its parent through either its own detach() method
+	/// or parents remove(name) method call. Detached protocols are automatically deleted.
+	///
 {
 public:
-	Protocol(AbstractChannel* pChannel);
-		/// Creates the Protocol and attaches the given AbstractChannel.
+	typedef std::vector<Protocol*> ProtocolVec;
+	typedef std::string ProtocolData;
+
+	Protocol(const std::string& name, AbstractChannel* pChannel);
+		/// Creates the Protocol using the given channel.
+
+	Protocol(const std::string& name/*, Protocol* pParent*/);
+		/// Creates the Protocol and attaches it to the parent.
 		
 	virtual ~Protocol();
 		/// Destroys the Protocol.
-	
-	Protocol(const Protocol& other);
-		/// Copy-creates protocol from other protocol.
-
-	Protocol& Protocol::operator = (const Protocol& other);
-		/// Assignment operator. 
 
 	virtual int establish();
 		/// Establishes the protocol conection.
 		/// Must be overridden to establish the protocol connection.
 
 	void writeRaw(const char* buffer, std::size_t length);
-		/// Sends the given buffer through the channel exactly as supplied.
+		/// Fills the internal buffer with string exactly as supplied.
 
 	void writeRaw(const std::string& buffer);
-		/// Sends the given buffer through the channel exactly as supplied.
-		/// If length is not zero and is less than or equal to the string length, 
-		/// length bytes are sent. Otherwise, the number of bytes to be set is
-		/// determined from the string length.
+		/// Fills the internal buffer with string exactly as supplied.
 		
 	int write(const char* buffer, std::size_t length, bool send = false);
-		/// Wraps the given buffer. If send is true, buffer is sent through the channel.
+		/// Wraps the given buffer into protocol data. 
+		/// If send is true, internal buffer is sent through the channel and cleared.
 		/// Returns the number of bytes sent.
 
 	int write(const std::string& buffer);
-		/// Wraps the given buffer and sends it through the channel.
+		/// Wraps the given buffer into protocol data and sends it through the channel.
 		/// Returns the number of bytes sent.
 	
-	const std::string& readRaw();
-		/// Returns the internal buffer without unwrapping it.
+	int read(char* pBuffer, std::size_t length);
+		/// Reads the data from channel, unwraps it from protocol data and 
+		/// stores it into the supplied buffer.
 
-	virtual int terminate();
+	const std::string& readRaw();
+		/// Returns the internal buffer contents without unwrapping it.
+
+	virtual void terminate();
 		/// Terminates the protocol connection.
 		/// Must be overridden to do the appropriate protocol termination.
 
-	void setNext(Protocol* pNewNext);
-		/// Sets the next protocol in chain.
-
 	int send();
-		/// Sends the data over the wire.
+		/// Sends the data over the wire and clears the internal buffer.
 
 	std::string& receive(std::string& buffer);
-		/// Receives the data.
+		/// Receives the data, places the unwrapped data into the supplied buffer
+		/// and return the refernce to the supplied buffer.
 
 	void clear();
 		/// Clears the internal buffer.
 
+	void add(Protocol* pProtocol);
+		/// Attaches a protocol to this protocol. Root protocol takes ownership of it.
+
+	void remove(const std::string& name);
+		/// Removes the protocol with specified name from the chain.
+
+	void detach();
+		/// Detaches this protocol from its parent and turns it into a standalone root protocol. 
+		/// The detached protocol keeps the previous parent's channel.
+		/// Does nothing if protocol is already a root protocol.
+
+	const std::string& name() const;
+		/// Returns this protocol name.
+
+	void setChannel(AbstractChannel* pChannel);
+		/// Sets the channel for this protocol.
+
+	bool isEstablished() const;
+		/// Returns the boolean value indicating whether the
+		/// connection is established or not.
+
 protected:
-	Protocol* getNext();
-		/// Gets the next protocol in chain.
+
+	Protocol& root();
+		/// Returns the root protocol.
+
+	ProtocolVec& protocols();
+		/// Returns the reference to the protocols vector.
 
 	AbstractChannel& channel();
 		/// Returns the reference to the underlying communication channel.
 
-	virtual std::string& wrap(std::string& buffer) = 0;
-	virtual std::string& unwrap(std::string& buffer) = 0;
+	std::string& buffer();
+		/// Returns the reference to the internal buffer.
+
+	std::string& data();
+		/// Returns the reference to bare data.
+
+	bool isRoot();
+		/// Returns true if this protocol is the root of the hierarchy.
+
+	void setEstablished(bool established);
+		/// Sets the established state flag for all chained protocols.
+
+	virtual std::string& wrap() = 0;
+	virtual std::string& unwrap() = 0;
 
 private:
 	Protocol();
+	Protocol(const Protocol& other);
+	Protocol& Protocol::operator = (const Protocol& other);
 
-	Poco::AutoPtr<Protocol>        _pNext;
-	Poco::AutoPtr<AbstractChannel> _pChannel;
-	Poco::SharedPtr<std::string>   _pBuffer;
+	void makeRoot();
+
+	void detachImpl(bool destroy = true);
+		/// Detaches the protocol from its parent and, if destroy is true,
+		/// deletes it. 
+		/// Does nothing if protocol is root.
+
+	std::string      _name;
+	AbstractChannel* _pChannel;
+	ProtocolVec*     _pProtocols;
+	ProtocolData*    _pBuffer;
+	Protocol*        _pParent;
+	bool             _established;
+	Poco::Mutex      _mutex;
 };
 
 
@@ -131,32 +193,23 @@ private:
 ///
 
 
-inline int Protocol::send()
+inline std::string& Protocol::buffer()
 {
-	std::string str = *_pBuffer;
-	int ret = _pChannel->write(str);
-	clear(); 
-	return ret;
+	if (_pBuffer) return *_pBuffer;
+	else if (_pParent) return _pParent->buffer();
+	else throw NullPointerException();
 }
 
 
-inline std::string& Protocol::receive(std::string& buffer)
+inline void Protocol::writeRaw(const char* buf, std::size_t length)
 {
-	_pChannel->read(*_pBuffer);
-	buffer = *_pBuffer;
-	return unwrap(buffer);
+	buffer().assign(buf, length);
 }
 
 
-inline void Protocol::writeRaw(const char* buffer, std::size_t length)
+inline void Protocol::writeRaw(const std::string& buf)
 {
-	_pBuffer->append(buffer, length);
-}
-
-
-inline void Protocol::writeRaw(const std::string& buffer)
-{
-	_pBuffer->append(buffer);
+	buffer().assign(buf.begin(), buf.end());
 }
 
 
@@ -168,37 +221,62 @@ inline int Protocol::write(const std::string& buffer)
 
 inline const std::string& Protocol::readRaw()
 {
-	return *_pBuffer;
+	return buffer();
+}
+
+
+inline Protocol& Protocol::root()
+{
+	if (!_pParent) return *this;
+	else return _pParent->root();
+}
+
+
+inline Protocol::ProtocolVec& Protocol::protocols()
+{
+	if (_pProtocols) return *_pProtocols;
+	else if (_pParent) return _pParent->protocols();
+	
+	throw NullPointerException();
 }
 
 
 inline AbstractChannel& Protocol::channel()
 {
-	return *_pChannel;
-}
-
-
-inline Protocol* Protocol::getNext()
-{
-	return _pNext;
-}
-
-
-inline int Protocol::establish()
-{
-	return 0;
-}
-
-
-inline int Protocol::terminate()
-{
-	return 0;
+	if (_pChannel) return *_pChannel;
+	else if (_pParent) return _pParent->channel();
+	
+	throw NullPointerException();
 }
 
 
 inline void Protocol::clear()
 {
-	_pBuffer->clear();
+	buffer().clear();
+}
+
+
+inline bool Protocol::isRoot()
+{
+	return 0 == _pParent;
+}
+
+
+inline const std::string& Protocol::name() const
+{
+	return _name;
+}
+
+
+inline void Protocol::detach()
+{
+	detachImpl(true);
+}
+
+
+inline bool Protocol::isEstablished() const
+{
+	return _established;
 }
 
 

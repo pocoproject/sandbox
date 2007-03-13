@@ -73,7 +73,7 @@ int ProtocolStreamBuf::readFromDevice(char* buffer, std::streamsize length)
 
 int ProtocolStreamBuf::writeToDevice(const char* buffer, std::streamsize length)
 {
-	_pProtocol->writeRaw(buffer, length);
+	_pProtocol->write(buffer, length, true);
 	return length;
 }
 

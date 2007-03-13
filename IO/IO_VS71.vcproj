@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib"
+				AdditionalDependencies="PocoFoundationd.lib PocoNetd.lib"
 				OutputFile="..\bin\PocoIOd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -85,7 +85,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
 				GeneratePreprocessedFile="0"
 				KeepComments="FALSE"
@@ -104,7 +104,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib"
+				AdditionalDependencies="PocoFoundation.lib PocoNet.lib"
 				OutputFile="..\bin\PocoIO.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -143,24 +143,33 @@
 	</References>
 	<Files>
 		<Filter
-			Name="IO"
+			Name="IOCore"
 			Filter="">
 			<Filter
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\include\Poco\Io\ActivePort.h">
+					RelativePath=".\include\Poco\IO\AbstractChannel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ActiveChannel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Channel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ChannelStream.h">
 				</File>
 				<File
 					RelativePath=".\include\Poco\IO\IO.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\IOPort.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
+				<File
+					RelativePath=".\src\ChannelStream.cpp">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -170,7 +179,43 @@
 				Name="Header Files"
 				Filter="">
 				<File
+					RelativePath=".\include\Poco\IO\SerialChannel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel_POSIX.h">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h">
+				</File>
+				<File
 					RelativePath=".\include\Poco\Io\SerialConfig.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialConfig_POSIX.h">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h">
@@ -181,21 +226,15 @@
 							Name="VCCustomBuildTool"/>
 					</FileConfiguration>
 				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialPort.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialPort_WIN32.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
 				<File
-					RelativePath=".\src\SerialConfig.cpp">
+					RelativePath=".\src\SerialChannel.cpp">
 				</File>
 				<File
-					RelativePath=".\src\SerialConfig_WIN32.cpp">
+					RelativePath=".\src\SerialChannel_POSIX.cpp">
 					<FileConfiguration
 						Name="debug_shared|Win32"
 						ExcludedFromBuild="TRUE">
@@ -210,10 +249,40 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\src\SerialPort.cpp">
+					RelativePath=".\src\SerialChannel_WIN32.cpp">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\src\SerialPort_WIN32.cpp">
+					RelativePath=".\src\SerialConfig.cpp">
+				</File>
+				<File
+					RelativePath=".\src\SerialConfig_POSIX.cpp">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\SerialConfig_WIN32.cpp">
 					<FileConfiguration
 						Name="debug_shared|Win32"
 						ExcludedFromBuild="TRUE">
@@ -239,9 +308,6 @@
 					RelativePath=".\include\Poco\IO\Protocol.h">
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\ProtocolImpl.h">
-				</File>
-				<File
 					RelativePath=".\include\Poco\IO\ProtocolStream.h">
 				</File>
 			</Filter>
@@ -252,7 +318,31 @@
 					RelativePath=".\src\Protocol.cpp">
 				</File>
 				<File
-					RelativePath=".\src\ProtocolImpl.cpp">
+					RelativePath=".\src\ProtocolStream.cpp">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Net"
+			Filter="">
+			<Filter
+				Name="Header Files"
+				Filter="">
+				<File
+					RelativePath=".\include\Poco\IO\NetChannel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\NetConfig.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				Filter="">
+				<File
+					RelativePath=".\src\NetChannel.cpp">
+				</File>
+				<File
+					RelativePath=".\src\NetConfig.cpp">
 				</File>
 			</Filter>
 		</Filter>

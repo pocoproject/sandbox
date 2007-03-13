@@ -53,7 +53,6 @@ NetChannel::NetChannel(const std::string& name, const NetConfig& config):
 	_pSocket(0)
 {
 	reconfigure(_config);
-	open();
 }
 
 
@@ -63,11 +62,9 @@ NetChannel::~NetChannel()
 }
 
 
-void NetChannel::reconfigure(const NetConfig& config)
+Poco::Net::Socket& NetChannel::newSocket()
 {
 	delete _pSocket;
-	_pSocket = 0;
-	_config = config;
 
 	if (isStream())
 		_pSocket = new Poco::Net::StreamSocket();
@@ -77,6 +74,17 @@ void NetChannel::reconfigure(const NetConfig& config)
 		throw InvalidArgumentException();
 
 	poco_check_ptr (_pSocket);
+
+	open();
+	if (!_pSocket) throw NullPointerException();
+	return *_pSocket;
+}
+
+
+void NetChannel::reconfigure(const NetConfig& config)
+{
+	_config = config;
+	newSocket();
 }
 
 
@@ -84,10 +92,14 @@ void NetChannel::open()
 {
 	const Poco::Timespan& ts = _config.timeout();
 	
-	if (isStream() && ts.totalMicroseconds())
-		socketImpl()->connect(_config.address(), ts);
-	else
-		socketImpl()->connect(_config.address());
+	try
+	{
+		if (isStream() && ts.totalMicroseconds())
+			socketImpl()->connect(_config.address(), ts);
+		else
+			socketImpl()->connect(_config.address());
+	}
+	catch (Exception&) { close(); }
 }
 
 
@@ -158,8 +170,9 @@ int NetChannel::write(const char* pBuffer, std::size_t length)
 	try
 	{
 		if (!socketImpl()->poll(_config.timeout(), SocketImpl::SELECT_WRITE)) 
-			throw Poco::TimeoutException("read timed out", socketImpl()->address().toString());
+			throw Poco::TimeoutException("write timed out", socketImpl()->address().toString());
 		sent = socketImpl()->sendBytes(pBuffer, (int) length);
+		socketImpl()->setBlocking(true);
 	}
 	catch (Poco::Exception&)
 	{
@@ -167,7 +180,6 @@ int NetChannel::write(const char* pBuffer, std::size_t length)
 		throw;
 	}
 	
-	socketImpl()->setBlocking(true);
 	return sent;
 }
 

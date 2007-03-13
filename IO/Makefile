@@ -8,7 +8,7 @@
 
 include $(POCO_BASE)/build/rules/global
 
-objects = SerialConfig SerialPort
+objects = ChannelStream NetConfig NetChannel Protocol ProtocolStream SerialConfig SerialChannel
 
 target         = PocoIO
 target_version = $(LIBVERSION)
