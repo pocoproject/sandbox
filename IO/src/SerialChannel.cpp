@@ -36,8 +36,9 @@
 
 #include "Poco/IO/SerialChannel.h"
 
-
-#if defined(POCO_OS_FAMILY_WINDOWS)
+#if defined(POCO_OS_FAMILY_WINDOWS) && defined(POCO_WIN32_UTF8)
+#include "SerialChannel_WIN32U.cpp"
+#elif defined(POCO_OS_FAMILY_WINDOWS)
 #include "SerialChannel_WIN32.cpp"
 #elif defined(POCO_OS_FAMILY_UNIX)
 #include "SerialChannel_POSIX.cpp"

@@ -35,8 +35,10 @@
 
 
 #include "Poco/IO/SerialChannel_WIN32.h"
+#include "Poco/UnicodeConverter.h"
 #include "Poco/Exception.h"
 #include <windows.h>
+
 
 using Poco::CreateFileException;
 using Poco::IOException;
@@ -79,7 +81,9 @@ void SerialChannelImpl::reconfigureImpl(const SerialConfigImpl& config)
 
 void SerialChannelImpl::openImpl()
 {
-	_handle = CreateFileA(_name.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+	std::wstring uname;
+	Poco::UnicodeConverter::toUTF16(_name, uname);
+	_handle = CreateFileW(uname.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
 	if (INVALID_HANDLE_VALUE == _handle) handleError(_name);
 
 	initImpl();
@@ -207,28 +211,29 @@ const std::string& SerialChannelImpl::getNameImpl() const
 std::string& SerialChannelImpl::getErrorText(std::string& buf)
 {
     DWORD dwRet;
-    LPTSTR pTemp = NULL;
+    LPWSTR pTemp = NULL;
 
     DWORD errCode = GetLastError();
 
-    dwRet = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+    dwRet = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 		NULL,
 		errCode,
 		LANG_USER_DEFAULT,
-		(LPTSTR) &pTemp,
+		(LPWSTR) &pTemp,
 		0,
 		NULL);
 
     if (dwRet && pTemp)
     {
-		if ((std::string(pTemp).length()-2) >= 0)
+		if ((std::wstring(pTemp).length()-2) >= 0)
 		{
-			pTemp[std::string(pTemp).length()-2] = TEXT('\0');  //remove cr and newline character
-			buf = pTemp;
+			pTemp[std::wstring(pTemp).length()-2] = TEXT('\0');  //remove cr and newline character
+			Poco::UnicodeConverter::toUTF8(pTemp, buf);
 		}
 
         LocalFree((HLOCAL) pTemp);
     }
+
     return buf;
 }
 

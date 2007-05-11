@@ -198,6 +198,33 @@
 				</File>
 				<File
 					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\SerialChannel_WIN32U.h">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\include\Poco\Io\SerialConfig.h">
@@ -221,6 +248,12 @@
 					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h">
 					<FileConfiguration
 						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCustomBuildTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
 						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCustomBuildTool"/>
@@ -250,6 +283,21 @@
 				</File>
 				<File
 					RelativePath=".\src\SerialChannel_WIN32.cpp">
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\SerialChannel_WIN32U.cpp">
 					<FileConfiguration
 						Name="debug_shared|Win32"
 						ExcludedFromBuild="TRUE">

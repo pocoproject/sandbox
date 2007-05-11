@@ -1,7 +1,13 @@
 //
-// IOTestSuite.cpp
+// SerialChannel_WIN32.h
 //
-// $Id: //poco/Main/template/suite.cpp#6 $
+// $Id: //poco/Main/Data/include/Poco/IO/SerialChannel_WIN32.h#1 $
+//
+// Library: IO
+// Package: Serial
+// Module:  SerialChannel
+//
+// Definition of the SerialChannelImpl class for WIN32.
 //
 // Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,19 +36,50 @@
 //
 
 
-#include "IOTestSuite.h"
-#include "SerialTestSuite.h"
-#include "NetTestSuite.h"
-#include "ProtocolTestSuite.h"
+#ifndef IO_SerialChannel_WIN32_INCLUDED
+#define IO_SerialChannel_WIN32_INCLUDED
 
 
-CppUnit::Test* IOTestSuite::suite()
+#include "Poco/IO/IO.h"
+#include "Poco/IO/SerialConfig_WIN32.h"
+#include <windows.h>
+
+
+namespace Poco {
+namespace IO {
+
+
+class IO_API SerialChannelImpl
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
+protected:
+	SerialChannelImpl(const std::string& name, const SerialConfigImpl& config);
+	~SerialChannelImpl();
+	void initImpl();
+	void reconfigureImpl(const SerialConfigImpl& config);
+	void openImpl();
+	void closeImpl();
+	char readImpl();
+	int readImpl(char* pBuffer, std::size_t length);
+	std::string& readImpl(std::string& buffer, std::size_t length = 0);
+	int writeImpl(char c);
+	int writeImpl(const char* buffer, std::size_t length);
+	int writeImpl(const std::string& data);
+	const std::string& getNameImpl() const;
+	void handleError(const std::string& path);
+	static std::string& getErrorText(std::string& buf);
 
-	pSuite->addTest(SerialTestSuite::suite());
-	pSuite->addTest(NetTestSuite::suite());
-	pSuite->addTest(ProtocolTestSuite::suite());
+private:
+	SerialChannelImpl();
+	SerialChannelImpl(const SerialChannelImpl&);
+	const SerialChannelImpl& operator = (const SerialChannelImpl&);
 
-	return pSuite;
-}
+	std::string _name;
+	HANDLE _handle;
+	SerialConfigImpl _config;
+};
+
+
+} } // namespace Poco::IO
+
+
+#endif // IO_SerialChannel_WIN32_INCLUDED
