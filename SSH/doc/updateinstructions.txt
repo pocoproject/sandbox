@@ -1,0 +1,49 @@
+1. Get the latest libssh2
+2. Overwrite all src and include files in poco\ssh\src
+   with the files in libssh2\src and libssh2\include
+3. Go to libsshs2\win32, rename libssh2_config.h to libssh2_config_win32.h
+4. Open the renamed file in an editor and change the first two lines from
+#ifndef LIBSSH2_CONFIG_H
+#define LIBSSH2_CONFIG_H
+
+to
+#ifndef LIBSSH2_CONFIG_WIN32_H
+#define LIBSSH2_CONFIG_WIN32_H
+
+Disable zlib support:
+//#define LIBSSH2_HAVE_ZLIB 1
+
+Add select support:
+
+#define HAVE_SELECT
+
+5. Now copy libssh2\win32\libssh2_config_win32.h to poco\SSH\src.
+
+6. Open poco\ssh\libssh2_priv.h. Disable the LIBSSH2_LIBRARY define which is right in front of the libssh2_config.h include:
+//MODIFIED:
+// #define LIBSSH2_LIBRARY
+#include "libssh2_config.h"
+
+MAke sure the HAVE_SELECT part contains the WIN32 block:
+#ifdef HAVE_POLL
+# include <sys/poll.h>
+#else
+# ifdef HAVE_SELECT
+# ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+# else
+#ifdef WIN32 //NEW
+# include <time.h> //NEW
+#else
+# include <sys/time.h>
+#endif
+# include <sys/types.h>
+# endif
+# endif
+#endif
+7. Now open poco\SSH\src\libssh2.h.
+
+Add directly after extern "C":
+
+//MODIFIED: never export any libssh flags
+#define LIBSSH2_API
