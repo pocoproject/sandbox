@@ -1,4 +1,4 @@
-1. Get the latest libssh2
+1. Get the latest libssh2 from libssh2.org (current version: 0.17)
 2. Overwrite all src and include files in poco\ssh\src
    with the files in libssh2\src and libssh2\include
 3. Go to libsshs2\win32, rename libssh2_config.h to libssh2_config_win32.h

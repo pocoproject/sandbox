@@ -1,7 +1,7 @@
 //
 // SSHTest.h
 //
-// $Id: //poco/Main/SSH/testsuite/src/SSHTest.h#1 $
+// $Id: //poco/Main/SSH/testsuite/src/SSHTest.h#2 $
 //
 // Definition of the SSHTest class.
 //
@@ -51,6 +51,7 @@ public:
 	void testSCPRead();
 	void testShell();
 	void testChannel();
+	void testData();
 
 	void setUp();
 	void tearDown();

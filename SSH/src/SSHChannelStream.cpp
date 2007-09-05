@@ -1,7 +1,7 @@
 //
 // SSHChannelStream.cpp
 //
-// $Id: //poco/Main/SSH/src/SSHChannelStream.cpp#5 $
+// $Id: //poco/Main/SSH/src/SSHChannelStream.cpp#6 $
 //
 // Library: SSH
 // Package: SSHCore
@@ -142,6 +142,12 @@ SSHChannelInputStream::~SSHChannelInputStream()
 }
 
 
+bool SSHChannelInputStream::data()
+{
+	return _buf.data();
+}
+
+
 SSHChannelOutputStream::SSHChannelOutputStream(const SSHChannel& channel, StreamType type):
 	SSHChannelStreamIOS(channel, type, std::ios::out),
 	std::ostream(&_buf)
@@ -177,6 +183,13 @@ SSHChannelStream::~SSHChannelStream()
 void SSHChannelStream::close()
 {
 	_buf.close();
+}
+
+
+
+bool SSHChannelStream::data()
+{
+	return _buf.data();
 }
 
 

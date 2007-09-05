@@ -1,7 +1,7 @@
 //
 // SSHTest.cpp
 //
-// $Id: //poco/Main/SSH/testsuite/src/SSHTest.cpp#2 $
+// $Id: //poco/Main/SSH/testsuite/src/SSHTest.cpp#3 $
 //
 // Copyright (c) 2007, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -143,6 +143,33 @@ void SSHTest::testChannel()
 }
 
 
+void SSHTest::testData()
+{
+	DummyValidator val;
+	Poco::Net::SocketAddress addr(SERVER, 22);
+	Poco::AutoPtr<SSHSession> ptrSes = new SSHSession(val, addr, USER, PWD);
+	SSHTerminal term(*ptrSes);
+	SSHChannel channel = term.openShell();
+	SSHChannelOutputStream out(channel);
+	SSHChannelInputStream in(channel);
+	std::string txt;
+
+	while (in.data())
+	{
+		std::getline(in, txt);
+		out << txt;
+	}
+
+	out << "ls -al\n";
+	out << std::flush;
+
+	while (in.data())
+	{
+		std::getline(in, txt);
+		out << txt;
+	}
+}
+
 void SSHTest::setUp()
 {
 }
@@ -162,6 +189,7 @@ CppUnit::Test* SSHTest::suite()
 	CppUnit_addTest(pSuite, SSHTest, testSCPRead);
 	CppUnit_addTest(pSuite, SSHTest, testShell);
 	CppUnit_addTest(pSuite, SSHTest, testChannel);
+	CppUnit_addTest(pSuite, SSHTest, testData);
 
 	return pSuite;
 }

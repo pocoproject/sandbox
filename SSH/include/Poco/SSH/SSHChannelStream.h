@@ -1,7 +1,7 @@
 //
 // SSHChannelStream.h
 //
-// $Id: //poco/Main/SSH/include/Poco/SSH/SSHChannelStream.h#4 $
+// $Id: //poco/Main/SSH/include/Poco/SSH/SSHChannelStream.h#5 $
 //
 // Library: SSH
 // Package: SSHCore
@@ -74,9 +74,8 @@ public:
 	int sync();
 		/// Flushes the output stream
 
-private:
 	bool data();
-		/// Returns true if data is waiting to be read. NOT working in libssh2-0.15!
+		/// Returns true if data is waiting to be read. NOT working in libssh2-0.17!
 	
 protected:
 	int readFromDevice(char* buffer, std::streamsize length);
@@ -126,6 +125,9 @@ public:
 
 	virtual ~SSHChannelInputStream();
 		/// Destroys the SSHChannelInputStream.
+
+	bool data();
+		/// Returns true if data is waiting to be read. NOT working in libssh2-0.17!
 };
 
 
@@ -156,6 +158,9 @@ public:
 
 	void close();
 		/// Flushes the output stream
+
+	bool data();
+		/// Returns true if data is waiting to be read. NOT working in libssh2-0.17!
 };
 
 

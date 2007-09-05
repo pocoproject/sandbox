@@ -42,7 +42,6 @@
 extern "C" {
 #endif
 
-//MODIFIED: never export any libssh flags
 #define LIBSSH2_API
 
 #include <stddef.h>
@@ -82,13 +81,13 @@ typedef unsigned long long libssh2_uint64_t;
 typedef long long libssh2_int64_t;
 #endif
 
-#define LIBSSH2_VERSION                             "0.16.0-CVS"
+#define LIBSSH2_VERSION "0.17"
 
 /* The numeric version number is also available "in parts" by using these
    defines: */
-#define LIBSSH2_VERSION_MAJOR                       0
-#define LIBSSH2_VERSION_MINOR                       16
-#define LIBSSH2_VERSION_PATCH                       0
+#define LIBSSH2_VERSION_MAJOR 0
+#define LIBSSH2_VERSION_MINOR 17
+#define LIBSSH2_VERSION_PATCH 
 
 /* This is the numeric version of the libssh2 version number, meant for easier
    parsing and comparions by programs. The LIBSSH2_VERSION_NUM define will
@@ -105,7 +104,7 @@ typedef long long libssh2_int64_t;
    and it is always a greater number in a more recent release. It makes
    comparisons with greater than and less than work.
 */
-#define LIBSSH2_VERSION_NUM                         0x001000
+#define LIBSSH2_VERSION_NUM 0x001100
 
 /*
  * This is the date and time when the full source package was created. The
@@ -116,12 +115,10 @@ typedef long long libssh2_int64_t;
  *
  * "Mon Feb 12 11:35:33 UTC 2007"
  */
-#define LIBSSH2_TIMESTAMP "CVS"
-
-#define LIBSSH2_APINO                               200706151200L
+#define LIBSSH2_TIMESTAMP "Mon Aug  6 20:50:42 UTC 2007"
 
 /* Part of every banner, user specified or not */
-#define LIBSSH2_SSH_BANNER                          "SSH-2.0-libssh2_" LIBSSH2_VERSION
+#define LIBSSH2_SSH_BANNER                  "SSH-2.0-libssh2_" LIBSSH2_VERSION
 
 /* We *could* add a comment here if we so chose */
 #define LIBSSH2_SSH_DEFAULT_BANNER                  LIBSSH2_SSH_BANNER
