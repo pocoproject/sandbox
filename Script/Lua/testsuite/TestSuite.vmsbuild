@@ -1,0 +1,9 @@
+#
+# TestSuite.vmsbuild
+#
+# $Id: //poco/Main/DataConnectors/ODBC/testsuite/TestSuite.vmsbuild#2 $
+#
+EXE=TestRunner
+SQLiteTestSuite
+Driver
+SQLiteTest

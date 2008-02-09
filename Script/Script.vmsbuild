@@ -1,0 +1,6 @@
+#
+# ODBC.vmsbuild
+#
+# $Id: //poco/Main/Script/Script.vmsbuild#1 $
+#
+LIB=PocoScript

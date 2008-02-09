@@ -1,0 +1,6 @@
+#
+# ODBC.vmsbuild
+#
+# $Id: //poco/Main/Script/Lua/Lua.vmsbuild#1 $
+#
+LIB=PocoLua
