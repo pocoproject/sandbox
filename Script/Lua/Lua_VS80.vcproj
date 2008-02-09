@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".\include;.\include\Poco\Script\Lua\lua;..\include;..\..\Foundation\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;Lua_EXPORTS;NO_TCL;THREADSAFE;_CRT_SECURE_NO_WARNINGS;LUA_BUILD_AS_DLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;Lua_EXPORTS;NO_TCL;THREADSAFE;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -134,7 +134,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories=".\include;.\include\Poco\Script\Lua;.\include\Poco\Script\Lua\lua;..\include;..\..\Foundation\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;Lua_EXPORTS;NO_TCL;THREADSAFE;_CRT_SECURE_NO_WARNINGS;LUA_BUILD_AS_DLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;Lua_EXPORTS;NO_TCL;THREADSAFE;_CRT_SECURE_NO_WARNINGS"
 				GeneratePreprocessedFile="0"
 				KeepComments="false"
 				StringPooling="true"
@@ -305,6 +305,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\include\Poco\Script\Lua\lua\lua.hpp"
+						>
+					</File>
+					<File
 						RelativePath=".\include\Poco\Script\Lua\lua\luaconf.h"
 						>
 					</File>
@@ -336,7 +340,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -356,7 +360,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -376,7 +380,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -396,7 +400,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -416,7 +420,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -436,7 +440,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -456,7 +460,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -476,7 +480,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -496,7 +500,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -516,7 +520,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -536,7 +540,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -556,7 +560,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -576,7 +580,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -596,7 +600,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -616,7 +620,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -636,7 +640,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -656,7 +660,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -676,7 +680,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -696,7 +700,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -716,7 +720,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -736,7 +740,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -756,7 +760,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -776,7 +780,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -796,7 +800,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -816,7 +820,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -836,7 +840,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -856,7 +860,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -876,7 +880,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -896,7 +900,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -916,7 +920,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								CompileAs="2"
+								CompileAs="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration

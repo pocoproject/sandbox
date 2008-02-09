@@ -50,8 +50,6 @@
 
 
 #include "Poco/Script/Lua/Environment.h"
-#include "Poco/Script/Lua/lua/lauxlib.h"
-#include "Poco/Script/Lua/lua/lualib.h"
 #include "Poco/Script/ScriptException.h"
 #include "Poco/Any.h"
 

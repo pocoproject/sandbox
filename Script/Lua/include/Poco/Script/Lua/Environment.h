@@ -56,7 +56,7 @@
 #define LUA_LIB
 #include "Poco/Script/Environment.h"
 #include "Poco/Script/Lua/Lua.h"
-#include "Poco/Script/Lua/lua/lua.h"
+#include "Poco/Script/Lua/lua/lua.hpp"
 #include "Poco/Any.h"
 #include <vector>
 
