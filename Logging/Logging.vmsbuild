@@ -1,0 +1,7 @@
+#
+# Logging.vmsbuild
+#
+# $Id: //poco/Main/Logging/Logging.vmsbuild#1 $
+#
+LIB=PocoLogging
+<SourceFilesHere>

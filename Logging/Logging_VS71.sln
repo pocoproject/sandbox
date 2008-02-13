@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logging", "Logging_VS71.vcproj", "{c7c3a714-6b99-4153-bc58-1d33d031958b}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSuite", "testsuite\TestSuite_VS71.vcproj", "{cebba916-3096-4dca-b372-7b304ac478c7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{c7c3a714-6b99-4153-bc58-1d33d031958b} = {c7c3a714-6b99-4153-bc58-1d33d031958b}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		debug_shared = debug_shared
+		release_shared = release_shared
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{c7c3a714-6b99-4153-bc58-1d33d031958b}.debug_shared.ActiveCfg = debug_shared|Win32
+		{c7c3a714-6b99-4153-bc58-1d33d031958b}.debug_shared.Build.0 = debug_shared|Win32
+		{c7c3a714-6b99-4153-bc58-1d33d031958b}.release_shared.ActiveCfg = release_shared|Win32
+		{c7c3a714-6b99-4153-bc58-1d33d031958b}.release_shared.Build.0 = release_shared|Win32
+		{cebba916-3096-4dca-b372-7b304ac478c7}.debug_shared.ActiveCfg = debug_shared|Win32
+		{cebba916-3096-4dca-b372-7b304ac478c7}.debug_shared.Build.0 = debug_shared|Win32
+		{cebba916-3096-4dca-b372-7b304ac478c7}.release_shared.ActiveCfg = release_shared|Win32
+		{cebba916-3096-4dca-b372-7b304ac478c7}.release_shared.Build.0 = release_shared|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

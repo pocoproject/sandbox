@@ -1,0 +1,9 @@
+#
+# TestSuite.vmsbuild
+#
+# $Id: //poco/Main/Logging/testsuite/TestSuite.vmsbuild#1 $
+#
+EXE=TestRunner
+LoggingTestSuite
+Driver
+<SourceFilesHere>

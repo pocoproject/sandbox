@@ -1,0 +1,155 @@
+POCO LoggingServer User Guide
+LoggingServer
+
+!!!Introduction
+The POCO LoggingServer logs SYSCONF messages (according to the latest draft and the old BSD format) into a database and
+makes them available via a Web based GUI.
+
+ 
+!!!Configuration
+The LoggingServer is configured via the <* LoggingServer.xml *> file.
+
+!!Configuration Properties
+Configuration properties can be divided into three different sections:
+  * configuration of the HTTP part of the LoggingServer
+  * logging channel configuration
+  * (optional) OpenSSL properties
+
+!HTTP Properties
+All HTTP properties are relative to the path <*appdata.LoggingServer.http*>:
+<%
+<table class="list" cellpadding="1" cellspacing="1">
+<tr class="ok"><th>Name</th><th>Mandatory</th><th>Default</th><th>Description</th></tr>
+<tr class="ok"><td>port</td><td>yes</td><td>&nbsp;</td><td>The port the HTTPServer binds to</td></tr>
+<tr class="ok"><td>user</td><td>yes</td><td>&nbsp;</td><td>The id of the user that is allowed to manage the LoggingServer. Typically, root or admin.</td></tr>
+<tr class="ok"><td>pwdhash</td><td>yes</td><td>&nbsp;</td><td>An MD5 hash of the password. Initially, the password is root (or in MD5: 63a9f0ea7bb98050796b649e85481845)</td></tr>
+<tr class="ok"><td>secure</td><td>no</td><td>false</td><td>A boolean property, either true or false. If true the server uses https. Note that the OpenSSL part must be configured!</td></tr>
+</table>
+%>
+
+A list of directory aliases can be configured too. One alias entry consists of a <!server!> subentry specifying the HTTP server part and 
+the <!local!> subentry defining the local directory to which the server path is mapped. Note that a server alias can only contain one single directory name.
+For example, you can map <! /logs !> to <! /opt/data !> but you can't map <!/hi/logs!> to <! /opt/data !>.
+
+The following entry must exist in every LoggingServer configuration:
+    <alias>
+        <server>/</server>
+        <local>data</local>
+    </alias>
+----
+
+!Logging Channel Configuration
+The root path for logging configuration is <*appdata.logging*>.
+Each application should have at least a root channel configured (which is the channel returned by the applications logger() method).
+In the following exampel we log to a channel named <*console*>
+    <loggers>
+        <root>
+            <channel>
+                <class>ConsoleChannel</class>
+            </channel>
+        </root>
+        <app>
+            <name>Application</name>
+            <channel>console</channel>
+        </app>  
+    </loggers>
+----
+
+The console channel itself is configured in the <*channels*> section of the configuration file. Each logging channel allows to specify a formatter to be set
+which controls the format of the output:
+    <formatters>
+        <f1>
+            <class>PatternFormatter</class>
+            <pattern>[%p] %t</pattern>
+        </f1>
+    </formatters>
+    <channels>
+        <console>
+            <class>ConsoleChannel</class>
+            <formatter>f1</formatter>
+        </console>
+----
+
+In addition, the following three channels are configured:
+  * CachingChannel (mandatory)
+  * RemoteSyslogListener (mandatory)
+  * DataBaseChannel (optional)
+  
+The <!CachingChannel!> is a mandatory channel that caches the last <*n*> messages in memory. Only these cached messages are shown in the Web GUI. The CachingChannel amust be named <!cache!> and supports
+one single property:
+  * size: how many messages should be cached
+
+        <cache>
+            <class>CachingChannel</class>
+            <size>100</size>
+        </cache>
+----
+ 
+The <!RemoteSyslogListener!> is the channel that listens for incoming SYSLOG messages, parses them and distributes them to its child channels.
+It supports the following properties:
+  * port: on which port does it listen for messages. Per default, 514 is used.
+  * channel: a comma separated list of channel names. Must contain the name <*cache*>, should contain all other channel names that should be informed about a new SYSLOG message.
+  
+        <listener>
+            <class>RemoteSyslogListener</class>
+            <port>514</port>
+            <channel>db, cache</channel>
+        </listener>   
+----
+  
+The <!DataBaseChannel!> writes messages into a database. It supports the following properties:
+  * database: can either be <*sqlite*> or <*ODBC*> (case-sensitive!)
+  * connectionString: the initialization string when connecting to the database. For <*sqlite*> the name of the database file is sufficient, <*ODBC*> expects as input the format "DSN=SomeDSNName;Uid=username;Pwd=password;"
+
+        <db>
+            <class>DatabaseChannel</class>
+            <database>sqlite</database>
+            <connectionString>test.db</connectionString>
+        </db>
+----
+
+The DatabaseChannel will automatically create a table named <!LogMessages!> that contains the following columns:
+  * source VARCHAR(30): where did the message come from
+  * text VARCHAR(100): the message text
+  * prio INTEGER: the priority value of the message
+  * time VARCHAR(30): a time value formatted in SORTABLE_FORMAT
+  * threadID INTEGER: the id of the thread that generated the message
+  * threadName VARCHAR(30): the name of the thread that generated the message (in most cases the threadID as string)
+  * pid INTEGER: the id of the process that generated the message
+  * addinfo VARCHAR(60)): optional additional information. Currently not used.
+
+Additional channels are provided to support <!filtering!> of messages based on different criteria:
+  * ParamFilter
+  * PriorityFilter
+  * RegExpFilter
+  * RepetitionFilter
+  * SourceFilter
+  * TextFilter
+
+Filters can be chained together. A message either passes a filter and is forwarded to the next <*passChannel*> in the chain,
+or it fails the filter test and is then forwarded to the <*failChannel*>.
+For example, if we only want to be informed about critical or fatal messages, and we don't want to be swamped with duplicate identical messages,
+we need to set up a chain that starts with the RemoteSyslogListener as source, then a PriorityFilter, followed by a RepetitionFilter, as sink we use the cache,
+but we still log all messages to the database:
+        <listener>
+            <class>RemoteSyslogListener</class>
+            <!--port>514</port-->
+            <channel>prio, cache</channel>
+        </listener>   
+        <prio>
+            <class>PriorityFilter</class>
+            <min>fatal</min>
+            <max>critical</max>
+            <passChannel>rep</passChannel>
+        </prio> 
+        <rep>
+            <class>RepetitionFilter</class>
+            <!-- interval in seconds-->
+            <interval>120</interval>
+            <passChannel>cache</passChannel>
+        </rep>
+
+
+!RPC Properties
+The RPC properties configure the communication between MonitoringAgent and MonitoringServer. All properties are relative to the path <* appdata.MonitoringAgent.remoting *>.
+See the MonitoringServer documentation on how to configure RPC. Note that the values for <!writeSoapEnvelope!> and <!secure!> must be equal to the values of the MonitoringServer.

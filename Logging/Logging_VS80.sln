@@ -1,0 +1,28 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logging", "Logging_VS80.vcproj", "{C7C3A714-6B99-4153-BC58-1D33D031958B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSuite", "testsuite\TestSuite_VS80.vcproj", "{CEBBA916-3096-4DCA-B372-7B304AC478C7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C7C3A714-6B99-4153-BC58-1D33D031958B} = {C7C3A714-6B99-4153-BC58-1D33D031958B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug_shared|Win32 = debug_shared|Win32
+		release_shared|Win32 = release_shared|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7C3A714-6B99-4153-BC58-1D33D031958B}.debug_shared|Win32.ActiveCfg = debug_shared|Win32
+		{C7C3A714-6B99-4153-BC58-1D33D031958B}.debug_shared|Win32.Build.0 = debug_shared|Win32
+		{C7C3A714-6B99-4153-BC58-1D33D031958B}.release_shared|Win32.ActiveCfg = release_shared|Win32
+		{C7C3A714-6B99-4153-BC58-1D33D031958B}.release_shared|Win32.Build.0 = release_shared|Win32
+		{CEBBA916-3096-4DCA-B372-7B304AC478C7}.debug_shared|Win32.ActiveCfg = debug_shared|Win32
+		{CEBBA916-3096-4DCA-B372-7B304AC478C7}.debug_shared|Win32.Build.0 = debug_shared|Win32
+		{CEBBA916-3096-4DCA-B372-7B304AC478C7}.release_shared|Win32.ActiveCfg = release_shared|Win32
+		{CEBBA916-3096-4DCA-B372-7B304AC478C7}.release_shared|Win32.Build.0 = release_shared|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
