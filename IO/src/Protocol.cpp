@@ -56,28 +56,24 @@ namespace Poco {
 namespace IO {
 
 
-Protocol::Protocol(const std::string& name, AbstractChannel* pChannel): 
+Protocol::Protocol(const std::string& name, Poco::IOChannel* pChannel): 
 	_name(name),
-	_pParent(0),
 	_pChannel(pChannel),
 	_pProtocols(new ProtocolVec()),
 	_pBuffer(new ProtocolData()),
+	_pParent(0),
 	_established(false)
 {
-	poco_check_ptr (_pChannel);
-	poco_check_ptr (_pProtocols);
-	poco_check_ptr (_pBuffer);
-
 	_pProtocols->push_back(this);
 }
 
 
 Protocol::Protocol(const std::string& name): 
 	_name(name),
-	_pParent(0),
-	_pChannel(0), 
+	_pChannel(0),
 	_pProtocols(0),
 	_pBuffer(0),
+	_pParent(0),
 	_established(false)
 {
 }
@@ -108,7 +104,7 @@ Protocol::~Protocol()
 }
 
 
-void Protocol::setChannel(AbstractChannel* pChannel)
+void Protocol::setChannel(Poco::IOChannel* pChannel)
 {
 	poco_check_ptr (pChannel);
 	if (!_pParent) 
@@ -134,27 +130,27 @@ int Protocol::send()
 }
 
 
-std::string& Protocol::receive(std::string& buf)
+std::string& Protocol::receive(std::string& buf, int length)
 {
-	channel().read(buffer());
+	channel().read(buffer(), length);
 	return buf = data();
 }
 
 
-int Protocol::read(char* pBuffer, std::size_t length)
+int Protocol::read(char* pBuffer, int length)
 {
 	std::string str;
-	receive(str);
+	receive(str, length);
 
-	memset(pBuffer, 0, length);
-	std::size_t len = str.size() > length ? length : str.size();
-	memcpy(pBuffer, str.data(), len);
+	std::memset(pBuffer, 0, length);
+	int len = str.size() > length ? length : static_cast<int>(str.size());
+	std::memcpy(pBuffer, str.data(), len);
 
 	return (int) len;
 }
 
 
-int Protocol::write(const char* buf, std::size_t length, bool doSend)
+int Protocol::write(const char* buf, int length, bool doSend)
 {
 	buffer().assign(buf, length);
 

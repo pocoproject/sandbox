@@ -40,23 +40,23 @@
 #include "CppUnit/TestCase.h"
 #include "Poco/BinaryReader.h"
 #include "Poco/BinaryWriter.h"
-#include "Poco/IO/Channel.h"
+#include "Poco/IOChannel.h"
+#include "Poco/IOChannelStream.h"
 #include "Poco/IO/SerialConfig.h"
 #include "Poco/IO/SerialChannel.h"
-#include "Poco/IO/ChannelStream.h"
 
 
 class SerialTestHW: public CppUnit::TestCase
+	/// In order for these tests to work, two null-modem wired 
+	/// serial ports are required.
 {
 public:
-	typedef Poco::IO::ChannelInputStream SerialInputStream;
-	typedef Poco::IO::ChannelOutputStream SerialOutputStream;
+	typedef Poco::IOChannelInputStream SerialInputStream;
+	typedef Poco::IOChannelOutputStream SerialOutputStream;
 	
 	SerialTestHW(const std::string& name);
 	~SerialTestHW();
 
-	// In order for this tests to work, two null-modem wired 
-	// serial ports are required.
 	void testChannel();
 	void testActiveChannel();
 	void testStreams();
@@ -68,14 +68,11 @@ public:
 	static CppUnit::Test* suite();
 
 private:
-	static const unsigned char SERIAL_EOF;
-
 	void writeBinary(Poco::BinaryWriter& writer);
 	void readBinary(Poco::BinaryReader& reader);
 
-	Poco::IO::SerialConfig _serialConfig;
-	std::string _serialName1;
-	std::string _serialName2;
+	Poco::IO::SerialConfig* _pConfig1;
+	Poco::IO::SerialConfig* _pConfig2;
 };
 
 

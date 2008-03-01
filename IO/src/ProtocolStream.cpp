@@ -46,9 +46,9 @@ namespace Poco {
 namespace IO {
 
 
-ProtocolStreamBuf::ProtocolStreamBuf(Protocol* protocol): 
-	_pProtocol(protocol),
-	BufferedBidirectionalStreamBuf(STREAM_BUFFER_SIZE, std::ios::in | std::ios::out)
+ProtocolStreamBuf::ProtocolStreamBuf(Protocol* protocol):
+	BufferedBidirectionalStreamBuf(STREAM_BUFFER_SIZE, std::ios::in | std::ios::out),
+	_pProtocol(protocol)
 {
 	poco_check_ptr (_pProtocol);
 	_pProtocol->duplicate();
@@ -64,7 +64,7 @@ ProtocolStreamBuf::~ProtocolStreamBuf()
 int ProtocolStreamBuf::readFromDevice(char* buffer, std::streamsize length)
 {
 	std::string str;
-	_pProtocol->receive(str);
+	_pProtocol->receive(str, length);
 	std::size_t len = str.size() < length ? str.size() : length;
 	memcpy(buffer, str.data(), len);
 	return (int) len;

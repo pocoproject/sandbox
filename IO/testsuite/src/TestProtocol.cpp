@@ -32,13 +32,13 @@
 
 #include "TestProtocol.h"
 #include "Poco/IO/Protocol.h"
-#include "Poco/IO/AbstractChannel.h"
+#include "Poco/IOChannel.h"
 #include "Poco/Format.h"
 #include "Poco/Exception.h"
 
 
 using Poco::IO::Protocol;
-using Poco::IO::AbstractChannel;
+using Poco::IOChannel;
 using Poco::format;
 using Poco::InvalidArgumentException;
 using Poco::InvalidAccessException;
@@ -48,7 +48,7 @@ const std::string TestProtocol::WRITE_BEGIN = "<data%d>";
 const std::string TestProtocol::WRITE_END = "</data%d>";
 
 
-TestProtocol::TestProtocol(AbstractChannel* pChannel, int number): 
+TestProtocol::TestProtocol(IOChannel* pChannel, int number): 
 	Protocol(format("TestProtocol%d", number), pChannel), 
 	_number(number)
 {

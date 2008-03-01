@@ -74,12 +74,13 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	_dcb.StopBits = stopBits;
 
 	if (_useEOF) _dcb.EofChar = eofChar;
-
-	ZeroMemory(&_cto, sizeof(COMMTIMEOUTS));
-	_cto.ReadIntervalTimeout = MAXDWORD ;
-	_cto.ReadTotalTimeoutMultiplier = MAXDWORD;
 	
 	setTimeoutImpl(timeout);
+}
+
+
+SerialConfigImpl::~SerialConfigImpl()
+{
 }
 
 
@@ -189,6 +190,20 @@ void SerialConfigImpl::setParityCharImpl(char parityChar)
 			os << "SerialConfigImpl::setParityCharImpl(" << parityChar << ')';
 			throw InvalidArgumentException(os.str());
 		}
+	}
+}
+
+
+void SerialConfigImpl::setTimeoutImpl(int timeout)
+{
+	ZeroMemory(&_cto, sizeof(COMMTIMEOUTS));
+
+	if (timeout > 0)
+	{
+		_cto.ReadIntervalTimeout = MAXDWORD ;
+		_cto.ReadTotalTimeoutMultiplier = MAXDWORD;
+
+		_cto.ReadTotalTimeoutConstant = timeout;
 	}
 }
 

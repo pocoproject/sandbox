@@ -38,9 +38,9 @@
 
 
 #if defined(POCO_OS_FAMILY_WINDOWS)
-#include "SerialConfig_WIN32.cpp"
+	#include "SerialConfig_WIN32.cpp"
 #elif defined(POCO_OS_FAMILY_UNIX)
-#include "SerialConfig_POSIX.cpp"
+	#include "SerialConfig_POSIX.cpp"
 #endif
 
 
@@ -48,32 +48,33 @@ namespace Poco {
 namespace IO {
 
 
-const unsigned char SerialConfig::DEFAULT_EOF=0x0D;
+const unsigned char SerialConfig::DEFAULT_XON=0x02;
+const unsigned char SerialConfig::DEFAULT_XOFF=0x03;
+const unsigned char SerialConfig::DEFAULT_EOF=0x04;
 
 
-SerialConfig::SerialConfig(): 
-	SerialConfigImpl(BPS_2400_IMPL, 
-		DATA_BITS_EIGHT_IMPL, 
-		'N', 
-		START_ONE_IMPL, 
-		STOP_ONE_IMPL,
-		FLOW_CTRL_HARDWARE_IMPL,
-		0, 
-		0,
-		true,
-		0,
-		1,
-		5000)
+SerialConfig::SerialConfig(const std::string& name): SerialConfigImpl(SerialConfigImpl::BPS_2400_IMPL, 
+	SerialConfigImpl::DATA_BITS_EIGHT_IMPL, 
+	'N', 
+	SerialConfigImpl::START_ONE_IMPL, 
+	SerialConfigImpl::STOP_ONE_IMPL,
+	SerialConfigImpl::FLOW_CTRL_HARDWARE_IMPL,
+	0, 
+	0,
+	true,
+	0,
+	1,
+	getTimeout())
 {
 }
 
 
-SerialConfig::SerialConfig(
-	SerialConfig::BPSRate bpsRate,
+SerialConfig::SerialConfig(const std::string& name,
+	BPSRate bpsRate,
 	DataBits dataBits,
 	char parity,
-	SerialConfig::StartBits startBits,
-	SerialConfig::StopBits stopBits,
+	StartBits startBits,
+	StopBits stopBits,
 	FlowControl flowControl,
 	unsigned char xOnChar,
 	unsigned char xOffChar,
@@ -81,18 +82,19 @@ SerialConfig::SerialConfig(
 	unsigned char eof,
 	int bufferSize,
 	int timeout):
-SerialConfigImpl((SerialConfigImpl::BPSRateImpl) bpsRate,
-		(SerialConfigImpl::DataBitsImpl) dataBits,
+	IOChannelConfig(name, IOChannelConfig::CONNECTION_CHANNEL, timeout),
+	SerialConfigImpl(static_cast<SerialConfigImpl::BPSRateImpl>(bpsRate),
+		static_cast<SerialConfigImpl::DataBitsImpl>(dataBits),
 		parity,
-		(SerialConfigImpl::StartBitsImpl)startBits,
-		(SerialConfigImpl::StopBitsImpl) stopBits,
-		(SerialConfigImpl::FlowControlImpl) flowControl,
+		static_cast<SerialConfigImpl::StartBitsImpl>(startBits),
+		static_cast<SerialConfigImpl::StopBitsImpl>(stopBits),
+		static_cast<SerialConfigImpl::FlowControlImpl>(flowControl),
 		xOnChar,
 		xOffChar,
 		useEOF,
 		eof,
 		bufferSize,
-		timeout)
+		getTimeout())
 {
 }
 

@@ -35,6 +35,9 @@
 
 
 #include "Poco/IO/SerialChannel_POSIX.h"
+#include <fcntl.h>
+#include <errno.h>
+#include <termios.h>
 #include "Poco/Exception.h"
 
 
@@ -46,8 +49,9 @@ namespace Poco {
 namespace IO {
 
 
-SerialChannelImpl::SerialChannelImpl(const std::string& name, const SerialConfigImpl& config): 
-	_name(name), _config(config)
+SerialChannelImpl::SerialChannelImpl(SerialConfigImpl* pConfig): 
+	_handle(0),
+	_pConfig(pConfig)
 {
 	openImpl();
 }
@@ -61,162 +65,183 @@ SerialChannelImpl::~SerialChannelImpl()
 
 void SerialChannelImpl::initImpl()
 {
-	//TODO
-}
-
-
-void SerialChannelImpl::reconfigureImpl(const SerialConfigImpl& config)
-{
-	_config = config;
-	initImpl();
+	tcsetattr(_handle, TCSANOW, &_pConfig->getTermios());
 }
 
 
 void SerialChannelImpl::openImpl()
 {
-	//TODO
-
 	initImpl();
+	_handle = open(_pConfig->name().c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+	if (_handle == -1) handleError(_pConfig->name());
 }
 
 
 void SerialChannelImpl::closeImpl()
 {
-	//TODO
+	if (_handle) close(_handle);
 }
 
 
-char SerialChannelImpl::readImpl()
+int SerialChannelImpl::readImpl(char* pBuffer, int length)
 {
-	char readBuf = 0;
-	readImpl(&readBuf, 1);
-	return readBuf;
-}
-
-
-int SerialChannelImpl::readImpl(char* pBuffer, std::size_t length)
-{
-	if (0 == length) return 0;
-
-	int read = 0;
-
-	//TODO
-
-	return read;
-}
-
-
-std::string& SerialChannelImpl::readImpl(std::string& buffer, std::size_t length)
-{
-	buffer.clear();
-	int read = 0;
-	int bufSize = length ? length : _config.getBufferSizeImpl();
-	if (0 == bufSize) return buffer;
-
-	char* pReadBuf = new char[bufSize+1];
-
-	buffer.clear();
+	int readLen = 0;
+	int readCount = 0;
+	std::memset(pBuffer, 0, length);
 	do
     {
-		//TODO
-		/*
-		ZeroMemory(pReadBuf, bufSize+1);
-		
-		if (!ReadFile(_handle, pReadBuf, bufSize, &read, NULL)) 
-		{
-			delete[] pReadBuf;
-			handleError(_name);
-		}*/
+		if ((readLen = read(_handle, pBuffer + readCount, length - readCount)) < 0) 
+			handleError(_pConfig->name());
+		else if (0 == readLen) break;
 
-		poco_assert(read <= bufSize);
-		buffer.append(pReadBuf, read);
-		
-		if (_config.getUseEOFImpl()) 
+		poco_assert (readLen <= length - readCount);
+		readCount += readLen;
+	}while(readCount < length);
+
+	return readCount;
+}
+
+
+int SerialChannelImpl::readImpl(char*& pBuffer)
+{
+	if (!_pConfig->getUseEOFImpl())
+		throw InvalidAccessException();
+
+	int bufSize = _pConfig->getBufferSizeImpl();
+	int it = 1;
+
+	if ((0 == bufSize) || (0 != pBuffer))
+		throw InvalidArgumentException();
+
+	std::string buffer;
+	int readLen = 0;
+	int readCount = 0;
+
+	pBuffer = static_cast<char*>(std::calloc(bufSize, sizeof(char)));//! freed in parent call
+
+	do
+    {
+		if (_leftOver.size())
 		{
-			size_t pos = buffer.find(_config.getEOFCharImpl());
-			if (pos != buffer.npos)
-			{
-				buffer = buffer.substr(0, pos);
-				//TODO
-				//PurgeComm(_handle, PURGE_RXCLEAR);
-				break;
-			}
+			readLen = _leftOver.size() > bufSize - readCount ? bufSize - readCount : _leftOver.size();
+			std::memcpy(pBuffer + readCount, _leftOver.data(), readLen);
+			if (readLen == _leftOver.size())
+				_leftOver.clear();
+			else
+				_leftOver.assign(_leftOver, readLen, _leftOver.size() - readLen);
 		}
-	}while(0 != read);
+		else
+		{
+			if ((readLen = read(_handle, pBuffer + readCount, bufSize - readCount)) < 0) 
+				handleError(_pConfig->name());
+			else if (0 == readLen) break;
+		}
 
-	delete[] pReadBuf;
-	return buffer;
+		poco_assert (readLen <= bufSize - readCount);
+		
+		buffer.assign(static_cast<char*>(pBuffer + readCount), readLen);
+		size_t pos = buffer.find(_pConfig->getEOFCharImpl());
+		if (pos != buffer.npos)
+		{
+			readCount += static_cast<int>(pos);
+			_leftOver.assign(buffer, pos + 1, buffer.size() - pos - 1);
+			break;
+		}
+
+		readCount += readLen;
+		if (readCount >= bufSize)
+		{
+			bufSize *= ++it;
+			pBuffer = static_cast<char*>(std::realloc(pBuffer, bufSize * sizeof(char)));
+		}
+	}while(true);
+
+	return readCount;
 }
 
 
-int SerialChannelImpl::writeImpl(char c)
+int SerialChannelImpl::writeImpl(const char* buffer, int length)
 {
-	return writeImpl(&c, 1);
-}
-
-
-int SerialChannelImpl::writeImpl(const char* pBuffer, std::size_t length)
-{
-	if (0 == length) return 0;
-
-	std::string str;
-	str.assign(pBuffer, length);
-	
-	return writeImpl(str);
-}
-
-
-int SerialChannelImpl::writeImpl(const std::string& data)
-{
-	if (0 == data.length()) return 0;
-
-	std::string d = data;
-
-	if (_config.getUseEOFImpl()) 
-	{
-		size_t pos = d.find(_config.getEOFCharImpl());
-		if (pos != d.npos) d = d.substr(0, pos+1);
-	}
-
 	int written = 0;
-	int length = d.length();
 
-	//TODO
-	/*
-	if (!WriteFile(_handle, d.data(), length, &written, NULL) || 
+	if ((written = write(_handle, buffer, length)) < 0 || 
 		((written != length) && (0 != written)))
-		handleError(_name);
+		handleError(_pConfig->name());
 	else if (0 == written)
-		throw IOException("Error writing to " + _name);
-*/
+		throw IOException("Error writing to " + _pConfig->name());
+
 	return written;
-}
-
-
-const std::string& SerialChannelImpl::getNameImpl() const
-{
-	return _name;
 }
 
 
 std::string& SerialChannelImpl::getErrorText(std::string& buf)
 {
-    //TODO
+    switch (errno)
+	{
+	case EIO:
+		buf = "I/O error.";
+		break;
+	case EPERM:
+		buf = "Insufficient permissions.";
+		break;
+	case EACCES:
+		buf = "File access denied.";
+		break;
+	case ENOENT:
+		buf = "File not found.";
+		break;
+	case ENOTDIR:
+		buf = "Not a directory.";
+		break;
+	case EISDIR:
+		buf = "Not a file.";
+		break;
+	case EROFS:
+		buf += "File is read only.";
+		break;
+	case ENOTEMPTY:
+		buf = "Directory not empty.";
+		break;
+	case ENAMETOOLONG:
+		buf = "Name too long.";
+		break;
+	case ENFILE:
+	case EMFILE:
+		buf = "Too many open files.";
+		break;
+	default:
+		buf = "Unknown error.";
+	}
+
     return buf;
 }
 
 
-void SerialChannelImpl::handleError(const std::string& name)
+void SerialChannelImpl::handleError(const std::string& path)
 {
-	//TODO
-	int error = 0;
-	std::string errorText;
-
-	switch (error)
+	switch (errno)
 	{
-	//TODO
+	case EIO:
+		throw IOException(path);
+	case EPERM:
+		throw FileAccessDeniedException("insufficient permissions", _pConfig->name());
+	case EACCES:
+		throw FileAccessDeniedException(_pConfig->name());
+	case ENOENT:
+		throw FileNotFoundException(_pConfig->name());
+	case ENOTDIR:
+		throw OpenFileException("not a directory", _pConfig->name());
+	case EISDIR:
+		throw OpenFileException("not a file", _pConfig->name());
+	case EROFS:
+		throw FileReadOnlyException(_pConfig->name());
+	case ENAMETOOLONG:
+		throw PathSyntaxException(_pConfig->name());
+	case ENFILE:
+	case EMFILE:
+		throw FileException("too many open files", _pConfig->name());
 	default:
-		throw FileException(name, getErrorText(errorText));
+		throw FileException(std::strerror(errno), _pConfig->name());
 	}
 }
 

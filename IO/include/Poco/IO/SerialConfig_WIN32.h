@@ -48,7 +48,7 @@ namespace Poco {
 namespace IO {
 
 
-class IO_API SerialConfigImpl
+class IO_API SerialConfigImpl: public RefCountedObject
 {
 public:
 	static const int MSEC = 1000;
@@ -112,10 +112,10 @@ public:
 		BPS_460800_IMPL  = BPS_NS_IMPL
 	};
 
-protected:
+	virtual const std::string& name() const = 0;
 
-	SerialConfigImpl(
-		BPSRateImpl bpsRate,
+protected:
+	SerialConfigImpl(BPSRateImpl bpsRate,
 		DataBitsImpl dataBits,
 		char parity,
 		StartBitsImpl startBits,
@@ -127,6 +127,8 @@ protected:
 		unsigned char eofChar,
 		int bufferSize,
 		int timeout);
+
+	virtual ~SerialConfigImpl();
 
 	void setBPSRateImpl(BPSRateImpl bpsRate);
 	void setDataBitsImpl(DataBitsImpl dataBits);
@@ -144,8 +146,8 @@ protected:
 	void setUseEOFImpl(bool useEOF);
 	void setEOFCharImpl(unsigned char eof);
 	void setBufferSizeImpl(int size);
-	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
+	void setBlockingImpl();
 
 	BPSRateImpl getBPSRateImpl() const;
 	DataBitsImpl getDataBitsImpl() const;
@@ -160,7 +162,6 @@ protected:
 	bool getUseEOFImpl() const;
 	unsigned char getEOFCharImpl() const;
 	int getBufferSizeImpl() const;
-	int getTimeoutSecondsImpl() const;
 	int getTimeoutImpl() const;
 
 	DCB& dcb();
@@ -231,15 +232,9 @@ inline void SerialConfigImpl::setBufferSizeImpl(int size)
 }
 
 
-inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
+inline void SerialConfigImpl::setBlockingImpl()
 {
-	setTimeoutImpl(timeout*MSEC);
-}
-
-
-inline void SerialConfigImpl::setTimeoutImpl(int timeout)
-{
-	_cto.ReadTotalTimeoutConstant = timeout;
+	ZeroMemory(&_cto, sizeof(COMMTIMEOUTS));
 }
 
 
@@ -314,11 +309,6 @@ inline int SerialConfigImpl::getBufferSizeImpl() const
 	return _bufferSize;
 }
 
-
-inline int SerialConfigImpl::getTimeoutSecondsImpl() const
-{
-	return getTimeoutImpl()*MSEC;
-}
 
 
 inline int SerialConfigImpl::getTimeoutImpl() const

@@ -34,11 +34,11 @@
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
 #include "Poco/Types.h"
+#include "Poco/IOChannel.h"
 #include "Poco/ActiveResult.h"
-#include "Poco/IO/Channel.h"
+#include "Poco/ActiveIOChannel.h"
 #include "Poco/IO/SerialConfig.h"
 #include "Poco/IO/SerialChannel.h"
-#include "Poco/IO/ActiveChannel.h"
 #include "Poco/Void.h"
 #include "Poco/Types.h"
 #include "Poco/BinaryReader.h"
@@ -53,38 +53,16 @@ using Poco::Void;
 using Poco::BinaryReader;
 using Poco::BinaryWriter;
 using Poco::InvalidAccessException;
-using Poco::IO::Channel;
+using Poco::IOChannel;
 using Poco::IO::SerialConfig;
 using Poco::IO::SerialChannel;
-using Poco::IO::ActiveChannel;
-using Poco::IO::Serial;
+using Poco::ActiveIOChannel;
+using Poco::NotImplementedException;
 
-
-const unsigned char SerialTestHW::SERIAL_EOF = 0x0D;
 
 SerialTestHW::SerialTestHW(const std::string& name): 
-	CppUnit::TestCase(name),
-	_serialConfig(SerialConfig::BPS_9600, 
-	SerialConfig::DATA_BITS_EIGHT, 
-	'N', 
-	SerialConfig::START_ONE,
-	SerialConfig::STOP_ONE,
-	SerialConfig::FLOW_CTRL_HARDWARE,
-	0,//xOn
-	0,//xOff
-	true,//use EOF
-	SERIAL_EOF,//EOF 
-	10,//buffer size
-	1000)//timeout
+	CppUnit::TestCase(name)
 {
-#if defined(POCO_OS_FAMILY_WINDOWS)
-	_serialName1 = "COM1";
-	_serialName2 = "COM2";
-#elif defined(POCO_OS_FAMILY_UNIX)
-	throw NotImplementedException("Not implemented");
-#else
-	throw NotImplementedException("Not implemented");
-#endif
 }
 
 
@@ -95,18 +73,18 @@ SerialTestHW::~SerialTestHW()
 
 void SerialTestHW::testChannel()
 {
-	Serial com1(_serialName1, _serialConfig);
-	Serial com2(_serialName2, _serialConfig);
+	SerialChannel com1(_pConfig1);
+	SerialChannel com2(_pConfig2);
 	
 	try
 	{
-		_serialConfig.setXoffChar(1);
+		_pConfig1->setXoffChar(1);
 		fail ("must fail");
 	}catch (InvalidAccessException&) {}
 
 	try
 	{
-		_serialConfig.setXonChar(1);
+		_pConfig1->setXonChar(1);
 		fail ("must fail");
 	}catch (InvalidAccessException&) {}
 
@@ -114,50 +92,43 @@ void SerialTestHW::testChannel()
 	assert('x' == com2.read());
 
 	std::string str = "1234567890";
-	str += 0x0D;
+	str += SerialConfig::DEFAULT_EOF;
 	str += "0987654321";
+	str += SerialConfig::DEFAULT_EOF;
 
-	assert(11 == com1.write(str));
+	assert(22 == com1.write(str));
 	assert(10 == com2.read(str).length());	
 	assert("1234567890" == str);
+	assert(10 == com2.read(str).length());	
+	assert("0987654321" == str);
 
 	assert(5 == com1.write(const_cast<char*>(str.c_str()), 5));
 	char chr[5] = "";
 	assert(3 == com2.read(chr, 3));	
-	assert('1' == chr[0]);
-	assert('2' == chr[1]);
-	assert('3' == chr[2]);
+	assert('0' == chr[0]);
+	assert('9' == chr[1]);
+	assert('8' == chr[2]);
 	assert(0 == chr[3]);
 	memset(chr, 0, sizeof(chr));
 	com2.read(chr, 2);	
-	assert('4' == chr[0]);
-	assert('5' == chr[1]);
-	assert(0 == chr[2]);
-
-	SerialConfig config(_serialConfig);
-	config.setBufferSize(1);
-	config.setBPSRate(SerialConfig::BPS_2400);
-	com1.reconfigure(config);
-	com2.reconfigure(config);
-	com1.write(str);
-	com2.read(str);	
-	assert("1234567890" == str);	
+	assert('7' == chr[0]);
+	assert('6' == chr[1]);
+	assert(0 == chr[2]);	
 }
 
 
 void SerialTestHW::testActiveChannel()
 {
-	SerialChannel com1(_serialName1, _serialConfig);
-	SerialChannel com2(_serialName2, _serialConfig);
+	SerialChannel com1(_pConfig1);
+	SerialChannel com2(_pConfig2);
 	std::string str1 = "1234567890";
 	std::string str2 = "";
 	
-	ActiveChannel<SerialChannel> activePort1(com1);
-	ActiveChannel<SerialChannel> activePort2(com2);
+	ActiveIOChannel<SerialChannel> activePort1(com1);
+	ActiveIOChannel<SerialChannel> activePort2(com2);
 	ActiveResult<int> result1 = activePort1.write(str1);
 	result1.wait();
-	Void v;
-	ActiveResult<std::string> result2 = activePort2.read(v);
+	ActiveResult<std::string> result2 = activePort2.read();
 	result2.wait();
 	assert("1234567890" == result2.data());
 }
@@ -165,8 +136,8 @@ void SerialTestHW::testActiveChannel()
 
 void SerialTestHW::testStreams()
 {
-	Serial com1(_serialName1, _serialConfig);
-	Serial com2(_serialName2, _serialConfig);
+	SerialChannel com1(_pConfig1);
+	SerialChannel com2(_pConfig2);
 	SerialOutputStream sos(com1);
 	SerialInputStream sis(com2);
 
@@ -184,8 +155,8 @@ void SerialTestHW::testStreams()
 
 void SerialTestHW::testBinary()
 {
-	Serial com1(_serialName1, _serialConfig);
-	Serial com2(_serialName2, _serialConfig);
+	SerialChannel com1(_pConfig1);
+	SerialChannel com2(_pConfig2);
 
 	SerialOutputStream sos(com1);
 	SerialInputStream sis(com2);
@@ -340,6 +311,45 @@ void SerialTestHW::readBinary(BinaryReader& reader)
 
 void SerialTestHW::setUp()
 {
+	std::string name1;
+	std::string name2;
+
+#if defined(POCO_OS_FAMILY_WINDOWS)
+	name1 = "COM1";
+	name2 = "COM2";
+#elif defined(POCO_OS_FAMILY_UNIX)
+	throw NotImplementedException("Not implemented");
+#else
+	throw NotImplementedException("Not implemented");
+#endif
+
+	_pConfig1 = new SerialConfig(name1,
+		SerialConfig::BPS_9600, 
+		SerialConfig::DATA_BITS_EIGHT, 
+		'N', 
+		SerialConfig::START_ONE,
+		SerialConfig::STOP_ONE,
+		SerialConfig::FLOW_CTRL_HARDWARE,
+		0,//xOn
+		0,//xOff
+		true,//use EOF
+		SerialConfig::DEFAULT_EOF,//EOF 
+		10,//buffer size
+		1000);//timeout
+
+	_pConfig2 = new SerialConfig(name2,
+		SerialConfig::BPS_9600, 
+		SerialConfig::DATA_BITS_EIGHT, 
+		'N', 
+		SerialConfig::START_ONE,
+		SerialConfig::STOP_ONE,
+		SerialConfig::FLOW_CTRL_HARDWARE,
+		0,//xOn
+		0,//xOff
+		true,//use EOF
+		SerialConfig::DEFAULT_EOF,//EOF 
+		10,//buffer size
+		1000);//timeout
 }
 
 

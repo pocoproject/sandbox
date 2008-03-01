@@ -49,11 +49,9 @@ namespace Poco {
 namespace IO {
 
 
-class IO_API SerialConfigImpl
+class IO_API SerialConfigImpl: public RefCountedObject
 {
 public:
-	static const int TENTH_SEC = 10;
-	static const int MILLI_SEC = 1000;
 	static const int NOT_SUPPORTED = -1;
 
 	enum DataBitsImpl
@@ -113,8 +111,9 @@ public:
 		BPS_460800_IMPL  = B460800
 	};
 
-protected:
+	virtual const std::string& name() const = 0;
 
+protected:
 	SerialConfigImpl(
 		BPSRateImpl bpsRate,
 		DataBitsImpl dataBits,
@@ -129,6 +128,8 @@ protected:
 		int bufferSize,
 		int timeout);
 
+	virtual ~SerialConfigImpl();
+
 	void setBPSRateImpl(BPSRateImpl bpsRate);
 	void setDataBitsImpl(DataBitsImpl dataBits);
 	void setParityImpl(ParityImpl parity);
@@ -142,11 +143,11 @@ protected:
 		unsigned char xOffChar);
 	void setXonCharImpl(unsigned char xOn);
 	void setXoffCharImpl(unsigned char xOff);
-	void setUseEOFImpl(bool useEOF);
+	void setUseEOFImpl(bool) const;
 	void setEOFCharImpl(unsigned char eof);
 	void setBufferSizeImpl(int size);
-	void setTimeoutSecondsImpl(int timeout);
 	void setTimeoutImpl(int timeout);
+	void setBlockingImpl();
 
 	BPSRateImpl getBPSRateImpl() const;
 	DataBitsImpl getDataBitsImpl() const;
@@ -161,15 +162,16 @@ protected:
 	bool getUseEOFImpl() const;
 	unsigned char getEOFCharImpl() const;
 	int getBufferSizeImpl() const;
-	int getTimeoutSecondsImpl() const;
 	int getTimeoutImpl() const;
 
 private:
 	SerialConfigImpl();
 
-	termios _termios;
+	termios& getTermios();
+
+	termios         _termios;
+	int             _bufferSize;
 	FlowControlImpl _flowControl;
-	bool _useEOF;
 
 	friend class SerialChannelImpl;
 };
@@ -180,21 +182,21 @@ private:
 //
 
 
+inline termios& SerialConfigImpl::getTermios()
+{
+	return _termios;
+}
+
+
 inline void SerialConfigImpl::setStartBitsImpl(SerialConfigImpl::StartBitsImpl startBits)
 {
 	throw Poco::InvalidAccessException("Operation not supported.");
 }
 
 
-inline void SerialConfigImpl::setUseEOFImpl(bool useEOF)
-{
-	//TODO
-}
-
-
 inline void SerialConfigImpl::setEOFCharImpl(unsigned char eof)
 {
-	//TODO
+	_termios.c_cc[VEOF] = eof;
 }
 
 
@@ -204,15 +206,9 @@ inline void SerialConfigImpl::setBufferSizeImpl(int size)
 }
 
 
-inline void SerialConfigImpl::setTimeoutSecondsImpl(int timeout)
+inline void SerialConfigImpl::setTimeoutImpl(int timeoutMS)
 {
-	_termios.c_cc[VTIME] = timeout * TENTH_SEC;
-}
-
-
-inline void SerialConfigImpl::setTimeoutImpl(int timeout)
-{
-	setTimeoutSecondsImpl(timeout * MILLI_SEC);
+	_termios.c_cc[VTIME] = timeoutMS * 100; // convert from ms to 1/10 s
 }
 
 
@@ -223,15 +219,9 @@ inline void SerialConfigImpl::setUseXonXoffImpl(unsigned char,
 }
 
 
-inline void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
+inline void SerialConfigImpl::setUseEOFImpl(bool) const
 {
-	throw Poco::InvalidAccessException("Operation not supported.");
-}
-
-
-inline void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
-{
-	throw Poco::InvalidAccessException("Operation not supported.");
+	throw NotImplementedException();
 }
 
 
@@ -261,25 +251,25 @@ inline bool SerialConfigImpl::getUseXonXoffImpl() const
 
 inline unsigned char SerialConfigImpl::getXonCharImpl() const
 {
-	throw Poco::InvalidAccessException("Operation not supported.");
+	return _termios.c_cc[VSTART];
 }
 
 
 inline unsigned char SerialConfigImpl::getXoffCharImpl() const
 {
-	throw Poco::InvalidAccessException("Operation not supported.");
+	return _termios.c_cc[VSTOP];
 }
 
 
 inline bool SerialConfigImpl::getUseEOFImpl() const
 {
-	return _useEOF;
+	return 0 != _termios.c_cc[VEOF];
 }
 
 
 inline unsigned char SerialConfigImpl::getEOFCharImpl() const
 {
-	return 0;//TODO
+	return _termios.c_cc[VEOF];
 }
 
 
@@ -289,15 +279,15 @@ inline int SerialConfigImpl::getBufferSizeImpl() const
 }
 
 
-inline int SerialConfigImpl::getTimeoutSecondsImpl() const
+inline int SerialConfigImpl::getTimeoutImpl() const
 {
-	return getTimeoutImpl() * MILLI_SEC;
+	return _termios.c_cc[VTIME] * 100; // convert from 1/10 s to ms
 }
 
 
-inline int SerialConfigImpl::getTimeoutImpl() const
+inline void SerialConfigImpl::setBlockingImpl()
 {
-	return _termios.c_cc[VTIME] * MILLI_SEC / TENTH_SEC;
+	_termios.c_cc[VTIME] = 0;
 }
 
 

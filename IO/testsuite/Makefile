@@ -9,7 +9,8 @@
 include $(POCO_BASE)/build/rules/global
 
 objects = IOTestSuite Driver \
-	<SourceFilesHere>
+	SerialTestSuite SerialTestHW  SerialTestHWSuite  SerialTestSW  SerialTestSWSuite \
+	ProtocolTest ProtocolTestSuite TestProtocol
 
 target         = testrunner
 target_version = 1

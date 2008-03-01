@@ -37,15 +37,15 @@
 
 
 #include "Poco/IO/Protocol.h"
-#include "Poco/IO/AbstractChannel.h"
+#include "Poco/IOChannel.h"
 
 
 class TestProtocol: public Poco::IO::Protocol
 	/// A test protocol.
 {
 public:
-	TestProtocol(Poco::IO::AbstractChannel* pChannel, int number);
-	TestProtocol(/*TestProtocol* pProtocol,*/ int number);
+	TestProtocol(Poco::IOChannel* pChannel, int number);
+	TestProtocol(int number);
 
 	virtual ~TestProtocol();
 

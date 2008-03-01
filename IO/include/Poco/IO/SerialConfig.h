@@ -41,12 +41,13 @@
 
 
 #include "Poco/IO/IO.h"
+#include "Poco/IOChannelConfig.h"
 
 
 #if defined(POCO_OS_FAMILY_WINDOWS)
-#include "Poco/IO/SerialConfig_WIN32.h"
+	#include "Poco/IO/SerialConfig_WIN32.h"
 #elif defined(POCO_OS_FAMILY_UNIX)
-#include "Poco/IO/SerialConfig_POSIX.h"
+	#include "Poco/IO/SerialConfig_POSIX.h"
 #endif
 
 
@@ -54,85 +55,87 @@ namespace Poco {
 namespace IO {
 
 
-class IO_API SerialConfig: private SerialConfigImpl
+class IO_API SerialConfig: public IOChannelConfig, public SerialConfigImpl
 {
 public:
 	enum DataBits
 	{
-		DATA_BITS_FIVE = DATA_BITS_FIVE_IMPL,
-		DATA_BITS_SIX = DATA_BITS_SIX_IMPL,
-		DATA_BITS_SEVEN = DATA_BITS_SEVEN_IMPL,
-		DATA_BITS_EIGHT = DATA_BITS_EIGHT_IMPL
+		DATA_BITS_FIVE = SerialConfigImpl::DATA_BITS_FIVE_IMPL,
+		DATA_BITS_SIX = SerialConfigImpl::DATA_BITS_SIX_IMPL,
+		DATA_BITS_SEVEN = SerialConfigImpl::DATA_BITS_SEVEN_IMPL,
+		DATA_BITS_EIGHT = SerialConfigImpl::DATA_BITS_EIGHT_IMPL
 	};
 
 	enum Parity
 	{
 		//on Windows, PARITY_* conflicts with
 		//system macros, hence PAR_*
-		PAR_NONE = PARITY_NONE_IMPL,
-		PAR_ODD = PARITY_ODD_IMPL,
-		PAR_EVEN = PARITY_EVEN_IMPL,
-		PAR_MARK = PARITY_MARK_IMPL,
-		PAR_SPACE = PARITY_SPACE_IMPL
+		PAR_NONE = SerialConfigImpl::PARITY_NONE_IMPL,
+		PAR_ODD = SerialConfigImpl::PARITY_ODD_IMPL,
+		PAR_EVEN = SerialConfigImpl::PARITY_EVEN_IMPL,
+		PAR_MARK = SerialConfigImpl::PARITY_MARK_IMPL,
+		PAR_SPACE = SerialConfigImpl::PARITY_SPACE_IMPL
 	};
 
 	enum StartBits
 	{
-		START_ONE = START_ONE_IMPL,
-		START_ONE5 = START_ONE5_IMPL,
-		START_TWO = START_TWO_IMPL
+		START_ONE = SerialConfigImpl::START_ONE_IMPL,
+		START_ONE5 = SerialConfigImpl::START_ONE5_IMPL,
+		START_TWO = SerialConfigImpl::START_TWO_IMPL
 	};
 
 	enum StopBits
 	{
-		STOP_ONE = STOP_ONE_IMPL,
-		STOP_ONE5 = STOP_ONE5_IMPL,
-		STOP_TWO = STOP_TWO_IMPL
+		STOP_ONE = SerialConfigImpl::STOP_ONE_IMPL,
+		STOP_ONE5 = SerialConfigImpl::STOP_ONE5_IMPL,
+		STOP_TWO = SerialConfigImpl::STOP_TWO_IMPL
 	};
 
 	enum FlowControl
 	{
-		FLOW_CTRL_HARDWARE = FLOW_CTRL_HARDWARE_IMPL,
-		FLOW_CTRL_SOFTWARE = FLOW_CTRL_SOFTWARE_IMPL
+		FLOW_CTRL_HARDWARE = SerialConfigImpl::FLOW_CTRL_HARDWARE_IMPL,
+		FLOW_CTRL_SOFTWARE = SerialConfigImpl::FLOW_CTRL_SOFTWARE_IMPL
 	};
 
 	enum BPSRate
 	{
-		BPS_110 = BPS_110_IMPL,
-		BPS_300 = BPS_300_IMPL,
-		BPS_600 = BPS_600_IMPL,
-		BPS_1200 = BPS_1200_IMPL,
-		BPS_2400 = BPS_2400_IMPL,
-		BPS_4800 = BPS_4800_IMPL,
-		BPS_9600 = BPS_9600_IMPL,
-		BPS_14400 = BPS_14400_IMPL,
-		BPS_19200 = BPS_19200_IMPL,
-		BPS_38400 = BPS_38400_IMPL,
-		BPS_57600 = BPS_57600_IMPL,
-		BPS_115200 = BPS_115200_IMPL,
-		BPS_128000 = BPS_128000_IMPL,
-		BPS_230400 = BPS_230400_IMPL,
-		BPS_256000 = BPS_256000_IMPL,
-		BPS_460800 = BPS_460800_IMPL
+		BPS_110 = SerialConfigImpl::BPS_110_IMPL,
+		BPS_300 = SerialConfigImpl::BPS_300_IMPL,
+		BPS_600 = SerialConfigImpl::BPS_600_IMPL,
+		BPS_1200 = SerialConfigImpl::BPS_1200_IMPL,
+		BPS_2400 = SerialConfigImpl::BPS_2400_IMPL,
+		BPS_4800 = SerialConfigImpl::BPS_4800_IMPL,
+		BPS_9600 = SerialConfigImpl::BPS_9600_IMPL,
+		BPS_14400 = SerialConfigImpl::BPS_14400_IMPL,
+		BPS_19200 = SerialConfigImpl::BPS_19200_IMPL,
+		BPS_38400 = SerialConfigImpl::BPS_38400_IMPL,
+		BPS_57600 = SerialConfigImpl::BPS_57600_IMPL,
+		BPS_115200 = SerialConfigImpl::BPS_115200_IMPL,
+		BPS_128000 = SerialConfigImpl::BPS_128000_IMPL,
+		BPS_230400 = SerialConfigImpl::BPS_230400_IMPL,
+		BPS_256000 = SerialConfigImpl::BPS_256000_IMPL,
+		BPS_460800 = SerialConfigImpl::BPS_460800_IMPL
 	};
 
-	SerialConfig();
-	SerialConfig(BPSRate bpsRate,
-		DataBits dataBits=DATA_BITS_EIGHT,
-		char parity='N',
-		StartBits startBits=START_ONE,
-		StopBits stopBits=STOP_ONE,
-		FlowControl flowControl=FLOW_CTRL_HARDWARE,
-		unsigned char xOnChar=0,
-		unsigned char xOffChar=0,
-		bool useEOF=true,
-		unsigned char eof=DEFAULT_EOF,
-		int bufferSize=1,
-		int timeout=5000);
+	SerialConfig(const std::string& name);
+
+	SerialConfig(const std::string& name,
+		BPSRate bpsRate,
+		DataBits dataBits = DATA_BITS_EIGHT,
+		char parity = 'N',
+		StartBits startBits = START_ONE,
+		StopBits stopBits = STOP_ONE,
+		FlowControl flowControl = FLOW_CTRL_HARDWARE,
+		unsigned char xOnChar = 0,
+		unsigned char xOffChar = 0,
+		bool useEOF = true,
+		unsigned char eof = DEFAULT_EOF,
+		int bufferSize = 1,
+		int timeout = INFINITE_TIMEOUT);
 
 	void setBPSRate(BPSRate bpsRate);
 	void setDataBits(DataBits dataBits);
-	void setParity(ParityImpl parity);
+	void setParity(Parity parity);
 	void setParityChar(char parityChar);
 	void setStartBits(StartBits startBits);
 	void setStopBits(StopBits stopBits);
@@ -146,12 +149,14 @@ public:
 	void setUseEOF(bool useEOF);
 	void setEOFChar(unsigned char eof);
 	void setBufferSize(int size);
-	void setTimeoutSeconds(int timeout);
-	void setTimeout(int timeout);
+
+	void setTimeout(int timeoutMS);
+	void setBlocking();
+	void setNonblocking(int timeoutMS);
 
 	BPSRate getBPSRate() const;
 	DataBits getDataBits() const;
-	ParityImpl getParity() const;
+	Parity getParity() const;
 	char getParityChar() const;
 	StartBits getStartBits() const;
 	StopBits getStopBits() const;
@@ -162,9 +167,11 @@ public:
 	bool getUseEOF() const;
 	unsigned char getEOFChar() const;
 	int getBufferSize() const;
-	int getTimeoutSeconds() const;
-	int getTimeout() const;
 
+	const std::string& name() const;
+
+	static const unsigned char DEFAULT_XON;
+	static const unsigned char DEFAULT_XOFF;
 	static const unsigned char DEFAULT_EOF;
 };
 
@@ -180,9 +187,9 @@ inline void SerialConfig::setDataBits(SerialConfig::DataBits dataBits)
 }
 
 
-inline void SerialConfig::setParity(SerialConfigImpl::ParityImpl parity)
+inline void SerialConfig::setParity(Parity parity)
 {
-	setParityImpl(parity);
+	setParityImpl(static_cast<SerialConfigImpl::ParityImpl>(parity));
 }
 
 
@@ -239,17 +246,23 @@ inline void SerialConfig::setBufferSize(int size)
 }
 
 
-inline void SerialConfig::setTimeoutSeconds(int timeout)
+inline void SerialConfig::setTimeout(int timeoutMS)
 {
-	setTimeoutSecondsImpl(timeout);
+	IOChannelConfig::setTimeout(timeoutMS);
+	setTimeoutImpl(getTimeout());
 }
 
 
-inline void SerialConfig::setTimeout(int timeout)
+inline void SerialConfig::setBlocking()
 {
-	setTimeoutImpl(timeout);
+	setBlockingImpl();
 }
 
+
+inline void SerialConfig::setNonblocking(int timeoutMS)
+{
+	setTimeoutImpl(timeoutMS);
+}
 
 inline SerialConfig::BPSRate SerialConfig::getBPSRate() const
 {
@@ -263,9 +276,9 @@ inline SerialConfig::DataBits SerialConfig::getDataBits() const
 }
 
 
-inline SerialConfigImpl::ParityImpl SerialConfig::getParity() const
+inline SerialConfig::Parity SerialConfig::getParity() const
 {
-	return getParityImpl();
+	return static_cast<SerialConfig::Parity>(getParityImpl());
 }
 
 
@@ -328,14 +341,9 @@ inline int SerialConfig::getBufferSize() const
 }
 
 
-inline int SerialConfig::getTimeoutSeconds() const
+inline const std::string& SerialConfig::name() const
 {
-	return getTimeoutSecondsImpl();
-}
-
-inline int SerialConfig::getTimeout() const
-{
-	return getTimeoutImpl();
+	return getName();
 }
 
 

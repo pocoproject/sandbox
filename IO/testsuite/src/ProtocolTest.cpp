@@ -47,36 +47,17 @@ using Poco::IO::SerialConfig;
 using Poco::IO::SerialChannel;
 using Poco::IO::ProtocolInputStream;
 using Poco::IO::ProtocolOutputStream;
-using Poco::IO::Serial;
+using Poco::IO::SerialChannel;
 using Poco::AutoPtr;
 using Poco::CircularReferenceException;
 using Poco::NullPointerException;
 using Poco::NotFoundException;
+using Poco::NotImplementedException;
 
 
 ProtocolTest::ProtocolTest(const std::string& name): 
-	CppUnit::TestCase(name),
-	_serialConfig(SerialConfig::BPS_9600, 
-	SerialConfig::DATA_BITS_EIGHT, 
-	'N', 
-	SerialConfig::START_ONE,
-	SerialConfig::STOP_ONE,
-	SerialConfig::FLOW_CTRL_SOFTWARE,
-	0x11,//xOn
-	0x13,//xOff
-	false,//use EOF
-	0,//EOF 
-	100,//buffer size
-	100)//timeout
+	CppUnit::TestCase(name)
 {
-#if defined(POCO_OS_FAMILY_WINDOWS)
-	_serialName1 = "COM1";
-	_serialName2 = "COM2";
-#elif defined(POCO_OS_FAMILY_UNIX)
-	throw NotImplementedException("Not implemented");
-#else
-	throw NotImplementedException("Not implemented");
-#endif
 }
 
 
@@ -87,8 +68,8 @@ ProtocolTest::~ProtocolTest()
 
 void ProtocolTest::testOne()
 {
-	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
-	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
+	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
+	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
 
 	TestProtocol tp1(pCom1, 1);
 	TestProtocol tp2(pCom2, 1);
@@ -100,7 +81,8 @@ void ProtocolTest::testOne()
 	tp1.send();
 	assert (tp1.readRaw() == "");
 	std::string str;
-	tp2.receive(str);
+	int size = static_cast<int>(rawData.size());
+	tp2.receive(str, size);
 	assert (tp2.readRaw() == rawData);
 	assert ("123" == str);
     tp2.clear();
@@ -108,7 +90,7 @@ void ProtocolTest::testOne()
 
 	tp1.write("123");
 	assert (tp1.readRaw() == "");
-	tp2.receive(str);
+	tp2.receive(str, size);
 	assert (tp2.readRaw() == rawData);
 	assert ("123" == str);
 }
@@ -116,8 +98,8 @@ void ProtocolTest::testOne()
 
 void ProtocolTest::testTwo()
 {
-	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
-	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
+	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
+	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
 
 	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
 	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
@@ -134,7 +116,8 @@ void ProtocolTest::testTwo()
 	pTp1->send();
 	assert (pTp1->readRaw() == "");
 	std::string str;
-	pTp2->receive(str);
+	int size = static_cast<int>(rawData.size());
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
     pTp2->clear();
@@ -142,13 +125,13 @@ void ProtocolTest::testTwo()
 
 	pTp1->write("123");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str);
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
 
 	str.clear();
 	pTp2->send();
-	pTp1->receive(str);
+	pTp1->receive(str, size);
 	assert ("123" == str);
 
 	try
@@ -187,7 +170,7 @@ void ProtocolTest::testTwo()
 	pTp3->send();
 	assert (pTp3->readRaw() == "");
 	str.clear();
-	pTp4->receive(str);
+	pTp4->receive(str, size);
 	assert (pTp4->readRaw() == rawData);
 	assert ("321" == str);
     pTp4->clear();
@@ -204,7 +187,7 @@ void ProtocolTest::testTwo()
 	pTp1->send();
 	assert (pTp1->readRaw() == "");
 	str.clear();
-	pTp2->receive(str);
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
     pTp2->clear();
@@ -212,7 +195,7 @@ void ProtocolTest::testTwo()
 
 	pTp1->write("123");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str);
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
 
@@ -221,7 +204,7 @@ void ProtocolTest::testTwo()
 	str.clear();
 	pTp1->write("321");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str);
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("321" == str);
 
@@ -233,7 +216,7 @@ void ProtocolTest::testTwo()
 	str.clear();
 	pTp1->write("456");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str);
+	pTp2->receive(str, size);
 	assert (pTp2->readRaw() == rawData);
 	assert ("456" == str);
 }
@@ -245,8 +228,8 @@ void ProtocolTest::testChain()
 	TestProtocol tp1(0);
 	TestProtocol tp2(0);
 
-	tp1.setChannel(new Serial(_serialName1, _serialConfig));
-	tp2.setChannel(new Serial(_serialName2, _serialConfig));
+	tp1.setChannel(new SerialChannel(_pConfig1));
+	tp2.setChannel(new SerialChannel(_pConfig2));
 	
 	std::ostringstream pre;
 	std::ostringstream post;
@@ -265,7 +248,7 @@ void ProtocolTest::testChain()
 	std::string po = post.str();
 	std::string str;
 	tp1.write("1234567890");
-	tp2.receive(str);
+	tp2.receive(str, (int) (pr.size() + std::strlen("1234567890") + po.size()));
 
 	assert (pre.str() + str + post.str() == tp2.readRaw());
 	assert ("1234567890" == str);
@@ -274,8 +257,8 @@ void ProtocolTest::testChain()
 
 void ProtocolTest::testStreams()
 {
-	Serial* pCom1 = new Serial(_serialName1, _serialConfig);
-	Serial* pCom2 = new Serial(_serialName2, _serialConfig);
+	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
+	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
 
 	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
 	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
@@ -299,7 +282,7 @@ void ProtocolTest::testStreams()
 
 	str.clear();
 	sos << "5432109876" << std::flush;
-	pTp2->receive(str);
+	pTp2->receive(str, (int) rawData.size());
 	assert (pTp2->readRaw() == "<data2><data1>5432109876</data1></data2>");
 	assert ("5432109876" == str);
 }
@@ -307,6 +290,45 @@ void ProtocolTest::testStreams()
 
 void ProtocolTest::setUp()
 {
+	std::string name1;
+	std::string name2;
+
+#if defined(POCO_OS_FAMILY_WINDOWS)
+	name1 = "COM1";
+	name2 = "COM2";
+#elif defined(POCO_OS_FAMILY_UNIX)
+	throw NotImplementedException("Not implemented");
+#else
+	throw NotImplementedException("Not implemented");
+#endif
+
+	_pConfig1 = new SerialConfig(name1,
+		SerialConfig::BPS_9600, 
+		SerialConfig::DATA_BITS_EIGHT, 
+		'N', 
+		SerialConfig::START_ONE,
+		SerialConfig::STOP_ONE,
+		SerialConfig::FLOW_CTRL_SOFTWARE,
+		0x11,//xOn
+		0x13,//xOff
+		true,//use EOF
+		SerialConfig::DEFAULT_EOF,//EOF
+		10,//buffer size
+		1000);//timeout
+
+	_pConfig2 = new SerialConfig(name2,
+		SerialConfig::BPS_9600, 
+		SerialConfig::DATA_BITS_EIGHT, 
+		'N', 
+		SerialConfig::START_ONE,
+		SerialConfig::STOP_ONE,
+		SerialConfig::FLOW_CTRL_SOFTWARE,
+		0x11,//xOn
+		0x13,//xOff
+		true,//use EOF
+		SerialConfig::DEFAULT_EOF,//EOF
+		10,//buffer size
+		1000);//timeout
 }
 
 

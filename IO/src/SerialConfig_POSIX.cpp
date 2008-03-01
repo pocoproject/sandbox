@@ -57,8 +57,7 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	bool useEOF,
 	unsigned char eofChar,
 	int bufferSize,
-	int timeout):  
-	_useEOF(useEOF)
+	int timeout)
 {
 	memset(&_termios, 0, sizeof(_termios)) ;
 
@@ -69,6 +68,11 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	setFlowControlImpl(flowControl, xOnChar, xOffChar);
 	setBufferSizeImpl(bufferSize);
 	setTimeoutImpl(timeout);
+}
+
+
+SerialConfigImpl::~SerialConfigImpl()
+{
 }
 
 
@@ -115,15 +119,14 @@ void SerialConfigImpl::setFlowControlImpl(SerialConfigImpl::FlowControlImpl flow
 	{
 		_termios.c_cflag |= (IXON | IXOFF); 
 		_termios.c_cflag &= ~CRTSCTS;
+		_termios.c_cc[VSTART] = xOnChar;
+		_termios.c_cc[VSTOP] = xOffChar;
 	}
 	else
 		throw InvalidArgumentException("Invalid argument supplied. Flow control not set.");
 
 	_flowControl = flowControl;
 }
-
-
-
 
 
 char SerialConfigImpl::getParityCharImpl() const
@@ -182,6 +185,9 @@ void SerialConfigImpl::setParityImpl(SerialConfigImpl::ParityImpl parity)
 		return setParityCharImpl('O');
 	case PARITY_EVEN_IMPL:
 		return setParityCharImpl('E');
+	case PARITY_MARK_IMPL:
+	default:
+		throw InvalidArgumentException();
 	}
 
 	throw InvalidArgumentException("Wrong parity.");
@@ -224,6 +230,24 @@ SerialConfigImpl::StopBitsImpl SerialConfigImpl::getStopBitsImpl() const
 		return STOP_TWO_IMPL;
 	else
 		return STOP_ONE_IMPL;
+}
+
+
+void SerialConfigImpl::setXonCharImpl(unsigned char xOn)
+{
+	if (FLOW_CTRL_HARDWARE_IMPL == getFlowControlImpl())
+		throw InvalidAccessException();
+
+	_termios.c_cc[VSTART] = xOn;
+}
+
+
+void SerialConfigImpl::setXoffCharImpl(unsigned char xOff)
+{
+	if (FLOW_CTRL_HARDWARE_IMPL == getFlowControlImpl())
+		throw InvalidAccessException();
+
+	_termios.c_cc[VSTOP] = xOff;
 }
 
 

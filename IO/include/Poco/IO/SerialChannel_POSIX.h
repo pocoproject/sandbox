@@ -42,6 +42,7 @@
 
 #include "Poco/IO/IO.h"
 #include "Poco/IO/SerialConfig_POSIX.h"
+#include "Poco/AutoPtr.h"
 
 
 namespace Poco {
@@ -51,18 +52,16 @@ namespace IO {
 class IO_API SerialChannelImpl
 {
 protected:
-	SerialChannelImpl(const std::string& name, const SerialConfigImpl& config);
-	~SerialChannelImpl();
+	typedef AutoPtr<SerialConfigImpl> ConfigPtr;
+
+	SerialChannelImpl(SerialConfigImpl* pConfig);
+	virtual ~SerialChannelImpl();
 	void initImpl();
-	void reconfigureImpl(const SerialConfigImpl& config);
 	void openImpl();
 	void closeImpl();
-	char readImpl();
-	int readImpl(char* pBuffer, std::size_t length);
-	std::string& readImpl(std::string& buffer, std::size_t length = 0);
-	int writeImpl(char c);
-	int writeImpl(const char* buffer, std::size_t length);
-	int writeImpl(const std::string& data);
+	int readImpl(char* pBuffer, int length);
+	int readImpl(char*& pBuffer);
+	int writeImpl(const char* buffer, int length);
 	const std::string& getNameImpl() const;
 	void handleError(const std::string& path);
 	static std::string& getErrorText(std::string& buf);
@@ -72,10 +71,9 @@ private:
 	SerialChannelImpl(const SerialChannelImpl&);
 	const SerialChannelImpl& operator = (const SerialChannelImpl&);
 
-	std::string _name;
-	//TODO
-	//HANDLE _handle;
-	SerialConfigImpl _config;
+	int         _handle;
+	ConfigPtr   _pConfig;
+	std::string _leftOver;
 };
 
 

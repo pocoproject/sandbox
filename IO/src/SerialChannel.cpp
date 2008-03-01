@@ -36,12 +36,15 @@
 
 #include "Poco/IO/SerialChannel.h"
 
-#if defined(POCO_OS_FAMILY_WINDOWS) && defined(POCO_WIN32_UTF8)
-#include "SerialChannel_WIN32U.cpp"
-#elif defined(POCO_OS_FAMILY_WINDOWS)
-#include "SerialChannel_WIN32.cpp"
+
+#if defined(POCO_OS_FAMILY_WINDOWS)
+	#if defined(POCO_WIN32_UTF8)
+		#include "SerialChannel_WIN32U.cpp"
+	#else
+		#include "SerialChannel_WIN32.cpp"
+	#endif
 #elif defined(POCO_OS_FAMILY_UNIX)
-#include "SerialChannel_POSIX.cpp"
+	#include "SerialChannel_POSIX.cpp"
 #endif
 
 
@@ -49,14 +52,17 @@ namespace Poco {
 namespace IO {
 
 
-SerialChannel::SerialChannel(const std::string& name, const SerialConfig& config):
-	SerialChannelImpl(name, (SerialConfigImpl&) config)
+SerialChannel::SerialChannel(SerialConfig* pConfig):
+	IOChannel(pConfig),
+	SerialChannelImpl(static_cast<SerialConfigImpl*>(pConfig))
 {
+	open();
 }
 
 
 SerialChannel::~SerialChannel()
 {
+	close();
 }
 
 

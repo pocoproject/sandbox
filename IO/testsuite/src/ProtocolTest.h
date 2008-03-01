@@ -58,9 +58,8 @@ public:
 	static CppUnit::Test* suite();
 
 private:
-	Poco::IO::SerialConfig _serialConfig;
-	std::string _serialName1;
-	std::string _serialName2;
+	Poco::IO::SerialConfig* _pConfig1;
+	Poco::IO::SerialConfig* _pConfig2;
 };
 
 

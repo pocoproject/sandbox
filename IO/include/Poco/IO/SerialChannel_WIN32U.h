@@ -36,12 +36,13 @@
 //
 
 
-#ifndef IO_SerialChannel_WIN32_INCLUDED
-#define IO_SerialChannel_WIN32_INCLUDED
+#ifndef IO_SerialChannel_WIN32U_INCLUDED
+#define IO_SerialChannel_WIN32U_INCLUDED
 
 
 #include "Poco/IO/IO.h"
 #include "Poco/IO/SerialConfig_WIN32.h"
+#include "Poco/AutoPtr.h"
 #include <windows.h>
 
 
@@ -52,34 +53,32 @@ namespace IO {
 class IO_API SerialChannelImpl
 {
 protected:
-	SerialChannelImpl(const std::string& name, const SerialConfigImpl& config);
+	typedef AutoPtr<SerialConfigImpl> ConfigPtr;
+
+	SerialChannelImpl(SerialConfigImpl* pConfig);
 	~SerialChannelImpl();
 	void initImpl();
-	void reconfigureImpl(const SerialConfigImpl& config);
 	void openImpl();
 	void closeImpl();
-	char readImpl();
-	int readImpl(char* pBuffer, std::size_t length);
-	std::string& readImpl(std::string& buffer, std::size_t length = 0);
-	int writeImpl(char c);
-	int writeImpl(const char* buffer, std::size_t length);
-	int writeImpl(const std::string& data);
+	int readImpl(char* pBuffer, int length);
+	int readImpl(char*& pBuffer);
+	int writeImpl(const char* buffer, int length);
 	const std::string& getNameImpl() const;
 	void handleError(const std::string& path);
-	static std::string& getErrorText(std::string& buf);
+	static std::string& getErrorText(DWORD errCode, std::string& buf);
 
 private:
 	SerialChannelImpl();
 	SerialChannelImpl(const SerialChannelImpl&);
 	const SerialChannelImpl& operator = (const SerialChannelImpl&);
 
-	std::string _name;
-	HANDLE _handle;
-	SerialConfigImpl _config;
+	HANDLE      _handle;
+	ConfigPtr   _pConfig;
+	std::string _leftOver;
 };
 
 
 } } // namespace Poco::IO
 
 
-#endif // IO_SerialChannel_WIN32_INCLUDED
+#endif // IO_SerialChannel_WIN32U_INCLUDED

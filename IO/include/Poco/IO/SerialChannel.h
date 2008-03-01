@@ -41,16 +41,18 @@
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IO/Channel.h"
+#include "Poco/IOChannel.h"
 #include "Poco/IO/SerialConfig.h"
 
 
-#if defined(POCO_OS_FAMILY_WINDOWS) && defined(POCO_WIN32_UTF8)
-#include "SerialChannel_WIN32U.h"
-#elif defined(POCO_OS_FAMILY_WINDOWS)
-#include "Poco/IO/SerialChannel_WIN32.h"
+#if defined(POCO_OS_FAMILY_WINDOWS)
+	#if defined(POCO_WIN32_UTF8)
+		#include "Poco/IO/SerialChannel_WIN32U.h"
+	#else
+		#include "Poco/IO/SerialChannel_WIN32.h"
+	#endif
 #elif defined(POCO_OS_FAMILY_UNIX)
-#include "Poco/IO/SerialChannel_POSIX.h"
+	#include "Poco/IO/SerialChannel_POSIX.h"
 #endif
 
 
@@ -58,26 +60,32 @@ namespace Poco {
 namespace IO {
 
 
-class IO_API SerialChannel: private SerialChannelImpl
+class IO_API SerialChannel: public Poco::IOChannel, private SerialChannelImpl
 {
 public:
-	SerialChannel(const std::string& name, const SerialConfig& config);
+	SerialChannel(SerialConfig* pConfig);
+		/// Creates serial channel.
+
 	~SerialChannel();
-	void init();
-	void reconfigure(const SerialConfig& config);
+		/// Destroys serial channel.
+
 	void open();
+		/// Opens the serial chanel.
+
 	void close();
-	char read();
-	int read(char* pBuffer, std::size_t length);
-	std::string& read(std::string& buffer, std::size_t length = 0);
-	int write(char c);
-	int write(const char* pBuffer, std::size_t length);
-	int write(const std::string& data);
-	const std::string& getName() const;
+		/// Closes the serial channel.
 
 private:
+	void init();
+	
+	int readData(char* pBuffer, int length);
+	int readData(char*& pBuffer);
+	int writeData(const char* buffer, int length);
+
 	SerialChannel(const SerialChannel&);
 	const SerialChannel& operator=(const SerialChannel&);
+
+	SerialConfig* _pConfig;
 };
 
 
@@ -89,12 +97,6 @@ private:
 inline void SerialChannel::init()
 {
 	initImpl();
-}
-
-
-inline void SerialChannel::reconfigure(const SerialConfig& config)
-{
-	reconfigureImpl((SerialConfigImpl&) config);
 }
 
 
@@ -110,49 +112,22 @@ inline void SerialChannel::close()
 }
 
 
-inline char SerialChannel::read()
-{
-	return readImpl();
-}
-
-
-inline int SerialChannel::read(char* pBuffer, std::size_t length)
+inline int SerialChannel::readData(char* pBuffer, int length)
 {
 	return readImpl(pBuffer, length);
 }
 
 
-inline std::string& SerialChannel::read(std::string& buffer, std::size_t length)
+inline int SerialChannel::readData(char*& pBuffer)
 {
-	return readImpl(buffer, length);
+	return readImpl(pBuffer);
 }
 
 
-inline int  SerialChannel::write(char c)
-{
-	return writeImpl(c);
-}
-
-
-inline int SerialChannel::write(const char* pBuffer, std::size_t length)
+inline int SerialChannel::writeData(const char* pBuffer, int length)
 {
 	return writeImpl(pBuffer, length);
 }
-
-
-inline int SerialChannel::write(const std::string& data)
-{
-	return writeImpl(data);
-}
-
-
-inline const std::string& SerialChannel::getName() const
-{
-	return getNameImpl();
-}
-
-
-typedef Channel<SerialChannel, SerialConfig> Serial;
 
 
 } } // namespace Poco::IO

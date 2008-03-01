@@ -315,50 +315,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<Filter
-			Name="Net"
-			>
-			<Filter
-				Name="Header Files"
-				>
-				<File
-					RelativePath=".\src\EchoServer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\NetTest.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				>
-				<File
-					RelativePath=".\src\EchoServer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\NetTest.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.cpp"
-					>
-				</File>
-			</Filter>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

@@ -34,57 +34,44 @@
 //
 
 
-#include "Poco/IO/SerialChannel_WIN32.h"
+#include "Poco/IO/SerialChannel_WIN32U.h"
 #include "Poco/UnicodeConverter.h"
 #include "Poco/Exception.h"
 #include <windows.h>
-
-
-using Poco::CreateFileException;
-using Poco::IOException;
 
 
 namespace Poco {
 namespace IO {
 
 
-SerialChannelImpl::SerialChannelImpl(const std::string& name, const SerialConfigImpl& config): 
-	_name(name), _config(config)
+SerialChannelImpl::SerialChannelImpl(SerialConfigImpl* pConfig): 
+	_pConfig(pConfig)
 {
-	openImpl();
 }
 
 
 SerialChannelImpl::~SerialChannelImpl()
 {
-	closeImpl();
 }
 
 
 void SerialChannelImpl::initImpl()
 {
-	if (!SetCommState(_handle, &(_config.dcb()))) handleError(_name);
+	if (!SetCommState(_handle, &(_pConfig->dcb()))) handleError(_pConfig->name());
 
-	if (!SetCommTimeouts(_handle, &(_config.commTimeouts()))) handleError(_name);
+	if (!SetCommTimeouts(_handle, &(_pConfig->commTimeouts()))) handleError(_pConfig->name());
 
-	DWORD bufSize = (DWORD) _config.getBufferSizeImpl();
+	DWORD bufSize = (DWORD) _pConfig->getBufferSizeImpl();
 	SetupComm(_handle, bufSize, bufSize);
-}
-
-
-void SerialChannelImpl::reconfigureImpl(const SerialConfigImpl& config)
-{
-	_config = config;
-	initImpl();
 }
 
 
 void SerialChannelImpl::openImpl()
 {
 	std::wstring uname;
-	Poco::UnicodeConverter::toUTF16(_name, uname);
+	Poco::UnicodeConverter::toUTF16(_pConfig->name(), uname);
 	_handle = CreateFileW(uname.c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
-	if (INVALID_HANDLE_VALUE == _handle) handleError(_name);
+	if (INVALID_HANDLE_VALUE == _handle) handleError(_pConfig->name());
 
 	initImpl();
 }
@@ -92,111 +79,98 @@ void SerialChannelImpl::openImpl()
 
 void SerialChannelImpl::closeImpl()
 {
-	if (!CloseHandle(_handle)) handleError(_name);
+	if (!CloseHandle(_handle)) handleError(_pConfig->name());
 }
 
 
-char SerialChannelImpl::readImpl()
+int SerialChannelImpl::readImpl(char* pBuffer, int length)
 {
-	char readBuf = 0;
-	readImpl(&readBuf, 1);
-	return readBuf;
-}
-
-
-int SerialChannelImpl::readImpl(char* pBuffer, std::size_t length)
-{
-	if (0 == length) return 0;
-
-	std::string buf;
-	readImpl(buf, length);
-	std::size_t len = length;
-	if (buf.size() < length) len = buf.size();
-	strncpy(pBuffer, buf.c_str(), len);
-	return (int) len;
-}
-
-
-std::string& SerialChannelImpl::readImpl(std::string& buffer, std::size_t length)
-{
-	buffer.clear();
-	int bufSize = length ? (int) length : (int) _config.getBufferSizeImpl();
-	if (0 == bufSize) return buffer;
-	char* pReadBuf = new char[bufSize+1];
 	DWORD read = 0;
 	DWORD readCount = 0;
-	buffer.clear();
+	ZeroMemory(pBuffer, length);
 	do
     {
-		ZeroMemory(pReadBuf, bufSize+1);
-		if (!ReadFile(_handle, pReadBuf + readCount, bufSize - readCount, &read, NULL)) 
-		{
-			delete[] pReadBuf;
-			handleError(_name);
-		}
+		if (!ReadFile(_handle, pBuffer + readCount, length - readCount, &read, NULL)) 
+			handleError(_pConfig->name());
 		else if (0 == read) break;
 
-		poco_assert(read <= bufSize - readCount);
-		buffer.append(pReadBuf + readCount, read);
+		poco_assert (read <= length - readCount);
+		readCount += read;
+	}while(readCount < length);
 
-		if (length) readCount += read;
-		
-		if (_config.getUseEOFImpl()) 
+	return readCount;
+}
+
+
+int SerialChannelImpl::readImpl(char*& pBuffer)
+{
+	if (!_pConfig->getUseEOFImpl())
+		throw InvalidAccessException();
+
+	const char eofChar = _pConfig->getEOFCharImpl();
+	int bufSize = _pConfig->getBufferSizeImpl();
+	int it = 1;
+
+	if ((0 == bufSize) || (0 != pBuffer))
+		throw InvalidArgumentException();
+
+	std::string buffer;
+	DWORD read = 0;
+	DWORD readCount = 0;
+
+	pBuffer = static_cast<char*>(std::calloc(bufSize, sizeof(char)));//! freed in parent call
+
+	do
+    {
+		if (_leftOver.size())
 		{
-			size_t pos = buffer.find(_config.getEOFCharImpl());
-			if (pos != buffer.npos)
-			{
-				buffer = buffer.substr(0, pos);
-				PurgeComm(_handle, PURGE_RXCLEAR);
-				break;
-			}
+			read = _leftOver.size() > bufSize - readCount ? bufSize - readCount : _leftOver.size();
+			std::memcpy(pBuffer + readCount, _leftOver.data(), read);
+			if (read == _leftOver.size())
+				_leftOver.clear();
+			else
+				_leftOver.assign(_leftOver, read, _leftOver.size() - read);
+		}
+		else
+		{
+			if (!ReadFile(_handle, pBuffer + readCount, bufSize - readCount, &read, NULL)) 
+				handleError(_pConfig->name());
+			else if (0 == read) break;
 		}
 
-		if (length && readCount >= length) break;
+		poco_assert (read <= bufSize - readCount);
+		
+		buffer.assign(static_cast<char*>(pBuffer + readCount), read);
+		size_t pos = buffer.find(_pConfig->getEOFCharImpl());
+		if (pos != buffer.npos)
+		{
+			readCount += static_cast<DWORD>(pos);
+			PurgeComm(_handle, PURGE_RXCLEAR);
+			_leftOver.assign(buffer, pos + 1, buffer.size() - pos - 1);
+			break;
+		}
+
+		readCount += read;
+		if (readCount >= bufSize)
+		{
+			bufSize *= ++it;
+			pBuffer = static_cast<char*>(std::realloc(pBuffer, bufSize * sizeof(char)));
+		}
 	}while(true);
 
-	delete[] pReadBuf;
-	return buffer;
+	return readCount;
 }
 
 
-int SerialChannelImpl::writeImpl(char c)
+int SerialChannelImpl::writeImpl(const char* buffer, int length)
 {
-	return writeImpl(&c, 1);
-}
-
-
-int SerialChannelImpl::writeImpl(const char* pBuffer, std::size_t length)
-{
-	if (0 == length) return 0;
-
-	std::string str;
-	str.assign(pBuffer, length);
-	
-	return writeImpl(str);
-}
-
-
-int SerialChannelImpl::writeImpl(const std::string& data)
-{
-	if (0 == data.length()) return 0;
-
-	std::string d = data;
-
-	if (_config.getUseEOFImpl()) 
-	{
-		size_t pos = d.find(_config.getEOFCharImpl());
-		if (pos != d.npos) d = d.substr(0, pos+1);
-	}
-
 	DWORD written = 0;
-	DWORD length = static_cast<DWORD>(d.length());
 
-	if (!WriteFile(_handle, d.data(), length, &written, NULL) || 
+	if (!WriteFile(_handle, buffer, length, &written, NULL) || 
 		((written != length) && (0 != written)))
-		handleError(_name);
+		handleError(_pConfig->name());
 	else if (0 == written)
-		throw IOException("Error writing to " + _name);
+		throw IOException("Error writing to " + _pConfig->name());
 
 	return written;
 }
@@ -204,16 +178,14 @@ int SerialChannelImpl::writeImpl(const std::string& data)
 
 const std::string& SerialChannelImpl::getNameImpl() const
 {
-	return _name;
+	return _pConfig->name();
 }
 
 
-std::string& SerialChannelImpl::getErrorText(std::string& buf)
+std::string& SerialChannelImpl::getErrorText(DWORD errCode, std::string& buf)
 {
     DWORD dwRet;
     LPWSTR pTemp = NULL;
-
-    DWORD errCode = GetLastError();
 
     dwRet = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 		NULL,
@@ -246,27 +218,27 @@ void SerialChannelImpl::handleError(const std::string& name)
 	switch (error)
 	{
 	case ERROR_FILE_NOT_FOUND:
-		throw FileNotFoundException(name, getErrorText(errorText));
+		throw FileNotFoundException(name, getErrorText(error, errorText));
 	case ERROR_ACCESS_DENIED:
-		throw FileAccessDeniedException(name, getErrorText(errorText));
+		throw FileAccessDeniedException(name, getErrorText(error, errorText));
 	case ERROR_ALREADY_EXISTS:
 	case ERROR_FILE_EXISTS:
-		throw FileExistsException(name, getErrorText(errorText));
+		throw FileExistsException(name, getErrorText(error, errorText));
 	case ERROR_FILE_READ_ONLY:
-		throw FileReadOnlyException(name, getErrorText(errorText));
+		throw FileReadOnlyException(name, getErrorText(error, errorText));
 	case ERROR_CANNOT_MAKE:
 	case ERROR_INVALID_NAME:
 	case ERROR_FILENAME_EXCED_RANGE:
-		throw CreateFileException(name, getErrorText(errorText));
+		throw CreateFileException(name, getErrorText(error, errorText));
 	case ERROR_BROKEN_PIPE:
 	case ERROR_INVALID_USER_BUFFER:
 	case ERROR_INSUFFICIENT_BUFFER:
-		throw IOException(name, getErrorText(errorText));
+		throw IOException(name, getErrorText(error, errorText));
 	case ERROR_NOT_ENOUGH_MEMORY:
-		throw OutOfMemoryException(name, getErrorText(errorText));
+		throw OutOfMemoryException(name, getErrorText(error, errorText));
 	case ERROR_HANDLE_EOF: break;
 	default:
-		throw FileException(name, getErrorText(errorText));
+		throw FileException(name, getErrorText(error, errorText));
 	}
 }
 

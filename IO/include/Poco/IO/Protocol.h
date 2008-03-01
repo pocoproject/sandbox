@@ -41,7 +41,7 @@
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IO/AbstractChannel.h"
+#include "Poco/IOChannel.h"
 #include "Poco/RefCountedObject.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/SharedPtr.h"
@@ -70,7 +70,7 @@ public:
 	typedef std::vector<Protocol*> ProtocolVec;
 	typedef std::string ProtocolData;
 
-	Protocol(const std::string& name, AbstractChannel* pChannel);
+	Protocol(const std::string& name, Poco::IOChannel* pChannel);
 		/// Creates the Protocol using the given channel.
 
 	Protocol(const std::string& name/*, Protocol* pParent*/);
@@ -89,7 +89,7 @@ public:
 	void writeRaw(const std::string& buffer);
 		/// Fills the internal buffer with string exactly as supplied.
 		
-	int write(const char* buffer, std::size_t length, bool send = false);
+	int write(const char* buffer, int length, bool send = false);
 		/// Wraps the given buffer into protocol data. 
 		/// If send is true, internal buffer is sent through the channel and cleared.
 		/// Returns the number of bytes sent.
@@ -98,7 +98,7 @@ public:
 		/// Wraps the given buffer into protocol data and sends it through the channel.
 		/// Returns the number of bytes sent.
 	
-	int read(char* pBuffer, std::size_t length);
+	int read(char* pBuffer, int length);
 		/// Reads the data from channel, unwraps it from protocol data and 
 		/// stores it into the supplied buffer.
 
@@ -112,9 +112,9 @@ public:
 	int send();
 		/// Sends the data over the wire and clears the internal buffer.
 
-	std::string& receive(std::string& buffer);
+	std::string& receive(std::string& buffer, int length = 0);
 		/// Receives the data, places the unwrapped data into the supplied buffer
-		/// and return the refernce to the supplied buffer.
+		/// and return the reference to the supplied buffer.
 
 	void clear();
 		/// Clears the internal buffer.
@@ -133,7 +133,7 @@ public:
 	const std::string& name() const;
 		/// Returns this protocol name.
 
-	void setChannel(AbstractChannel* pChannel);
+	void setChannel(Poco::IOChannel* pChannel);
 		/// Sets the channel for this protocol.
 
 	bool isEstablished() const;
@@ -148,7 +148,7 @@ protected:
 	ProtocolVec& protocols();
 		/// Returns the reference to the protocols vector.
 
-	AbstractChannel& channel();
+	Poco::IOChannel& channel();
 		/// Returns the reference to the underlying communication channel.
 
 	std::string& buffer();
@@ -169,7 +169,7 @@ protected:
 private:
 	Protocol();
 	Protocol(const Protocol& other);
-	Protocol& Protocol::operator = (const Protocol& other);
+	Protocol& operator = (const Protocol& other);
 
 	void makeRoot();
 
@@ -179,7 +179,7 @@ private:
 		/// Does nothing if protocol is root.
 
 	std::string      _name;
-	AbstractChannel* _pChannel;
+	Poco::IOChannel* _pChannel;
 	ProtocolVec*     _pProtocols;
 	ProtocolData*    _pBuffer;
 	Protocol*        _pParent;
@@ -215,7 +215,7 @@ inline void Protocol::writeRaw(const std::string& buf)
 
 inline int Protocol::write(const std::string& buffer)
 {
-	return write(buffer.c_str(), buffer.size(), true);
+	return write(buffer.c_str(), static_cast<int>(buffer.size()), true);
 }
 
 
@@ -241,7 +241,7 @@ inline Protocol::ProtocolVec& Protocol::protocols()
 }
 
 
-inline AbstractChannel& Protocol::channel()
+inline Poco::IOChannel& Protocol::channel()
 {
 	if (_pChannel) return *_pChannel;
 	else if (_pParent) return _pParent->channel();
