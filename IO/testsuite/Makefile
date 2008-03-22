@@ -9,8 +9,8 @@
 include $(POCO_BASE)/build/rules/global
 
 objects = IOTestSuite Driver \
-	SerialTestSuite SerialTestHW  SerialTestHWSuite  SerialTestSW  SerialTestSWSuite \
-	ProtocolTest ProtocolTestSuite TestProtocol
+	AsyncChannelTest AsyncIOTestSuite \
+	ProtocolTest ProtocolTestSuite TestProtocol TestChannel
 
 target         = testrunner
 target_version = 1

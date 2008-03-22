@@ -68,16 +68,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib PocoNetd.lib"
-				OutputFile="..\bin\PocoIOd.dll"
+				AdditionalDependencies="PocoFoundationd.lib"
+				OutputFile="..\bin\Poco$(ProjectName)d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\bin\PocoIOd.pdb"
+				ProgramDatabaseFile="..\bin\Poco$(ProjectName)d.pdb"
 				SubSystem="1"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoIOd.lib"
+				ImportLibrary="..\lib\Poco$(ProjectName)d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -162,8 +162,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib PocoNet.lib"
-				OutputFile="..\bin\PocoIO.dll"
+				AdditionalDependencies="PocoFoundation.lib"
+				OutputFile="..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\lib"
@@ -222,161 +222,6 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Serial"
-			>
-			<Filter
-				Name="Header Files"
-				>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_POSIX.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32U.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialConfig_POSIX.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				>
-				<File
-					RelativePath=".\src\SerialChannel.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_POSIX.cpp"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_WIN32.cpp"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_WIN32U.cpp"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig_POSIX.cpp"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig_WIN32.cpp"
-					>
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="Protocol"
 			>
 			<Filter
@@ -400,6 +245,90 @@
 				</File>
 				<File
 					RelativePath=".\src\ProtocolStream.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="AsyncIO"
+			>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\AsyncChannel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\AsyncCommand.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\AsyncEvent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\AsyncStreamChannel.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\include\Poco\IO\ActiveChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\AsyncChannel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\AsyncCommand.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\AsyncEvent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\AsyncStreamChannel.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="IO"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\include\Poco\IO\Channel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ChannelConfig.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ChannelStream.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\Channel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelConfig.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ChannelStream.cpp"
 					>
 				</File>
 			</Filter>

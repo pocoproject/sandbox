@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CppUnitd.lib WinTestRunnerd.lib PocoFoundationd.lib PocoNetd.lib"
+				AdditionalDependencies="CppUnitd.lib WinTestRunnerd.lib PocoFoundationd.lib"
 				OutputFile="bin/TestSuited.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="CppUnit.lib WinTestRunner.lib PocoFoundation.lib PocoNet.lib"
+				AdditionalDependencies="CppUnit.lib WinTestRunner.lib PocoFoundation.lib"
 				OutputFile="bin/TestSuite.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib"
@@ -228,58 +228,6 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Serial"
-			>
-			<Filter
-				Name="Header Files"
-				>
-				<File
-					RelativePath=".\src\SerialTestHW.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestHWSuite.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				>
-				<File
-					RelativePath=".\src\SerialTestHW.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestHWSuite.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.cpp"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="Protocol"
 			>
 			<Filter
@@ -291,6 +239,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ProtocolTestSuite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\TestChannel.h"
 					>
 				</File>
 				<File
@@ -310,7 +262,39 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\TestChannel.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\TestProtocol.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Async"
+			>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\AsyncChannelTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\AsyncIOTestSuite.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\AsyncChannelTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\AsyncIOTestSuite.h"
 					>
 				</File>
 			</Filter>

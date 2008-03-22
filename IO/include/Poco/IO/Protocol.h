@@ -41,7 +41,7 @@
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IOChannel.h"
+#include "Poco/IO/Channel.h"
 #include "Poco/RefCountedObject.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/SharedPtr.h"
@@ -70,7 +70,7 @@ public:
 	typedef std::vector<Protocol*> ProtocolVec;
 	typedef std::string ProtocolData;
 
-	Protocol(const std::string& name, Poco::IOChannel* pChannel);
+	Protocol(const std::string& name, Channel* pChannel);
 		/// Creates the Protocol using the given channel.
 
 	Protocol(const std::string& name/*, Protocol* pParent*/);
@@ -133,7 +133,7 @@ public:
 	const std::string& name() const;
 		/// Returns this protocol name.
 
-	void setChannel(Poco::IOChannel* pChannel);
+	void setChannel(Channel* pChannel);
 		/// Sets the channel for this protocol.
 
 	bool isEstablished() const;
@@ -148,7 +148,7 @@ protected:
 	ProtocolVec& protocols();
 		/// Returns the reference to the protocols vector.
 
-	Poco::IOChannel& channel();
+	Channel& channel();
 		/// Returns the reference to the underlying communication channel.
 
 	std::string& buffer();
@@ -178,13 +178,13 @@ private:
 		/// deletes it. 
 		/// Does nothing if protocol is root.
 
-	std::string      _name;
-	Poco::IOChannel* _pChannel;
-	ProtocolVec*     _pProtocols;
-	ProtocolData*    _pBuffer;
-	Protocol*        _pParent;
-	bool             _established;
-	Poco::Mutex      _mutex;
+	std::string   _name;
+	Channel*    _pChannel;
+	ProtocolVec*  _pProtocols;
+	ProtocolData* _pBuffer;
+	Protocol*     _pParent;
+	bool          _established;
+	Poco::Mutex   _mutex;
 };
 
 
@@ -241,7 +241,7 @@ inline Protocol::ProtocolVec& Protocol::protocols()
 }
 
 
-inline Poco::IOChannel& Protocol::channel()
+inline Channel& Protocol::channel()
 {
 	if (_pChannel) return *_pChannel;
 	else if (_pParent) return _pParent->channel();

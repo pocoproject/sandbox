@@ -37,7 +37,7 @@
 
 
 #include "Poco/IO/IO.h"
-#include "Poco/IO/SerialConfig.h"
+#include "Poco/IO/ChannelConfig.h"
 #include "CppUnit/TestCase.h"
 
 
@@ -56,10 +56,6 @@ public:
 	void tearDown();
 
 	static CppUnit::Test* suite();
-
-private:
-	Poco::IO::SerialConfig* _pConfig1;
-	Poco::IO::SerialConfig* _pConfig2;
 };
 
 

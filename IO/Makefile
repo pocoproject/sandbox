@@ -8,7 +8,9 @@
 
 include $(POCO_BASE)/build/rules/global
 
-objects = Protocol ProtocolStream SerialConfig SerialChannel
+objects = AsyncCommand AsyncEvent AsyncChannel AsyncStreamChannel \
+	Channel ChannelConfig ChannelStream \
+	Protocol ProtocolStream
 
 target         = PocoIO
 target_version = $(LIBVERSION)

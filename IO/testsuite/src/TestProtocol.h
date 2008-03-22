@@ -1,7 +1,7 @@
 //
 // TestProtocol.h
 //
-// $Id: //poco/1.2/Net/testsuite/src/TestProtocol.h#1 $
+// $Id: //poco/Main/IO/testsuite/src/TestProtocol.h#1 $
 //
 // Definition of the TestProtocol class.
 //
@@ -37,14 +37,14 @@
 
 
 #include "Poco/IO/Protocol.h"
-#include "Poco/IOChannel.h"
+#include "Poco/IO/Channel.h"
 
 
 class TestProtocol: public Poco::IO::Protocol
 	/// A test protocol.
 {
 public:
-	TestProtocol(Poco::IOChannel* pChannel, int number);
+	TestProtocol(Poco::IO::Channel* pChannel, int number);
 	TestProtocol(int number);
 
 	virtual ~TestProtocol();

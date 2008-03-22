@@ -56,7 +56,7 @@ namespace Poco {
 namespace IO {
 
 
-Protocol::Protocol(const std::string& name, Poco::IOChannel* pChannel): 
+Protocol::Protocol(const std::string& name, Channel* pChannel): 
 	_name(name),
 	_pChannel(pChannel),
 	_pProtocols(new ProtocolVec()),
@@ -104,7 +104,7 @@ Protocol::~Protocol()
 }
 
 
-void Protocol::setChannel(Poco::IOChannel* pChannel)
+void Protocol::setChannel(Channel* pChannel)
 {
 	poco_check_ptr (pChannel);
 	if (!_pParent) 

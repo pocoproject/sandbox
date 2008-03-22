@@ -1,7 +1,7 @@
 //
 // TestProtocol.cpp
 //
-// $Id: //poco/1.2/Net/testsuite/src/TestProtocol.cpp#1 $
+// $Id: //poco/Main/IO/testsuite/src/TestProtocol.cpp#1 $
 //
 // Copyright (c) 2005-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,13 +32,13 @@
 
 #include "TestProtocol.h"
 #include "Poco/IO/Protocol.h"
-#include "Poco/IOChannel.h"
+#include "Poco/IO/Channel.h"
 #include "Poco/Format.h"
 #include "Poco/Exception.h"
 
 
 using Poco::IO::Protocol;
-using Poco::IOChannel;
+using Poco::IO::Channel;
 using Poco::format;
 using Poco::InvalidArgumentException;
 using Poco::InvalidAccessException;
@@ -48,7 +48,7 @@ const std::string TestProtocol::WRITE_BEGIN = "<data%d>";
 const std::string TestProtocol::WRITE_END = "</data%d>";
 
 
-TestProtocol::TestProtocol(IOChannel* pChannel, int number): 
+TestProtocol::TestProtocol(Channel* pChannel, int number): 
 	Protocol(format("TestProtocol%d", number), pChannel), 
 	_number(number)
 {

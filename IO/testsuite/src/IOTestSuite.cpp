@@ -31,7 +31,7 @@
 
 
 #include "IOTestSuite.h"
-#include "SerialTestSuite.h"
+#include "AsyncIOTestSuite.h"
 #include "ProtocolTestSuite.h"
 
 
@@ -39,7 +39,7 @@ CppUnit::Test* IOTestSuite::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("IOTestSuite");
 
-	pSuite->addTest(SerialTestSuite::suite());
+	pSuite->addTest(AsyncIOTestSuite::suite());
 	pSuite->addTest(ProtocolTestSuite::suite());
 
 	return pSuite;

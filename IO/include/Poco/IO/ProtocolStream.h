@@ -42,7 +42,7 @@
 
 #include "Poco/IO/IO.h"
 #include "Poco/IO/Protocol.h"
-#include "Poco/IOChannel.h"
+//#include "Poco/IO/Channel.h"
 #include "Poco/BufferedBidirectionalStreamBuf.h"
 #include <istream>
 #include <ostream>

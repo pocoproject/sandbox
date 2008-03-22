@@ -32,10 +32,10 @@
 
 #include "ProtocolTest.h"
 #include "TestProtocol.h"
+#include "TestChannel.h"
 #include "Poco/IO/Protocol.h"
 #include "Poco/IO/ProtocolStream.h"
-#include "Poco/IO/SerialConfig.h"
-#include "Poco/IO/SerialChannel.h"
+#include "Poco/IO/ChannelConfig.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/Exception.h"
 #include "CppUnit/TestCaller.h"
@@ -43,11 +43,8 @@
 #include <sstream>
 
 
-using Poco::IO::SerialConfig;
-using Poco::IO::SerialChannel;
 using Poco::IO::ProtocolInputStream;
 using Poco::IO::ProtocolOutputStream;
-using Poco::IO::SerialChannel;
 using Poco::AutoPtr;
 using Poco::CircularReferenceException;
 using Poco::NullPointerException;
@@ -68,8 +65,9 @@ ProtocolTest::~ProtocolTest()
 
 void ProtocolTest::testOne()
 {
-	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
-	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
+	std::string buffer;
+	TestChannel* pCom1 = new TestChannel(buffer);
+	TestChannel* pCom2 = new TestChannel(buffer);
 
 	TestProtocol tp1(pCom1, 1);
 	TestProtocol tp2(pCom2, 1);
@@ -98,8 +96,9 @@ void ProtocolTest::testOne()
 
 void ProtocolTest::testTwo()
 {
-	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
-	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
+	std::string buffer;
+	TestChannel* pCom1 = new TestChannel(buffer);
+	TestChannel* pCom2 = new TestChannel(buffer);
 
 	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
 	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
@@ -228,8 +227,9 @@ void ProtocolTest::testChain()
 	TestProtocol tp1(0);
 	TestProtocol tp2(0);
 
-	tp1.setChannel(new SerialChannel(_pConfig1));
-	tp2.setChannel(new SerialChannel(_pConfig2));
+	std::string buffer;
+	tp1.setChannel(new TestChannel(buffer));
+	tp2.setChannel(new TestChannel(buffer));
 	
 	std::ostringstream pre;
 	std::ostringstream post;
@@ -257,8 +257,9 @@ void ProtocolTest::testChain()
 
 void ProtocolTest::testStreams()
 {
-	SerialChannel* pCom1 = new SerialChannel(_pConfig1);
-	SerialChannel* pCom2 = new SerialChannel(_pConfig2);
+	std::string buffer;
+	TestChannel* pCom1 = new TestChannel(buffer);
+	TestChannel* pCom2 = new TestChannel(buffer);
 
 	AutoPtr<TestProtocol> pTp1 = new TestProtocol(pCom1, 1);
 	AutoPtr<TestProtocol> pTp2 = new TestProtocol(pCom2, 1);
@@ -290,45 +291,6 @@ void ProtocolTest::testStreams()
 
 void ProtocolTest::setUp()
 {
-	std::string name1;
-	std::string name2;
-
-#if defined(POCO_OS_FAMILY_WINDOWS)
-	name1 = "COM1";
-	name2 = "COM2";
-#elif defined(POCO_OS_FAMILY_UNIX)
-	throw NotImplementedException("Not implemented");
-#else
-	throw NotImplementedException("Not implemented");
-#endif
-
-	_pConfig1 = new SerialConfig(name1,
-		SerialConfig::BPS_9600, 
-		SerialConfig::DATA_BITS_EIGHT, 
-		'N', 
-		SerialConfig::START_ONE,
-		SerialConfig::STOP_ONE,
-		SerialConfig::FLOW_CTRL_SOFTWARE,
-		0x11,//xOn
-		0x13,//xOff
-		true,//use EOF
-		SerialConfig::DEFAULT_EOF,//EOF
-		10,//buffer size
-		1000);//timeout
-
-	_pConfig2 = new SerialConfig(name2,
-		SerialConfig::BPS_9600, 
-		SerialConfig::DATA_BITS_EIGHT, 
-		'N', 
-		SerialConfig::START_ONE,
-		SerialConfig::STOP_ONE,
-		SerialConfig::FLOW_CTRL_SOFTWARE,
-		0x11,//xOn
-		0x13,//xOff
-		true,//use EOF
-		SerialConfig::DEFAULT_EOF,//EOF
-		10,//buffer size
-		1000);//timeout
 }
 
 
