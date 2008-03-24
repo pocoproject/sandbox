@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="IO"
+	Name="Serial"
 	ProjectGUID="{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
 	RootNamespace="IO"
 	Keyword="Win32Proj"
@@ -42,8 +42,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
+				AdditionalIncludeDirectories=".\include;..\..\Foundation\include;..\..\IO\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;Serial_EXPORTS"
 				StringPooling="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -69,18 +69,18 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib"
-				OutputFile="..\bin\PocoIOd.dll"
+				AdditionalDependencies="PocoFoundationd.lib PocoIOd.lib"
+				OutputFile="..\..\bin\Poco$(ProjectName)d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="..\bin\PocoIOd.pdb"
+				ProgramDatabaseFile="..\bin\Poco$(ProjectName)d.pdb"
 				SubSystem="1"
 				OptimizeForWindows98="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="..\lib\PocoIOd.lib"
+				ImportLibrary="..\..\lib\Poco$(ProjectName)d.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -135,8 +135,8 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\Net\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;IO_EXPORTS"
+				AdditionalIncludeDirectories=".\include;..\..\Foundation\include;..\..\IO\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;Serial_EXPORTS"
 				GeneratePreprocessedFile="0"
 				KeepComments="false"
 				StringPooling="true"
@@ -162,11 +162,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib"
-				OutputFile="..\bin\PocoIO.dll"
+				AdditionalDependencies="PocoFoundation.lib PocoIO.lib"
+				OutputFile="..\..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
 				SubSystem="1"
@@ -175,7 +175,7 @@
 				OptimizeForWindows98="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="..\lib\PocoIO.lib"
+				ImportLibrary="..\..\lib\Poco$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -205,13 +205,13 @@
 	</References>
 	<Files>
 		<Filter
-			Name="IOCore"
+			Name="SerialCore"
 			>
 			<Filter
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\include\Poco\IO\IO.h"
+					RelativePath=".\include\Poco\IO\Serial\Serial.h"
 					>
 				</File>
 			</Filter>
@@ -227,34 +227,107 @@
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\include\Poco\IO\SerialChannel.h"
+					RelativePath=".\include\Poco\IO\Serial\SerialChannel.h"
 					>
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_POSIX.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32U.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialConfig_POSIX.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h"
+					RelativePath=".\include\Poco\IO\Serial\SerialChannel_POSIX.h"
 					>
 					<FileConfiguration
 						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Serial\SerialChannel_WIN32.h"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Serial\SerialChannel_WIN32U.h"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Serial\SerialConfig.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Serial\SerialConfig_POSIX.h"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\Serial\SerialConfig_WIN32.h"
+					>
+					<FileConfiguration
+						Name="debug_shared|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="release_shared|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -372,34 +445,6 @@
 							Name="VCCLCompilerTool"
 						/>
 					</FileConfiguration>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Protocol"
-			>
-			<Filter
-				Name="Header Files"
-				>
-				<File
-					RelativePath=".\include\Poco\IO\Protocol.h"
-					>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\ProtocolStream.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				>
-				<File
-					RelativePath=".\src\Protocol.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\ProtocolStream.cpp"
-					>
 				</File>
 			</Filter>
 		</Filter>

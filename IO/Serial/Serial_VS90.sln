@@ -1,11 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IO", "IO_VS90.vcproj", "{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSuite", "testsuite\TestSuite_VS90.vcproj", "{B6E34FDD-B2F6-45FD-B93F-44EAD8497877}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1} = {3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Serial", "Serial_VS90.vcproj", "{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		release_shared|Win32 = release_shared|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.debug_shared|Win32.ActiveCfg = debug_shared|Win32
-		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.debug_shared|Win32.Build.0 = debug_shared|Win32
-		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.release_shared|Win32.ActiveCfg = release_shared|Win32
-		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.release_shared|Win32.Build.0 = release_shared|Win32
 		{B6E34FDD-B2F6-45FD-B93F-44EAD8497877}.debug_shared|Win32.ActiveCfg = debug_shared|Win32
 		{B6E34FDD-B2F6-45FD-B93F-44EAD8497877}.debug_shared|Win32.Build.0 = debug_shared|Win32
 		{B6E34FDD-B2F6-45FD-B93F-44EAD8497877}.release_shared|Win32.ActiveCfg = release_shared|Win32
 		{B6E34FDD-B2F6-45FD-B93F-44EAD8497877}.release_shared|Win32.Build.0 = release_shared|Win32
+		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.debug_shared|Win32.ActiveCfg = debug_shared|Win32
+		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.debug_shared|Win32.Build.0 = debug_shared|Win32
+		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.release_shared|Win32.ActiveCfg = release_shared|Win32
+		{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}.release_shared|Win32.Build.0 = release_shared|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

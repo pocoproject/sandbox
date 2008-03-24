@@ -228,29 +228,17 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Serial"
+			Name="Async"
 			>
 			<Filter
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\src\SerialTestHW.h"
+					RelativePath=".\src\AsyncChannelTest.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\SerialTestHWSuite.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.h"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.h"
+					RelativePath=".\src\AsyncIOTestSuite.h"
 					>
 				</File>
 			</Filter>
@@ -258,23 +246,11 @@
 				Name="Source Files"
 				>
 				<File
-					RelativePath=".\src\SerialTestHW.cpp"
+					RelativePath=".\src\AsyncChannelTest.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\SerialTestHWSuite.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.cpp"
+					RelativePath=".\src\AsyncIOTestSuite.cpp"
 					>
 				</File>
 			</Filter>
@@ -294,6 +270,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\TestChannel.h"
+					>
+				</File>
+				<File
 					RelativePath=".\src\TestProtocol.h"
 					>
 				</File>
@@ -307,6 +287,10 @@
 				</File>
 				<File
 					RelativePath=".\src\ProtocolTestSuite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\TestChannel.cpp"
 					>
 				</File>
 				<File
