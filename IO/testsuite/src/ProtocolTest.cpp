@@ -80,7 +80,7 @@ void ProtocolTest::testOne()
 	assert (tp1.readRaw() == "");
 	std::string str;
 	int size = static_cast<int>(rawData.size());
-	tp2.receive(str, size);
+	tp2.receive(str);
 	assert (tp2.readRaw() == rawData);
 	assert ("123" == str);
     tp2.clear();
@@ -88,7 +88,7 @@ void ProtocolTest::testOne()
 
 	tp1.write("123");
 	assert (tp1.readRaw() == "");
-	tp2.receive(str, size);
+	tp2.receive(str);
 	assert (tp2.readRaw() == rawData);
 	assert ("123" == str);
 }
@@ -116,7 +116,7 @@ void ProtocolTest::testTwo()
 	assert (pTp1->readRaw() == "");
 	std::string str;
 	int size = static_cast<int>(rawData.size());
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
     pTp2->clear();
@@ -124,13 +124,13 @@ void ProtocolTest::testTwo()
 
 	pTp1->write("123");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
 
 	str.clear();
 	pTp2->send();
-	pTp1->receive(str, size);
+	pTp1->receive(str);
 	assert ("123" == str);
 
 	try
@@ -169,7 +169,7 @@ void ProtocolTest::testTwo()
 	pTp3->send();
 	assert (pTp3->readRaw() == "");
 	str.clear();
-	pTp4->receive(str, size);
+	pTp4->receive(str);
 	assert (pTp4->readRaw() == rawData);
 	assert ("321" == str);
     pTp4->clear();
@@ -186,7 +186,7 @@ void ProtocolTest::testTwo()
 	pTp1->send();
 	assert (pTp1->readRaw() == "");
 	str.clear();
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
     pTp2->clear();
@@ -194,7 +194,7 @@ void ProtocolTest::testTwo()
 
 	pTp1->write("123");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
 
@@ -203,7 +203,7 @@ void ProtocolTest::testTwo()
 	str.clear();
 	pTp1->write("321");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("321" == str);
 
@@ -215,7 +215,7 @@ void ProtocolTest::testTwo()
 	str.clear();
 	pTp1->write("456");
 	assert (pTp1->readRaw() == "");
-	pTp2->receive(str, size);
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("456" == str);
 }
@@ -248,7 +248,7 @@ void ProtocolTest::testChain()
 	std::string po = post.str();
 	std::string str;
 	tp1.write("1234567890");
-	tp2.receive(str, (int) (pr.size() + std::strlen("1234567890") + po.size()));
+	tp2.receive(str);
 
 	assert (pre.str() + str + post.str() == tp2.readRaw());
 	assert ("1234567890" == str);
@@ -283,7 +283,7 @@ void ProtocolTest::testStreams()
 
 	str.clear();
 	sos << "5432109876" << std::flush;
-	pTp2->receive(str, (int) rawData.size());
+	pTp2->receive(str);
 	assert (pTp2->readRaw() == "<data2><data1>5432109876</data1></data2>");
 	assert ("5432109876" == str);
 }

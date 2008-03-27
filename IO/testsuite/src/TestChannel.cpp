@@ -55,9 +55,9 @@ int TestChannel::readData(char* pBuffer, int length)
 
 int TestChannel::readData(char*& pBuffer)
 {
-	std::size_t len = _buffer.size() + 1;
+	std::size_t len = _buffer.size();
 	pBuffer = static_cast<char*>(std::calloc(len, sizeof(char)));//! freed in parent call
-	std::memcpy(pBuffer, _buffer.c_str(), len - 1);
+	std::memcpy(pBuffer, _buffer.c_str(), len);
 	_buffer.clear();
 	return static_cast<int>(len);
 }

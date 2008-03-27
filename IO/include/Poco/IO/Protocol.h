@@ -112,7 +112,7 @@ public:
 	int send();
 		/// Sends the data over the wire and clears the internal buffer.
 
-	std::string& receive(std::string& buffer, int length = 0);
+	std::string& receive(std::string& buffer);
 		/// Receives the data, places the unwrapped data into the supplied buffer
 		/// and return the reference to the supplied buffer.
 
@@ -179,7 +179,7 @@ private:
 		/// Does nothing if protocol is root.
 
 	std::string   _name;
-	Channel*    _pChannel;
+	Channel*      _pChannel;
 	ProtocolVec*  _pProtocols;
 	ProtocolData* _pBuffer;
 	Protocol*     _pParent;

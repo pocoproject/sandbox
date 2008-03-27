@@ -143,13 +143,12 @@ int SocketChannel::readData(char* pBuffer, int length)
 
 	try
 	{
-		if (!socketImpl()->poll(config().getTimeout(), SocketImpl::SELECT_READ)) 
+		if (!socketImpl()->poll(config().getTimeout() * Timespan::MILLISECONDS, SocketImpl::SELECT_READ)) 
 			throw TimeoutException("read timed out", socketImpl()->address().toString());
 		received = socketImpl()->receiveBytes(pBuffer, (int) length);
 	}
 	catch (Poco::Exception&)
 	{
-		socketImpl()->setBlocking(true);
 		throw;
 	}
 
@@ -160,18 +159,15 @@ int SocketChannel::readData(char* pBuffer, int length)
 int SocketChannel::writeData(const char* pBuffer, int length)
 {
 	int sent = 0;
-	socketImpl()->setBlocking(false);
 
 	try
 	{
-		if (!socketImpl()->poll(config().getTimeout(), SocketImpl::SELECT_WRITE)) 
+		if (!socketImpl()->poll(config().getTimeout() * Timespan::MILLISECONDS, SocketImpl::SELECT_WRITE)) 
 			throw Poco::TimeoutException("write timed out", socketImpl()->address().toString());
 		sent = socketImpl()->sendBytes(pBuffer, (int) length);
-		socketImpl()->setBlocking(true);
 	}
 	catch (Poco::Exception&)
 	{
-		socketImpl()->setBlocking(true);
 		throw;
 	}
 	

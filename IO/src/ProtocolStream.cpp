@@ -64,7 +64,7 @@ ProtocolStreamBuf::~ProtocolStreamBuf()
 int ProtocolStreamBuf::readFromDevice(char* buffer, std::streamsize length)
 {
 	std::string str;
-	_pProtocol->receive(str, length);
+	_pProtocol->receive(str);
 	std::size_t len = str.size() < length ? str.size() : length;
 	memcpy(buffer, str.data(), len);
 	return (int) len;

@@ -130,9 +130,9 @@ int Protocol::send()
 }
 
 
-std::string& Protocol::receive(std::string& buf, int length)
+std::string& Protocol::receive(std::string& buf)
 {
-	channel().read(buffer(), length);
+	channel().read(buffer());
 	return buf = data();
 }
 
@@ -140,13 +140,13 @@ std::string& Protocol::receive(std::string& buf, int length)
 int Protocol::read(char* pBuffer, int length)
 {
 	std::string str;
-	receive(str, length);
+	receive(str);
 
 	std::memset(pBuffer, 0, length);
 	int len = str.size() > length ? length : static_cast<int>(str.size());
 	std::memcpy(pBuffer, str.data(), len);
 
-	return (int) len;
+	return len;
 }
 
 
