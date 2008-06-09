@@ -38,11 +38,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundationd.lib PocoXMLd.lib PocoUtild.lib PocoZipd.lib"
-				OutputFile="bin/zipd.exe"
+				OutputFile="bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="bin/zipd.pdb"
+				ProgramDatabaseFile="bin/$(ProjectName)d.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundation.lib PocoXML.lib PocoUtil.lib PocoZip.lib"
-				OutputFile="bin/zip.exe"
+				OutputFile="bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\lib"
 				GenerateDebugInformation="FALSE"

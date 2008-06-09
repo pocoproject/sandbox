@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
-	Name="unzip"
-	ProjectGUID="{0CFFC7B0-04F4-4A60-B6E4-84D78EDA2C73}"
+	Version="9.00"
+	Name="TestSuite"
+	ProjectGUID="{9665FC3C-DB71-4C6C-AAEE-AAFD73CB31E7}"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +20,6 @@
 			OutputDirectory="obj\debug_shared"
 			IntermediateDirectory="obj\debug_shared"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
 			CharacterSet="2"
 			>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\..\Foundation\include;..\..\..\XML\include;..\..\..\Util\include"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;..\..\Net\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,13 +66,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib PocoXMLd.lib PocoUtild.lib PocoZipd.lib"
-				OutputFile="bin/$(ProjectName)d.exe"
+				AdditionalDependencies="CppUnitd.lib WinTestRunnerd.lib PocoFoundationd.lib PocoZipd.lib PocoNetd.lib"
+				OutputFile="bin/TestSuited.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="bin/$(ProjectName)d.pdb"
-				SubSystem="1"
+				ProgramDatabaseFile="bin/TestSuited.pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -94,9 +96,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -105,7 +104,6 @@
 			OutputDirectory="obj\release_shared"
 			IntermediateDirectory="obj\release_shared"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
 			CharacterSet="2"
 			>
@@ -131,7 +129,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="..\..\include;..\..\..\Foundation\include;..\..\..\XML\include;..\..\..\Util\include"
+				AdditionalIncludeDirectories="..\include;..\..\Foundation\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;..\..\Net\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;POCO_DLL;WINVER=0x0500"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -155,15 +153,17 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib PocoXML.lib PocoUtil.lib PocoZip.lib"
-				OutputFile="bin/$(ProjectName).exe"
+				AdditionalDependencies="CppUnit.lib WinTestRunner.lib PocoFoundation.lib PocoZip.lib PocoNet.lib"
+				OutputFile="bin/TestSuite.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -185,9 +185,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -196,16 +193,72 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Header Files"
+			Name="Zip"
 			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\src\CompressTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PartialStreamTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ZipTest.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\CompressTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\PartialStreamTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\ZipTest.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
-			Name="Source Files"
+			Name="_Suite"
 			>
-			<File
-				RelativePath=".\src\unzip.cpp"
+			<Filter
+				Name="Header Files"
 				>
-			</File>
+				<File
+					RelativePath=".\src\ZipTestSuite.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\ZipTestSuite.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="_Driver"
+			>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\WinDriver.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

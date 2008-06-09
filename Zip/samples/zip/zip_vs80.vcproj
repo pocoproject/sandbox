@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="zip"
 	ProjectGUID="{73408DCF-2E65-47AF-BF38-7466DAB8D5CB}"
 	Keyword="Win32Proj"
@@ -67,11 +67,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundationd.lib PocoXMLd.lib PocoUtild.lib PocoZipd.lib"
-				OutputFile="bin/zipd.exe"
+				OutputFile="bin/$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="bin/zipd.pdb"
+				ProgramDatabaseFile="bin/$(ProjectName)d.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundation.lib PocoXML.lib PocoUtil.lib PocoZip.lib"
-				OutputFile="bin/zip.exe"
+				OutputFile="bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\lib"
 				GenerateDebugInformation="false"

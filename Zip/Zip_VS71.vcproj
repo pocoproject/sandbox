@@ -40,15 +40,15 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundationd.lib"
-				OutputFile="..\bin\PocoZipd.dll"
+				OutputFile="..\bin\Poco$(ProjectName)d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="..\bin\PocoZipd.pdb"
+				ProgramDatabaseFile="..\bin\Poco$(ProjectName)d.pdb"
 				SubSystem="1"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoZipd.lib"
+				ImportLibrary="..\lib\Poco$(ProjectName)d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundation.lib"
-				OutputFile="..\bin\PocoZip.dll"
+				OutputFile="..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\lib"
@@ -115,7 +115,7 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoZip.lib"
+				ImportLibrary="..\lib\Poco$(ProjectName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
