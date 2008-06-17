@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	CryptoStream
+// Module:  CryptoStream
 //
 // Definition of the CryptoStreamBuf, CryptoInputStream and CryptoOutputStream
 // classes.

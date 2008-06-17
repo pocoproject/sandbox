@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	Cipher
+// Module:  Cipher
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.

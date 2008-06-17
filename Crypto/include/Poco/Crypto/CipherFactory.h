@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	CipherFactory
+// Module:  CipherFactory
 //
 // Definition of the CipherFactory class.
 //

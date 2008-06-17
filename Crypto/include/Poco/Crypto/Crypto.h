@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	Crypto
+// Module:  Crypto
 //
 // Basic definitions for the Poco Crypto library.
 // This file must be the first file included by every other Crypto

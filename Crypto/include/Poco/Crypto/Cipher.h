@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	Cipher
+// Module:  Cipher
 //
 // Definition of the Cipher class.
 //

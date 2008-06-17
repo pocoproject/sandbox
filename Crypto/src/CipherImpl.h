@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	CipherImpl
+// Module:  CipherImpl
 //
 // Definition of the CipherImpl class.
 //

@@ -5,7 +5,7 @@
 //
 // Library: Crypto
 // Package: CryptoCore
-// Module:	CryptoTransform
+// Module:  CryptoTransform
 //
 // Definition of the CryptoTransform class.
 //
