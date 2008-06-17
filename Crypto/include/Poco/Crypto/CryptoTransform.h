@@ -49,7 +49,11 @@ namespace Crypto {
 
 class Crypto_API CryptoTransform
 	/// This interface represents the basic operations for cryptographic
-	/// transformations to be used with a CryptoStream.
+	/// transformations to be used with a CryptoInputStream or a
+	/// CryptoOutputStream.
+	///
+	/// Implementations of this class are returned by the Cipher class to
+	/// perform encryption or decryption of data.
 {
 public:
 	CryptoTransform();

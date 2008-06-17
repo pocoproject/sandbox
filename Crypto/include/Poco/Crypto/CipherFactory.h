@@ -51,7 +51,8 @@ class Cipher;
 
 
 class Crypto_API CipherFactory
-	/// A factory for Cipher objects.
+	/// A factory for Cipher objects. See the Cipher class for examples on how to
+	/// use the CipherFactory.
 {
 public:
 	CipherFactory();
@@ -61,7 +62,19 @@ public:
 		/// Destroys the CipherFactory.
 
 	Cipher* createCipher(const std::string& name);
-		/// Creates a Cipher object for the given Cipher name.
+		/// Creates a Cipher object for the given Cipher name. Valid cipher names
+		/// depend on the OpenSSL version the library is linked with; see the output
+		/// of
+		///
+		///     openssl enc --help
+		///
+		/// for a list of supported block and stream ciphers.
+		///
+		/// Common examples are:
+		///
+		///   * AES: "aes-128", "aes-256"
+		///   * DES: "des", "des3"
+		///   * Blowfish: "bf"
 
 	static CipherFactory& defaultFactory();
 		/// Returns the default CipherFactory.
