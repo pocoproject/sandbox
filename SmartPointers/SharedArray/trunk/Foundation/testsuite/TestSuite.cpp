@@ -1,5 +1,5 @@
 //
-// SharedArrayTest.cpp
+// TestSuite.cpp
 //
 // $Id: //poco/1.3/Foundation/testsuite/src/SharedArrayTest.cpp#1 $
 //
@@ -29,9 +29,14 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#include "Poco/SharedArray.h"
+#include "TestSuite.h"
+
+#include <Poco/SharedArray.h>
+#include <Poco/Mutex.h>
+
 #include <assert.h>
 #include <iostream>
+#include <vector>
 
 using Poco::SharedArray;
 using Poco::NullPointerException;
@@ -43,12 +48,14 @@ namespace
     public:
         TestObject(const int& data = 0) : _data(data)
         {
+            Poco::FastMutex::ScopedLock lock(_mutex);
             ++_count;
             std::cout << "current counter : " << _count << "\n";
         }
 
         virtual ~TestObject()
         {
+            Poco::FastMutex::ScopedLock lock(_mutex);
             --_count;
             std::cout << "current counter : " << _count << "\n";
         }
@@ -71,100 +78,216 @@ namespace
     private:
         int _data;
         static int _count;
+
+        Poco::FastMutex _mutex;
     };
 
     int TestObject::_count = 0;
 }
 
-struct SharedArrayTest
+void SharedArrayTestSuite::testConstruction()
 {
 
-    void testSharedArray()
     {
+        // default construction
         SharedArray<TestObject> ptr1;
         poco_assert(ptr1.get() == 0);
-        TestObject* pTO1 = new TestObject[10];
-        for(int i = 0; i < 10; i++){
-            pTO1[i].set(i);
-        }
-
-        ptr1 = pTO1;
-        assert (ptr1.get() == pTO1);
-        assert (ptr1 == pTO1);
-        for(int i = 0; i< 10; i++){
-            assert(ptr1[i].data() == i);
-        }
-
-        TestObject* pTO2 = new TestObject[20];
-        for(int i = 20; i > 0; i--){
-            pTO2[i].set(i);
-        }
-        SharedArray<TestObject> ptr2 = pTO2;
-        SharedArray<TestObject> ptr3 = ptr1;
-        SharedArray<TestObject> ptr4;
-        assert (ptr1.get() == pTO1);
-        assert (ptr1 == pTO1);
-        assert (ptr2.get() == pTO2);
-        assert (ptr2 == pTO2);
-        assert (ptr3.get() == pTO1);
-        assert (ptr3 == pTO1);
-
-        assert (ptr1 == pTO1);
-        assert (ptr1 != pTO2);
-        assert (ptr1 < pTO2);
-        assert (ptr1 <= pTO2);
-        assert (ptr2 > pTO1);
-        assert (ptr2 >= pTO1);
-
-        assert (ptr1 == ptr3);
-        assert (ptr1 != ptr2);
-        assert (ptr1 < ptr2);
-        assert (ptr1 <= ptr2);
-        assert (ptr2 > ptr1);
-        assert (ptr2 >= ptr1);
-
-        ptr1.swap(ptr2);
-        assert (ptr2 < ptr1);
-        ptr2.swap(ptr1);
 
         try
         {
-            assert (ptr4[0].data() == 1);
+            poco_assert (ptr1[0].data() == 1);
             assert (!"must throw NullPointerException");
         }
-        catch (NullPointerException&)
+        catch (NullPointerException& e)
         {
+            std::cout << "Exception caught: " << e.displayText() << std::endl;
         }
-
-        assert (!(ptr4 == ptr1));
-        assert (!(ptr4 == ptr2));
-        assert (ptr4 != ptr1);
-        assert (ptr4 != ptr2);
-
-        ptr4 = ptr2;
-        assert (ptr4 == ptr2);
-        assert (!(ptr4 != ptr2));
-
-        assert (TestObject::count() == 30);
-        ptr1 = 0;
-        ptr2 = 0;
-        ptr3 = 0;
-        ptr4 = 0;
-        assert (TestObject::count() == 0);
-
-        {
-            SharedArray<TestObject> ptr = new TestObject[2];
-            assert (TestObject::count() == 2);
-        }
-        assert (TestObject::count() == 0);
 
     }
 
-};
+    poco_assert(TestObject::count() == 0);
+
+    // construct from explicit raw pointer to dynamical allocated array
+    {        
+        SharedArray<TestObject> ptr2(new TestObject[10]);
+        poco_assert(ptr2.get() != 0);
+        poco_assert(ptr2);
+        poco_assert(!ptr2 == false);
+        poco_assert(TestObject::count() == 10);
+
+        // the following code wont compile
+        TestObject* p = new TestObject[10];
+        SharedArray<TestObject> ptr3(p);
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+    // copy construction 
+    {        
+        SharedArray<TestObject> ptr3(new TestObject[10]);
+        poco_assert(ptr3.get() != 0);
+        poco_assert(TestObject::count() == 10);
+
+        SharedArray<TestObject> ptr4(ptr3);
+        poco_assert(TestObject::count() == 10);
+    }
+    poco_assert(TestObject::count() == 0);
+
+}
+
+void SharedArrayTestSuite::testAssignment()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        
+        SharedArray<TestObject> ptr1(new TestObject[10]);
+        poco_assert(ptr1.get() != 0);
+        poco_assert(TestObject::count() == 10);
+
+        SharedArray<TestObject> ptr2 = ptr1;
+
+        poco_assert(TestObject::count() == 10);
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+    // note we use explicit constructor for raw pointer, the following wont compile
+    // {        
+    //    TestObject*p = new TestObject[10];        
+    //    SharedArray<TestObject> ptr1 = p;
+    // }
+
+
+}
+
+void SharedArrayTestSuite::testSwap()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        
+        SharedArray<TestObject> ptr1(new TestObject[10]);
+
+        // before swap
+        poco_assert(ptr1.get() != 0);
+        poco_assert(TestObject::count() == 10);
+
+        {
+            SharedArray<TestObject> ptr2(new TestObject[20]);
+            ptr2.swap(ptr1);
+            poco_assert(TestObject::count() == 30);     
+            poco_assert(ptr2.get() != 0);
+        }
+
+        // after swap
+        poco_assert(ptr1.get() != 0);
+        poco_assert(TestObject::count() == 20);
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+}
+
+void SharedArrayTestSuite::testElementAccess()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        
+        SharedArray<TestObject> ptr1(new TestObject[10]);
+
+        for(int i = 0; i<10; i++){
+            ptr1[i].set(i);
+        }
+
+        for(int i = 0; i<10; i++){
+            poco_assert(i == ptr1[i].data());
+        }        
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+}
+
+
+void SharedArrayTestSuite::testAddressComparison()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        
+        SharedArray<TestObject> ptr1(new TestObject[10]);
+        SharedArray<TestObject> ptr2(new TestObject[10]);
+        SharedArray<TestObject> ptr3(ptr1);
+
+        poco_assert(ptr1);
+        poco_assert(ptr2 != ptr1);
+        poco_assert(ptr3 == ptr1);
+
+        if(ptr1.get() > ptr2.get()){
+           poco_assert(ptr1 > ptr2);
+        }
+        if(ptr1.get() >= ptr2.get()){
+            poco_assert(ptr1 >= ptr2);
+        }
+        if(ptr1.get() < ptr2.get()){
+            poco_assert(ptr1 < ptr2);
+        }
+        if(ptr1.get() <= ptr2.get()){
+            poco_assert(ptr1 <= ptr2);
+        }
+
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+}
+
+void SharedArrayTestSuite::testStlContainers()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        
+        typedef std::vector<SharedArray<TestObject> >             TContainer;
+        typedef std::vector<SharedArray<TestObject> >::iterator   TIter;
+
+        TContainer container;
+
+        container.push_back(SharedArray<TestObject> (new TestObject[10]));
+        container.push_back(SharedArray<TestObject> (new TestObject[10]));
+        container.push_back(SharedArray<TestObject> (new TestObject[10]));           
+
+        poco_assert(TestObject::count() == 30);
+
+        for(TIter it = container.begin(); it != container.end(); ++it){
+            (*it)[0].set(0);
+        }
+
+        poco_assert(container[0][0].data() == 0);
+        poco_assert(container[1][0].data() == 0);
+        poco_assert(container[2][0].data() == 0);
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+}
 
 int main()
 {
 
-    SharedArrayTest test;
-    test.testSharedArray();
+    SharedArrayTestSuite test;
+
+    test.testConstruction();
+    test.testAssignment();
+    test.testSwap();
+    test.testElementAccess();
+    test.testAddressComparison();
+    test.testStlContainers();
 }

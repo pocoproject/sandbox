@@ -1,7 +1,7 @@
 //
-// sampleBasic.cpp
+// SharedArrayTestSuite.h
 //
-// $Id: //poco/1.3/Foundation/testsuite/src/sampleBasic.cpp#1 $
+// $Id: //poco/1.3/Foundation/testsuite/src/TestSuite.h#1 $
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -29,19 +29,26 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#include "Poco/SharedArray.h"
-#include <assert.h>
-#include <iostream>
+#ifndef Foundation_TestSuite_INCLUDED
+#define Foundation_TestSuite_INCLUDED
 
-int main()
+struct SharedArrayTestSuite
 {
 
-    Poco::SharedArray<int> foo(new int[10]);
+    void testConstruction();
 
-    if(foo){
-        for(int i = 0; i<10; i++){
-           foo[0] = i;
-        }        
-    }
+    void testAssignment();
 
-}
+    void testElementAccess();
+
+    void testSwap();
+
+    void testAddressComparison();
+
+    void testStlContainers();
+
+};
+
+#endif // Foundation_TestSuite_INCLUDED
+
+

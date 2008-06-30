@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="testsuite"
-	ProjectGUID="{510CFB7B-1224-014B-9D6C-2D464ACB598D}"
+	ProjectGUID="{419C5D39-6DBD-8A4A-A522-CB99E3CAAD80}"
 	RootNamespace="testsuite"
 	Keyword="Win32Proj"
 	>
@@ -359,6 +359,10 @@
 				Name="testsuite"
 				Filter=""
 				>
+				<File
+					RelativePath="..\..\Foundation\testsuite\testsuite.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\Foundation\testsuite\TestSuite.cpp"
 					>

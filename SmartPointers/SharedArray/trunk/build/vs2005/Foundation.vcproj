@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="Foundation"
-	ProjectGUID="{61E5D566-0F8D-1C4C-AFEF-5A0B1508CB80}"
+	ProjectGUID="{DA7B6EA8-15C2-E846-9884-BFCEC2013173}"
 	RootNamespace="Foundation"
 	Keyword="Win32Proj"
 	>

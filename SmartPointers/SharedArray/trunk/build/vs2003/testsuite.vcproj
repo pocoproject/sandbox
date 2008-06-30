@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="testsuite"
-	ProjectGUID="{39F88D95-93F7-474E-A114-F94A4814F48D}"
+	ProjectGUID="{A0792D6F-25A8-FB4B-A9EC-019D52F41D6B}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -244,6 +244,9 @@
 			<Filter
 				Name="testsuite"
 				Filter="">
+				<File
+					RelativePath="..\..\Foundation\testsuite\testsuite.h">
+				</File>
 				<File
 					RelativePath="..\..\Foundation\testsuite\TestSuite.cpp">
 				</File>

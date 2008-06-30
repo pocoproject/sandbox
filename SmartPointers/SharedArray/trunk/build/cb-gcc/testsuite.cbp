@@ -77,6 +77,13 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Unit filename="../../Foundation/testsuite/testsuite.h">
+			<Option compilerVar="CPP" />
+			<Option target="debug_shared" />
+			<Option target="release_shared" />
+			<Option target="debug_static" />
+			<Option target="release_static" />
+		</Unit>
 		<Unit filename="../../Foundation/testsuite/TestSuite.cpp">
 			<Option compilerVar="CPP" />
 			<Option target="debug_shared" />
