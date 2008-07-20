@@ -35,7 +35,17 @@
 local samples =
 {
     -- add more sample here and this script will build them all
-    "Basic"
+    "Abstract",
+    "Array",
+    "Basic",
+    "BlockExit",
+    "Factory",
+    "Handle",
+    "IncompleteType",
+    "Pimpl",
+    "PreventDelete",
+    "Void",
+    "StaticObject"
 }
 
 -- Output is placed in a directory named for the target toolset.
@@ -85,7 +95,7 @@ function makesample(index, name)
 
     package.links = { "Foundation"}
 
-    package.files = { "../../Foundation/samples/sample" .. name .. ".cpp" }
+    package.files = { "../../Foundation/samples/sample" .. name .. ".cpp" , "../../Foundation/samples/sample" .. name .. ".h"}
 
     package.libpaths =
     {
