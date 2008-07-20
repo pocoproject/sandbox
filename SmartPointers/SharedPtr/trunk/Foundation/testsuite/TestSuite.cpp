@@ -179,7 +179,7 @@ void testCustomResource()
 
 	// test other resource with raw function pointer
 	{
-		SharedPtr<FILE> p(fp = fopen("./a.txt", "wb"), fclose);
+		SharedPtr<FILE> p(fp = fopen("./a.txt", "w+"), fclose);
 		poco_assert(p.get() != 0);
 		n = fwrite(buf, sizeof(buf), 1, p.get());
 		poco_assert(n == 1);
@@ -191,7 +191,7 @@ void testCustomResource()
 
 	// test other resource with customized function pointer deleter
 	{
-		SharedPtr<FILE> p(fp = fopen("./a.txt", "wb"), logFileCloser);
+		SharedPtr<FILE> p(fp = fopen("./a.txt", "w+"), logFileCloser);
 		poco_assert(p.get() != 0);
 		n = fwrite(buf, sizeof(buf), 1, p.get());
 		poco_assert(n == 1);
@@ -203,7 +203,7 @@ void testCustomResource()
 
 	// test other resource with customized functor deleter
 	{
-		SharedPtr<FILE> p(fp = fopen("./a.txt", "wb"), logFileFunctorCloser());
+		SharedPtr<FILE> p(fp = fopen("./a.txt", "w+"), logFileFunctorCloser());
 		poco_assert(p.get() != 0);
 		n = fwrite(buf, sizeof(buf), 1, p.get());
 		poco_assert(n == 1);

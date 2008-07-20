@@ -154,6 +154,8 @@ class SharedPtr
     /// SharedPtr also implements all relational operators and
     /// a cast operator in case dynamic casting of the encapsulated data types
     /// is required.
+    ///
+    /// TODO : handling the bad_alloc execption for deleter?
 {
 
     typedef typename SharedPtrTraits<C>::reference reference;
@@ -173,7 +175,6 @@ public:
     template <typename A, typename D>
     SharedPtr(A* ptr, D deleter): _pCounter(new RC), _ptr(ptr)
     {
-        // TODO handling the bad_alloc execption ?
         _deleter = new CustomDeleter<A, D>(deleter); 
     }
 
@@ -425,6 +426,7 @@ private:
     void release()
     {
         poco_assert_dbg (_pCounter);
+        poco_assert_dbg (_deleter);
         int i = _pCounter->release();
         if (i == 0)
         {
@@ -432,7 +434,11 @@ private:
                 (*_deleter)(_ptr);
                 delete _deleter;
                 _deleter = 0;
-            }
+            } 
+            // else{
+            //  TODO: throw Poco::NullPointerException here ?
+            // }
+            
 			/*
 			else if (_ptr){
                 delete _ptr;

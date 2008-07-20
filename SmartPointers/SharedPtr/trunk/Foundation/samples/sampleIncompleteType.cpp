@@ -44,7 +44,7 @@ int main()
 
     // test other resource with customized functor deleter
     {
-        SharedPtr<File> p = open("./a.txt", "wt");
+        SharedPtr<File> p = open("./a.txt", "w+");
         poco_assert(p.get() != 0);
         n = write(p, buf, sizeof(buf));
         poco_assert(n == 1);

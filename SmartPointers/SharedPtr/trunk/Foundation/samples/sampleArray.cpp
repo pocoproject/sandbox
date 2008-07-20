@@ -1,5 +1,5 @@
 //
-// sampleAbstract.cpp
+// sampleArray.cpp
 //
 // Copyright (c) 2004-2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.

@@ -11,9 +11,6 @@ Currently, the following solution/makefile generation are supported :
   * Code::Blocks with MingW 
   * Cygwin with g++ 3.4.4 
 
-Also note please use premake.exe (the windows version) if you want to 
-generate the makefiles for Cygwin. 
-
 Here is an example, for visual studio 2008, just 
 
   * double click the CreateVs2008Solution.bat, or 

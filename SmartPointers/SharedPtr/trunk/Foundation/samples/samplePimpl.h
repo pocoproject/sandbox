@@ -1,5 +1,5 @@
 //
-// sampleFactory.cpp
+// samplePimpl.h
 //
 // Copyright (c) 2004-2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -27,35 +27,30 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#include "sampleFactory.h"
+#ifndef Foundation_Sample_Pimpl_INCLUDED
+#define Foundation_Sample_Pimpl_INCLUDED
+
 #include "Poco/SharedPtr.h"
-#include "Poco/Debugger.h"
-#include "Poco/Bugcheck.h"
 #include <iostream>
 
-using Poco::SharedPtr;
+class ImplementationDetails;
 
-struct ResourceFacotry
-    /// A resource factory class to wrap the create/destory calls
-    /// No need to worry about the destory since the SharedPtr will 
-    /// handle it.
-    ///
-    /// It is esay to build your own resource/memory manager using this
-    /// method.
+class PublicInterface
 {
-    static SharedPtr<Resource> create(){
-        SharedPtr<Resource> ptr(createResource(), destoryResource);
-        return ptr;
-    }
+
+public:
+
+    PublicInterface ();
+
+    ~PublicInterface();
+
+    void foo();
+
+private:
+
+    Poco::SharedPtr<ImplementationDetails> _pimpl;
+
 };
 
-int main()
-{
-    {
-        /// Get resource using the factory class 
-        SharedPtr<Resource> ptr = ResourceFacotry::create();
-        ptr->foo();
-    }
+#endif // Foundation_Sample_Pimpl_INCLUDED
 
-    /// Resource destoryed after the exit of the above scope.
-}

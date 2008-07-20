@@ -98,10 +98,10 @@ int main()
 {
 
     {
+        /// hold an arbitrary object
         SharedPtr<void> ptr (new TestObject);
         poco_assert(ptr.get() != 0);
         poco_assert(TestObject::count() == 1);
-
     }
 
     poco_assert(TestObject::count() == 0);

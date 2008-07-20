@@ -1,5 +1,5 @@
 //
-// sampleFactory.cpp
+// sampleFactory.h
 //
 // Copyright (c) 2004-2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -26,36 +26,50 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
+#ifndef Foundation_Sample_Factory_INCLUDED
+#define Foundation_Sample_Factory_INCLUDED
 
-#include "sampleFactory.h"
-#include "Poco/SharedPtr.h"
-#include "Poco/Debugger.h"
-#include "Poco/Bugcheck.h"
 #include <iostream>
 
-using Poco::SharedPtr;
-
-struct ResourceFacotry
-    /// A resource factory class to wrap the create/destory calls
-    /// No need to worry about the destory since the SharedPtr will 
-    /// handle it.
-    ///
-    /// It is esay to build your own resource/memory manager using this
-    /// method.
+class Resource
+    /// a dummy resource class
 {
-    static SharedPtr<Resource> create(){
-        SharedPtr<Resource> ptr(createResource(), destoryResource);
-        return ptr;
+
+public: 
+
+    void foo(){
+        std::cout << "Resource::foo()\n";
     }
+
+private:
+
+    Resource(){
+        std::cout<< "Resource::Resource()\n";
+    }
+
+    ~Resource(){
+        std::cout<< "Resource::~Resource()\n";
+    }
+
+    Resource& operator=(const Resource&);
+
+    friend Resource* createResource();
+    friend void destoryResource(Resource* ptr);
 };
 
-int main()
+/// It is quite common some platform dependent resource are managed by
+/// create/desotry like "factory method".
+/// SharedPtr can wrap them and realize the RAII. See ResourceFacotry class
+/// in sampleFactory.cpp 
+Resource* createResource()
 {
-    {
-        /// Get resource using the factory class 
-        SharedPtr<Resource> ptr = ResourceFacotry::create();
-        ptr->foo();
-    }
-
-    /// Resource destoryed after the exit of the above scope.
+    return new Resource();
 }
+
+void destoryResource(Resource* ptr)
+{
+    delete ptr;
+}
+
+#endif // Foundation_Sample_Factory_INCLUDED
+
