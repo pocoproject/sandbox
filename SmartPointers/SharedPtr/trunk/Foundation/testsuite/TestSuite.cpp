@@ -79,6 +79,21 @@ namespace
     };
 
     int TestObject::_count = 0;
+
+	class DerivedObject: public TestObject
+	{
+	public:
+		DerivedObject(int i): _number(i)
+		{
+		}
+
+		int number() const
+		{
+			return _number;
+		}
+	private:
+		int _number;
+	};
 }
 
 
@@ -200,8 +215,135 @@ void testCustomResource()
 
 }
 
+void testRegression()
+{
+
+	SharedPtr<TestObject> ptr1;
+	assert(ptr1.get() == 0);
+	TestObject* pTO1 = new TestObject(1);
+	TestObject* pTO2 = new TestObject(2);
+	if (pTO2 < pTO1)
+	{
+		TestObject* pTmp = pTO1;
+		pTO1 = pTO2;
+		pTO2 = pTmp;
+	}
+	assert (pTO1 < pTO2);
+	ptr1 = pTO1;
+	SharedPtr<TestObject> ptr2 = pTO2;
+	SharedPtr<TestObject> ptr3 = ptr1;
+	SharedPtr<TestObject> ptr4;
+	assert (ptr1.get() == pTO1);
+	assert (ptr1 == pTO1);
+	assert (ptr2.get() == pTO2);
+	assert (ptr2 == pTO2);
+	assert (ptr3.get() == pTO1);
+	assert (ptr3 == pTO1);
+	
+	assert (ptr1 == pTO1);
+	assert (ptr1 != pTO2);
+	assert (ptr1 < pTO2);
+	assert (ptr1 <= pTO2);
+	assert (ptr2 > pTO1);
+	assert (ptr2 >= pTO1);
+	
+	assert (ptr1 == ptr3);
+	assert (ptr1 != ptr2);
+	assert (ptr1 < ptr2);
+	assert (ptr1 <= ptr2);
+	assert (ptr2 > ptr1);
+	assert (ptr2 >= ptr1);
+	
+	ptr1.swap(ptr2);
+	assert (ptr2 < ptr1);
+	ptr2.swap(ptr1);
+
+	assert (ptr1->data() == 1 && ptr2->data() == 2 || ptr1->data() == 2 && ptr2->data() == 1);
+	
+	try
+	{
+		assert (ptr4->data() == 4);
+		assert (!"must throw NullPointerException");
+	}
+	catch (NullPointerException&)
+	{
+	}
+	
+	assert (!(ptr4 == ptr1));
+	assert (!(ptr4 == ptr2));
+	assert (ptr4 != ptr1);
+	assert (ptr4 != ptr2);
+	
+	ptr4 = ptr2;
+	assert (ptr4 == ptr2);
+	assert (!(ptr4 != ptr2));
+	
+	assert (TestObject::count() == 2);
+	ptr1 = 0;
+	ptr2 = 0;
+	ptr3 = 0;
+	ptr4 = 0;
+	assert (TestObject::count() == 0);
+	
+	{
+		SharedPtr<TestObject> ptr = new TestObject(0);
+		assert (TestObject::count() == 1);
+	}
+	assert (TestObject::count() == 0);
+
+	// test ImplicitCast
+	{
+		{
+			// null assign test
+			SharedPtr<DerivedObject> ptr2;
+			assert(ptr2.get() == 0);
+			SharedPtr<TestObject> ptr1 = ptr2;
+		}
+		{
+			SharedPtr<DerivedObject> ptr2(new DerivedObject(666));
+			assert (TestObject::count() == 1);
+			SharedPtr<TestObject> ptr1 = ptr2;
+			assert (TestObject::count() == 1);
+		}
+		assert (TestObject::count() == 0);
+		SharedPtr<TestObject> ptr1 = new DerivedObject(666);
+		assert (TestObject::count() == 1);
+		ptr1 = 0;
+		assert (TestObject::count() == 0);
+	}
+
+	// testExplicitCast()
+	{
+		SharedPtr<TestObject> ptr1 = new DerivedObject(666);
+		SharedPtr<DerivedObject> ptr2 = ptr1.cast<DerivedObject>();
+		assert (ptr2.get() != 0);
+
+		// cast the other way round must fail
+		ptr1 = new TestObject(0);
+		assert (TestObject::count() == 2);
+		ptr2 = ptr1.cast<DerivedObject>();
+		assert (TestObject::count() == 1);
+		assert (ptr2.get() == 0);
+	}
+
+}
+
+void testVoid()
+{
+	{
+		SharedPtr<void> ptr(new TestObject);
+		assert(ptr.get() != 0);
+		assert(TestObject::count() == 1);
+	}
+	assert(TestObject::count() == 0);
+}
+
 int main()
 {
+
+	testRegression();
+
+	testVoid();
 
 	testConstruction();
 
