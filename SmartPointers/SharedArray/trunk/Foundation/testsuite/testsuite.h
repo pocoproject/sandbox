@@ -32,23 +32,7 @@
 #ifndef Foundation_TestSuite_INCLUDED
 #define Foundation_TestSuite_INCLUDED
 
-struct SharedArrayTestSuite
-{
-
-    void testConstruction();
-
-    void testAssignment();
-
-    void testElementAccess();
-
-    void testSwap();
-
-    void testAddressComparison();
-
-    void testStlContainers();
-
-};
-
 #endif // Foundation_TestSuite_INCLUDED
+
 
 

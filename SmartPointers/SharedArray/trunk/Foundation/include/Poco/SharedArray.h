@@ -58,13 +58,52 @@ class SharedArray
 //
 /// For temporal array buffer class, check Poco::Buffer.
 {
+
 public:
 
-    typedef void (*pDeleter)(C* p);
-
-    SharedArray(): _pCounter(0), _ptr(0)
+	template<class T>
+    class Deleter
+        /// Deleter base
     {
-    }
+    public:
+        virtual ~Deleter(){}
+        virtual void operator()(T* p) = 0;
+    };
+
+	template<class T>
+    class DefaultDeleter : public Deleter<T>
+        /// Default Deleter 
+    {
+    public:
+        ~DefaultDeleter(){}
+        virtual void operator()(T* p)
+        {
+            delete [] p;
+        }
+    private:
+    };
+
+    template <class T, class D>
+    class CustomDeleter : public Deleter<T>
+        /// ShardPtrDeleter accepts both the object pointer and concrete deleter.
+        /// The deleter can be function pointer or even functor which provide "operator ()".
+        /// note the deleter shall be default constructible and its constructor and destrucotor
+        /// shall never throw exceptions.
+    {
+    public:
+
+        CustomDeleter(D deleter) : _deleter(deleter) {}
+        virtual ~CustomDeleter() {}
+        virtual void operator()(T* p) 
+        {
+            (this->_deleter)(p);
+        }
+
+    private:
+        D  _deleter;
+    };
+
+public:
 
     explicit SharedArray(C* ptr): _ptr(ptr)
         /// Constructs a SharedArray object from user provided raw pointer.
@@ -76,6 +115,7 @@ public:
     {
         try{
             _pCounter = new RC;
+            _deleter = new DefaultDeleter<C>();
         }
         catch(std::bad_alloc& e){
             delete [] _ptr;
@@ -83,17 +123,24 @@ public:
         }
     }
 
-    /// TODO
-    /// This copy constructor will be removed. 
-    /// 1 Since we can not make sure the class Other have the same layout as type C. 
-    ///   We need to check this because for array the layout is always an important issue.
-    /// 2 Different from SharePtr, this kind of conversion it is seldom useful for 
-    ///   array objects.
-
-    //    template <class Other>
-    //    SharedArray(const SharedArray<Other, RC>& ptr): _pCounter(ptr._pCounter), _ptr(const_cast<Other*>(ptr.get()))
-    //        _pCounter->duplicate();
-    //    }
+    template <class D>
+    SharedArray(C* ptr, D deleter): _ptr(ptr)
+        /// Copy constructs a SharedArray object from another SharedArray object.
+        ///
+        /// Reference count will be added by 1.
+        /// 
+        /// Exception: Thown std::bad_alloc if allocation for reference counting object and deleter
+        /// fails. If this exception is thrown, the array object will also be deallocated.
+    {
+        try{
+            _pCounter = new RC;
+            _deleter = new CustomDeleter<C, D>(deleter); 
+        }
+        catch(std::bad_alloc& e){
+            delete [] _ptr;
+            throw e;
+        }
+    }
 
     SharedArray(const SharedArray& ptr) : _pCounter(0), _ptr(0)
         /// Copy constructs a SharedArray object from another SharedArray object.
@@ -105,15 +152,12 @@ public:
         assign(ptr);
     }
 
-    /// TODO:
-    /// This assignment will be removed.
-    //
-    //    SharedArray& operator = (C* ptr)
-    //    {
-    //        return assign(ptr);
-    //    }
-
     SharedArray& operator = (const SharedArray& ptr)
+        /// Assignment from another SharedArray object.
+        ///
+        /// Reference count will be added by 1.
+        /// 
+        /// Exception: No exception will be thrown.
     {
         return assign(ptr);
     }
@@ -137,6 +181,7 @@ public:
     {
         std::swap(_ptr, ptr._ptr);
         std::swap(_pCounter, ptr._pCounter);
+        std::swap(_deleter, ptr._deleter);
     }
 
     C& operator [] (std::ptrdiff_t index)
@@ -154,8 +199,6 @@ public:
         return deref(index);
     }
 
-    /// TODO
-    /// Do we really need this one?
     const C& operator [] (std::ptrdiff_t index) const
         /// Element access, returns a const reference to the desired element according to the given index.
         ///
@@ -187,21 +230,6 @@ public:
         return _ptr;
     }
 
-    /// TODO
-    /// This implicit pointer cast will be removed. Since it is danger.
-    //
-    //    operator C* ()
-    //    {
-    //        return _ptr;
-    //    }
-
-    /// TODO
-    /// This implicit cast will be removed. Since it is danger.
-    //    operator const C* () const
-    //    {
-    //        return _ptr;
-    //    }
-
     operator bool () const
         /// Returns true if the underlying pionter is not null pointer. 
         ///
@@ -219,6 +247,9 @@ public:
     }
 
     bool operator == (const SharedArray& ptr) const
+        /// Returns true if the underlying pionter is same. 
+        ///
+        /// Exception: No exception will be thrown.
     {
         return get() == ptr.get();
     }
@@ -315,33 +346,6 @@ private:
         return _ptr == 0;
     }
 
-    /// TODO:
-    /// This assignment will be removed.
-    // SharedArray& assign(C* ptr)
-    // {
-    //     if (get() != ptr)
-    //     {
-    //         RC* pTmp = 0;
-    //         // if allocation failed, delete the given object and do not touch the
-    //         // SharedArray object.
-    //         try{
-    //             pTmp = new RC;
-    //         }
-    //         catch(std::bad_alloc e){
-    //             delete [] ptr;
-    //             return *this;
-    //         }
-    // 
-    //         // destroy the SharedArray and build the new one.
-    //         release();
-    // 
-    //         // 
-    //         _pCounter = pTmp;
-    //         _ptr = ptr;
-    //     }
-    //     return *this;
-    // }
-
     SharedArray& assign(const SharedArray& ptr)
     {
         if (&ptr != this)
@@ -349,27 +353,13 @@ private:
             release();
             _pCounter = ptr._pCounter;
             _ptr = ptr._ptr;
+            _deleter = ptr._deleter;
             if(_pCounter){
                 _pCounter->duplicate();
             }
         }
         return *this;
     }
-
-    /// TODO
-    /// This assigment helper will be removed. 
-    /// See copy constructor for details.
-    //
-    //    template <class Other>
-    //    SharedArray& assign(const SharedArray<Other, RC>& ptr)
-    //    {
-    //        if (ptr.get() != _ptr)
-    //        {
-    //            SharedArray tmp(ptr);
-    //            swap(tmp);
-    //        }
-    //        return *this;
-    //    }
 
     C& deref(std::ptrdiff_t index)
     {
@@ -393,11 +383,14 @@ private:
            int i = _pCounter->release();
            if (i == 0)
            {
-               if (_ptr)
-                   delete [] _ptr;
+               if (_ptr){
+                   (*_deleter)(_ptr);
+               }
                _ptr = 0;
                delete _pCounter;
                _pCounter = 0;
+               delete _deleter;
+               _deleter = 0;
            }
         }        
     }
@@ -406,7 +399,56 @@ private:
 
     RC* _pCounter;
     C*  _ptr;
+    Deleter<C>* _deleter;
 };
+
+template<class C, class RC>
+bool operator==(const C* a, SharedArray<C, RC> const & b)
+{
+    return b == a;
+}
+
+template<class C, class RC>
+bool operator==(C* a, SharedArray<C,RC> const & b)
+{
+    return b == a;
+}
+
+template<class C, class RC>
+bool operator!=(const C* a, SharedArray<C,RC>  const & b)
+{
+    return b != a;
+}
+
+template<class C, class RC>
+bool operator!=(C* a, SharedArray<C,RC> const & b)
+{
+    return b != a;
+}
+
+template<class C, class RC>
+bool operator<(const C* a, SharedArray<C,RC> const & b)
+{
+    return b > a;
+}
+
+template<class C, class RC>
+bool operator<(C* a, SharedArray<C,RC> const & b)
+{
+    return b > a;
+}
+
+template<class C, class RC>
+bool operator>(const C* a, SharedArray<C,RC> const & b)
+{
+    return b < a;
+}
+
+template<class C, class RC>
+bool operator>(C* a, SharedArray<C,RC> const & b)
+{
+    return b < a;
+}
 
 } // namespace Poco
 

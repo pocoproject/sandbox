@@ -1,5 +1,5 @@
 
-premake --usetargetpath --with-samples --with-testsuite --target vs2003
+premake --usetargetpath --with-samples --with-testsuite --clean --target vs2003
 
 pause
 

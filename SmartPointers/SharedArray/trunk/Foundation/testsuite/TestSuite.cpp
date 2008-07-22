@@ -46,7 +46,14 @@ namespace
     class TestObject
     {
     public:
-        TestObject(const int& data = 0) : _data(data)
+
+		TestObject() : _data(0){
+            Poco::FastMutex::ScopedLock lock(_mutex);
+            ++_count;
+            std::cout << "current counter : " << _count << "\n";
+		}
+
+        TestObject(const int& data) : _data(data)
         {
             Poco::FastMutex::ScopedLock lock(_mutex);
             ++_count;
@@ -85,27 +92,8 @@ namespace
     int TestObject::_count = 0;
 }
 
-void SharedArrayTestSuite::testConstruction()
+void testConstruction()
 {
-
-    {
-        // default construction
-        SharedArray<TestObject> ptr1;
-        poco_assert(ptr1.get() == 0);
-
-        try
-        {
-            poco_assert (ptr1[0].data() == 1);
-            assert (!"must throw NullPointerException");
-        }
-        catch (NullPointerException& e)
-        {
-            std::cout << "Exception caught: " << e.displayText() << std::endl;
-        }
-
-    }
-
-    poco_assert(TestObject::count() == 0);
 
     // construct from explicit raw pointer to dynamical allocated array
     {        
@@ -135,7 +123,7 @@ void SharedArrayTestSuite::testConstruction()
 
 }
 
-void SharedArrayTestSuite::testAssignment()
+void testAssignment()
 {
     poco_assert(TestObject::count() == 0);
 
@@ -162,7 +150,7 @@ void SharedArrayTestSuite::testAssignment()
 
 }
 
-void SharedArrayTestSuite::testSwap()
+void testSwap()
 {
     poco_assert(TestObject::count() == 0);
 
@@ -191,7 +179,7 @@ void SharedArrayTestSuite::testSwap()
 
 }
 
-void SharedArrayTestSuite::testElementAccess()
+void testElementAccess()
 {
     poco_assert(TestObject::count() == 0);
 
@@ -214,7 +202,7 @@ void SharedArrayTestSuite::testElementAccess()
 }
 
 
-void SharedArrayTestSuite::testAddressComparison()
+void testAddressComparison()
 {
     poco_assert(TestObject::count() == 0);
 
@@ -244,11 +232,90 @@ void SharedArrayTestSuite::testAddressComparison()
 
     }
 
+	// test operator(), operator!()  operators and free operators 
+	{
+		TestObject * rawPointer = 0;
+        SharedArray<TestObject> ptr5(rawPointer = new TestObject[10]);
+		poco_assert(TestObject::count() == 10);
+        poco_assert(ptr5);
+        poco_assert(!!ptr5);
+        poco_assert(rawPointer == ptr5);
+
+        SharedArray<TestObject> ptr6(ptr5);
+		poco_assert(TestObject::count() == 10);
+        poco_assert(ptr6);
+        poco_assert(!!ptr6);
+        poco_assert(ptr6 == ptr5);
+        poco_assert(rawPointer == ptr6);
+
+		TestObject* rawPointer2 = rawPointer+1;
+        poco_assert(rawPointer2 > ptr6);
+
+	}
+
+    poco_assert(TestObject::count() == 0);
+
     poco_assert(TestObject::count() == 0);
 
 }
 
-void SharedArrayTestSuite::testStlContainers()
+template<class T>
+struct logDeleter
+{
+	void operator()(T* p)
+	{
+		std::cout << "log array deleter\n";
+		delete [] p;
+	}
+};
+
+template<class T>
+void freeFuncDeleter(T* p)
+{
+	std::cout << "free function deleter\n";
+	delete [] p;
+};
+
+void testCustomDeleter()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+
+		SharedArray<TestObject> functorDeleter(new TestObject[10], logDeleter<TestObject>() );
+        poco_assert(TestObject::count() == 10);
+
+		SharedArray<TestObject> functionDeleter(new TestObject[10], freeFuncDeleter<TestObject> );
+        poco_assert(TestObject::count() == 20);
+
+    }
+
+    poco_assert(TestObject::count() == 0);
+
+    {
+
+		SharedArray<TestObject> functorDeleter(new TestObject[10], logDeleter<TestObject>() );
+        poco_assert(TestObject::count() == 10);
+
+		{
+
+			SharedArray<TestObject> functionDeleter(new TestObject[20], freeFuncDeleter<TestObject> );
+			poco_assert(TestObject::count() == 30);
+
+			SharedArray<TestObject> temp = functionDeleter;
+			functionDeleter = functorDeleter;
+			functorDeleter = temp;
+
+		}
+
+		poco_assert(TestObject::count() == 20);
+    }
+	
+	poco_assert(TestObject::count() == 0);
+
+}
+
+void testStlContainers()
 {
     poco_assert(TestObject::count() == 0);
 
@@ -281,13 +348,11 @@ void SharedArrayTestSuite::testStlContainers()
 
 int main()
 {
-
-    SharedArrayTestSuite test;
-
-    test.testConstruction();
-    test.testAssignment();
-    test.testSwap();
-    test.testElementAccess();
-    test.testAddressComparison();
-    test.testStlContainers();
+    testConstruction();
+    testAssignment();
+    testSwap();
+    testElementAccess();
+    testAddressComparison();
+    testCustomDeleter();
+    testStlContainers();
 }
