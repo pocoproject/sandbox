@@ -105,7 +105,7 @@ public:
 
 public:
 
-    explicit SharedArray(C* ptr): _ptr(ptr)
+    explicit SharedArray(C* ptr = 0): _ptr(ptr)
         /// Constructs a SharedArray object from user provided raw pointer.
         ///
         /// ptr must be a pointer to an dynamically allocated array or null pointer 0.
@@ -150,6 +150,18 @@ public:
         /// Exception: No exception will be thrown.
     {
         assign(ptr);
+    }
+
+    void reset(C* ptr = 0)
+    {
+        poco_assert(ptr == 0 || ptr != _ptr);
+        SharedArray<C>(ptr).swap(*this);
+    }
+
+    template <class D> 
+    void reset(C* ptr, D deleter)
+    {
+        SharedArray<C>(ptr, deleter).swap(*this);
     }
 
     SharedArray& operator = (const SharedArray& ptr)
@@ -214,15 +226,7 @@ public:
         return deref(index);
     }
 
-    C* get()
-        /// Returns the underlying raw pointer to the array.
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        return _ptr;
-    }
-
-    const C* get() const
+    C* get() const
         /// Returns the const raw pointer.
         ///
         /// Exception: No exception will be thrown.
@@ -401,6 +405,12 @@ private:
     C*  _ptr;
     Deleter<C>* _deleter;
 };
+
+template<class C> 
+void swap(SharedArray<C> & a, SharedArray<C> & b) // never throws
+{
+    a.swap(b);
+}
 
 template<class C, class RC>
 bool operator==(const C* a, SharedArray<C, RC> const & b)

@@ -30,18 +30,99 @@
 //
 
 #include "Poco/SharedArray.h"
-#include <assert.h>
+#include "Poco/Bugcheck.h"
 #include <iostream>
+#include <set>
+
+using Poco::SharedArray;
+
+template<class T>
+void ck( const T* v1, T v2 ) { poco_assert( *v1 == v2 ); }
+
+namespace {
+	int UDT_use_count;  // independent of pointer maintained counts
+}
+
+//  user defined type  -------------------------------------------------------//
+
+class UDT {
+	long value_;
+public:
+	explicit UDT( long value=0 ) : value_(value) { ++UDT_use_count; }
+	~UDT() {
+		--UDT_use_count;
+		std::cout << "UDT with value " << value_ << " being destroyed\n";
+	}
+	long value() const { return value_; }
+	void value( long v ) { value_ = v;; }
+};  // UDT
+
+
+void basicSample()
+{
+	poco_assert( UDT_use_count == 0 );  // reality check
+
+	//  test shared_array with a built-in type
+	char * cap = new char [ 100 ];
+	SharedArray<char> ca ( cap );
+	poco_assert( ca.get() == cap );
+	poco_assert( cap == ca.get() );
+	poco_assert( &ca[0] == cap );
+
+	strcpy( ca.get(), "Hot Dog with mustard and relish" );
+	poco_assert( strcmp( ca.get(), "Hot Dog with mustard and relish" ) == 0 );
+	poco_assert( strcmp( cap, "Hot Dog with mustard and relish" ) == 0 );
+
+	poco_assert( ca[0] == 'H' );
+	poco_assert( ca[30] == 'h' );
+
+	SharedArray<char> ca2 ( ca );
+	SharedArray<char> ca3 ( ca2 );
+
+	ca[0] = 'N';
+	ca[4] = 'd';
+	poco_assert( strcmp( ca.get(), "Not dog with mustard and relish" ) == 0 );
+	poco_assert( strcmp( ca2.get(), "Not dog with mustard and relish" ) == 0 );
+	poco_assert( strcmp( ca3.get(), "Not dog with mustard and relish" ) == 0 );
+	ca2.reset();
+
+	ca.reset();
+	poco_assert( ca.get() == 0 );
+
+	SharedArray<char> ca4;
+	swap( ca3, ca4 );
+	poco_assert( strcmp( ca4.get(), "Not dog with mustard and relish" ) == 0 );
+	poco_assert( ca3.get() == 0 );
+
+	std::set< SharedArray<char> > sca;
+	sca.insert(ca4);
+	poco_assert( sca.find(ca4) != sca.end() );
+	poco_assert( sca.find(ca4) == sca.find( SharedArray<char>(ca4) ) );
+
+	//  test shared_array with user defined type
+	SharedArray<UDT> udta ( new UDT[3] );
+
+	udta[0].value( 111 );
+	udta[1].value( 222 );
+	udta[2].value( 333 );
+	SharedArray<UDT> udta2 ( udta );
+
+	poco_assert( udta[0].value() == 111 );
+	poco_assert( udta[1].value() == 222 );
+	poco_assert( udta[2].value() == 333 );
+	poco_assert( udta2[0].value() == 111 );
+	poco_assert( udta2[1].value() == 222 );
+	poco_assert( udta2[2].value() == 333 );
+	udta2.reset();
+	poco_assert( udta2.get() == 0 );
+
+	poco_assert( UDT_use_count == 3 );  // reality check
+
+	std::cout << "OK\n";
+
+}
 
 int main()
 {
-
-    Poco::SharedArray<int> foo(new int[10]);
-
-    if(foo){
-        for(int i = 0; i<10; i++){
-           foo[0] = i;
-        }        
-    }
-
+	basicSample();
 }
