@@ -41,6 +41,8 @@
 
 
 #include "Poco/Crypto/Crypto.h"
+#include "Poco/RefCountedObject.h"
+#include "Poco/AutoPtr.h"
 
 #include <vector>
 
@@ -52,7 +54,7 @@ namespace Crypto {
 class CryptoTransform;
 
 
-class Crypto_API Cipher
+class Crypto_API Cipher: public Poco::RefCountedObject
 	/// Represents the abstract base class from which all implementations of
 	/// symmetric encryption algorithms must inherit.  Use the CipherFactory
 	/// class to obtain an instance of this class:
@@ -116,6 +118,7 @@ class Crypto_API Cipher
 	///     sink.close();
 {
 public:
+	typedef Poco::AutoPtr<Cipher> Ptr;
 	typedef std::vector<unsigned char> ByteVec;
 
 	enum Mode
@@ -192,6 +195,12 @@ public:
 
 	virtual std::string decryptString(const std::string& str, Encoding encoding = ENC_NONE);
 		/// Directly decrypt a string that is encoded with the given encoding.
+
+	virtual void encrypt(std::istream& source, std::ostream& sink, Encoding encoding = ENC_NONE);
+		/// Directly encrypts an input stream and encodes it using the given encoding.
+
+	virtual void decrypt(std::istream& source, std::ostream& sink, Encoding encoding = ENC_NONE);
+		/// Directly decrypt an input stream that is encoded with the given encoding.
 
 protected:
 	Cipher();

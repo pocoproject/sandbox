@@ -37,7 +37,7 @@
 #include "Poco/Crypto/CipherFactory.h"
 #include "Poco/Crypto/Cipher.h"
 
-#include "CipherImpl.h"
+#include "Poco/Crypto/CipherImpl.h"
 
 #include "Poco/Exception.h"
 #include "Poco/SingletonHolder.h"

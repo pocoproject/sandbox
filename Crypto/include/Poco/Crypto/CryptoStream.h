@@ -52,6 +52,7 @@ namespace Crypto {
 
 
 class CryptoTransform;
+class Cipher;
 
 
 class Crypto_API CryptoStreamBuf : public Poco::BufferedStreamBuf
@@ -116,6 +117,9 @@ public:
 		/// Create a new CryptoInputStream object. The CryptoInputStream takes the
 		/// ownership of the given CryptoTransform object.
 
+	CryptoInputStream(std::istream& istr, Cipher& cipher, std::size_t bufferSize = 8192);
+		/// Create a new CryptoInputStream objectusing the given cipher.
+
 	~CryptoInputStream();
 };
 
@@ -135,6 +139,9 @@ public:
 	CryptoOutputStream(std::ostream& ostr, CryptoTransform* pTransform, std::size_t bufferSize = 8192);
 		/// Create a new CryptoOutputStream object. The CryptoOutputStream takes the
 		/// ownership of the given CryptoTransform object.
+
+	CryptoOutputStream(std::ostream& ostr, Cipher& cipher, std::size_t bufferSize = 8192);
+		/// Create a new CryptoOutputStream object using the given cipher.
 
 	~CryptoOutputStream();
 

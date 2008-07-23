@@ -34,10 +34,8 @@
 //
 
 
+#include "Poco/Crypto/CipherImpl.h"
 #include "Poco/Crypto/CryptoTransform.h"
-
-#include "CipherImpl.h"
-
 #include "Poco/Exception.h"
 #include <openssl/err.h>
 

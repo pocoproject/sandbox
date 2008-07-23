@@ -92,7 +92,26 @@ std::string Cipher::encryptString(const std::string& str, Encoding encoding)
 {
 	std::istringstream source(str);
 	std::ostringstream sink;
-	CryptoInputStream encryptor(source, createEncryptor());
+
+	encrypt(source, sink, encoding);
+
+	return sink.str();
+}
+
+
+std::string Cipher::decryptString(const std::string& str, Encoding encoding)
+{
+	std::istringstream source(str);
+	std::ostringstream sink;
+
+	decrypt(source, sink, encoding);
+	return sink.str();
+}
+
+
+void Cipher::encrypt(std::istream& source, std::ostream& sink, Encoding encoding)
+{
+	CryptoInputStream encryptor(source, *this);
 
 	switch (encoding)
 	{
@@ -119,16 +138,12 @@ std::string Cipher::encryptString(const std::string& str, Encoding encoding)
 	default:
 		throw Poco::InvalidArgumentException("Invalid argument", "encoding");
 	}
-
-	return sink.str();
 }
 
 
-std::string Cipher::decryptString(const std::string& str, Encoding encoding)
+void Cipher::decrypt(std::istream& source, std::ostream& sink, Encoding encoding)
 {
-	std::istringstream source(str);
-	std::ostringstream sink;
-	CryptoOutputStream decryptor(sink, createDecryptor());
+	CryptoOutputStream decryptor(sink, *this);
 
 	switch (encoding)
 	{
@@ -156,8 +171,6 @@ std::string Cipher::decryptString(const std::string& str, Encoding encoding)
 	default:
 		throw Poco::InvalidArgumentException("Invalid argument", "encoding");
 	}
-
-	return sink.str();
 }
 
 

@@ -36,6 +36,7 @@
 
 #include "Poco/Crypto/CryptoStream.h"
 #include "Poco/Crypto/CryptoTransform.h"
+#include "Poco/Crypto/Cipher.h"
 #include "Poco/Exception.h"
 #include <algorithm>
 
@@ -266,6 +267,16 @@ CryptoInputStream::CryptoInputStream(
 }
 
 
+CryptoInputStream::CryptoInputStream(
+	std::istream&	 istr,
+	Cipher&          cipher, 
+	std::size_t		 bufferSize) :
+		CryptoIOS(istr, cipher.createEncryptor(), bufferSize),
+		std::istream(&_buf)
+{
+}
+
+
 CryptoInputStream::~CryptoInputStream()
 {
 }
@@ -277,10 +288,20 @@ CryptoInputStream::~CryptoInputStream()
 
 
 CryptoOutputStream::CryptoOutputStream(
-	std::ostream&	 ostr,
+	std::ostream&    ostr,
 	CryptoTransform* pTransform,
-	std::size_t		 bufferSize) :
+	std::size_t      bufferSize) :
 		CryptoIOS(ostr, pTransform, bufferSize),
+		std::ostream(&_buf)
+{
+}
+
+
+CryptoOutputStream::CryptoOutputStream(
+	std::ostream&    ostr, 
+	Cipher&          cipher, 
+	std::size_t      bufferSize):
+		CryptoIOS(ostr, cipher.createDecryptor(), bufferSize),
 		std::ostream(&_buf)
 {
 }
