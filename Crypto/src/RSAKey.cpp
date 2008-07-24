@@ -1,11 +1,13 @@
 //
-// Driver.cpp
+// RSAKey.cpp
 //
-// $Id: //poco/Main/Crypto/testsuite/src/Driver.cpp#1 $
+// $Id: //poco/Main/Crypto/src/RSAKey.cpp#1 $
 //
-// Console-based test driver for Poco Crypto.
+// Library: Crypto
+// Package: CryptoCore
+// Module:  RSAKey
 //
-// Copyright (c) 2007, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -32,8 +34,60 @@
 //
 
 
-#include "CppUnit/TestRunner.h"
-#include "CryptoTestSuite.h"
+#include "Poco/Crypto/RSAKey.h"
+#include <openssl/rsa.h>
 
 
-CppUnitMain(CryptoTestSuite)
+namespace Poco {
+namespace Crypto {
+
+
+
+RSAKey::RSAKey(KeyLength keyLength, Exponent exp):
+	_pImpl(0)
+{
+	int keyLen = keyLength;
+	unsigned long expVal = RSA_3;
+	if (expVal == EXP_LARGE)
+		expVal = RSA_F4;
+	_pImpl = new RSAKeyImpl(keyLen, expVal);
+}
+
+
+RSAKey::RSAKey(const std::string& publicKey, const std::string& privateKeyFile, const std::string& pwd):
+	_pImpl(new RSAKeyImpl(publicKey, privateKeyFile, pwd))
+{
+}
+
+
+RSAKey::RSAKey(std::istream* pPubKey, 
+		std::istream* pPrivKey, 
+		const std::string& privateKeyPwd):
+	_pImpl(new RSAKeyImpl(pPubKey, pPrivKey, privateKeyPwd))
+{
+}
+
+
+RSAKey::~RSAKey()
+{
+}
+
+
+int RSAKey::size() const
+{
+	return _pImpl->size();
+}
+
+void RSAKey::save(const std::string& pubKeyFile, const std::string& privKeyFile, const std::string& privKeyPwd)
+{
+	_pImpl->save(pubKeyFile, privKeyFile, privKeyPwd);
+}
+
+
+void RSAKey::save(std::ostream* pPubKey, std::ostream* pPrivKey, const std::string& privateKeyPwd)
+{
+	_pImpl->save(pPubKey, pPrivKey, privateKeyPwd);
+}
+
+
+} } // namespace Poco::Crypto

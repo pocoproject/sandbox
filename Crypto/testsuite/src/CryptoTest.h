@@ -1,11 +1,11 @@
 //
 // CryptoTest.h
 //
-// $Id: //poco/Main/template/test.h#7 $
+// $Id: //poco/Main/Crypto/testsuite/src/CryptoTest.h#1 $
 //
 // Definition of the CryptoTest class.
 //
-// Copyright (c) 2007, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization

@@ -1,9 +1,13 @@
 //
-// CryptoTestSuite.h
+// RSADigestEngine.h
 //
-// $Id: //poco/Main/Crypto/testsuite/src/CryptoTestSuite.h#1 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSADigestEngine.h#1 $
 //
-// Definition of the CryptoTestSuite class.
+// Library: Crypto
+// Package: CryptoCore
+// Module:  RSADigestEngine
+//
+// Definition of the RSADigestEngine class.
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,18 +36,61 @@
 //
 
 
-#ifndef CryptoTestSuite_INCLUDED
-#define CryptoTestSuite_INCLUDED
+#ifndef Crypto_RSADigestEngine_INCLUDED
+#define Crypto_RSADigestEngine_INCLUDED
 
 
-#include "CppUnit/TestSuite.h"
+#include "Poco/Crypto/Crypto.h"
+#include "Poco/Crypto/RSAKey.h"
+#include "Poco/DigestEngine.h"
+#include "Poco/SHA1Engine.h"
+#include <openssl/rsa.h>
+#include <istream>
+#include <ostream>
 
 
-class CryptoTestSuite
+namespace Poco {
+namespace Crypto {
+
+
+
+
+class Crypto_API RSADigestEngine: public Poco::DigestEngine
+	/// RSADigestEngine is the implementation class for RSADigestEngine
 {
 public:
-	static CppUnit::Test* suite();
+	RSADigestEngine(const RSAKey& key);
+		/// Creates the RSADigestEngine with the given key
+
+	~RSADigestEngine();
+		/// Destroys the RSADigestEngine.
+
+	unsigned digestLength() const;
+		/// Returns the length of the digest in bytes.
+
+	void reset();
+		/// Resets the engine so that a new
+		/// digest can be computed.
+		
+	const DigestEngine::Digest& digest();
+
+	const DigestEngine::Digest& signature();
+		/// Signs the data
+
+	void verify(const DigestEngine::Digest& signature);
+		/// Verifies the data against the signature
+
+protected:
+	void updateImpl(const void* data, unsigned length);
+
+private:
+	RSAKey _key;
+	DigestEngine::Digest _sig;
+	SHA1Engine   _sha1;
 };
 
 
-#endif // CryptoTestSuite_INCLUDED
+} } // namespace Poco::Crypto
+
+
+#endif // Crypto_RSADigestEngine_INCLUDED

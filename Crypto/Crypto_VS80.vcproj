@@ -76,8 +76,6 @@
 				ProgramDatabaseFile="..\bin\PocoCryptod.pdb"
 				SubSystem="1"
 				OptimizeForWindows98="0"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="..\lib\PocoCryptod.lib"
 				TargetMachine="1"
 			/>
@@ -98,6 +96,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -170,8 +171,6 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="0"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="..\lib\PocoCrypto.lib"
 				TargetMachine="1"
 			/>
@@ -192,6 +191,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -231,6 +233,18 @@
 					RelativePath=".\include\Poco\Crypto\CryptoTransform.h"
 					>
 				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSADigestEngine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKey.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKeyImpl.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
@@ -253,6 +267,18 @@
 				</File>
 				<File
 					RelativePath=".\src\CryptoTransform.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSADigestEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSAKey.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSAKeyImpl.cpp"
 					>
 				</File>
 			</Filter>

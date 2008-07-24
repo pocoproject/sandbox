@@ -166,6 +166,15 @@
 				<File
 					RelativePath=".\include\Poco\Crypto\CryptoTransform.h">
 				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSADigestEngine.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKey.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKeyImpl.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
@@ -184,6 +193,15 @@
 				</File>
 				<File
 					RelativePath=".\src\CryptoTransform.cpp">
+				</File>
+				<File
+					RelativePath=".\src\RSADigestEngine.cpp">
+				</File>
+				<File
+					RelativePath=".\src\RSAKey.cpp">
+				</File>
+				<File
+					RelativePath=".\src\RSAKeyImpl.cpp">
 				</File>
 			</Filter>
 		</Filter>

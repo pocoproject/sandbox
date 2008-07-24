@@ -1,7 +1,7 @@
 #
 # Makefile
 #
-# $Id: //poco/Main/template/TestSuite.make#3 $
+# $Id: //poco/Main/Crypto/testsuite/Makefile#1 $
 #
 # Makefile for Poco Crypto testsuite
 #
@@ -9,7 +9,7 @@
 include $(POCO_BASE)/build/rules/global
 
 objects = CryptoTestSuite Driver \
-	CryptoTest
+	CryptoTest RSATest
 
 target         = testrunner
 target_version = 1

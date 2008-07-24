@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;Crypto_EXPORTS"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\NetSSL_OpenSSL\include;..\Net\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;POCO_DLL;Crypto_EXPORTS;OPENSSL_NO_DEPRECATED"
 				StringPooling="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,7 +68,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib libeay32mtd.lib ssleay32mtd.lib"
+				AdditionalDependencies="PocoFoundationd.lib libeay32mdd.lib ssleay32mdd.lib"
+				ShowProgress="0"
 				OutputFile="..\bin\PocoCryptod.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -133,7 +134,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories=".\include;..\Foundation\include"
+				AdditionalIncludeDirectories=".\include;..\Foundation\include;..\NetSSL_OpenSSL\include;..\Net\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;POCO_DLL;Crypto_EXPORTS"
 				GeneratePreprocessedFile="0"
 				KeepComments="false"
@@ -232,6 +233,18 @@
 					RelativePath=".\include\Poco\Crypto\CryptoTransform.h"
 					>
 				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSADigestEngine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKey.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSAKeyImpl.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
@@ -254,6 +267,18 @@
 				</File>
 				<File
 					RelativePath=".\src\CryptoTransform.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSADigestEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSAKey.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSAKeyImpl.cpp"
 					>
 				</File>
 			</Filter>

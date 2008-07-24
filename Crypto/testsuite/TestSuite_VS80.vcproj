@@ -203,12 +203,20 @@
 					RelativePath=".\src\CryptoTest.h"
 					>
 				</File>
+				<File
+					RelativePath=".\src\RSATest.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				>
 				<File
 					RelativePath=".\src\CryptoTest.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSATest.cpp"
 					>
 				</File>
 			</Filter>

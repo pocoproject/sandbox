@@ -1,7 +1,7 @@
 //
 // CipherImpl.h
 //
-// $Id: CipherImpl.h 610 2008-06-17 09:25:16Z fbeyer $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/CipherImpl.h#1 $
 //
 // Library: Crypto
 // Package: CryptoCore

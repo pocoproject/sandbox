@@ -1,11 +1,11 @@
 //
-// Driver.cpp
+// RSATest.h
 //
-// $Id: //poco/Main/Crypto/testsuite/src/Driver.cpp#1 $
+// $Id: //poco/Main/Crypto/testsuite/src/RSATest.h#1 $
 //
-// Console-based test driver for Poco Crypto.
+// Definition of the RSATest class.
 //
-// Copyright (c) 2007, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -32,8 +32,31 @@
 //
 
 
-#include "CppUnit/TestRunner.h"
-#include "CryptoTestSuite.h"
+#ifndef RSATest_INCLUDED
+#define RSATest_INCLUDED
 
 
-CppUnitMain(CryptoTestSuite)
+#include "Poco/Crypto/Crypto.h"
+#include "CppUnit/TestCase.h"
+
+
+class RSATest: public CppUnit::TestCase
+{
+public:
+	RSATest(const std::string& name);
+	~RSATest();
+
+	void testNewKeys();
+	void testSign();
+	void testSignManipulated();
+
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+};
+
+
+#endif // RSATest_INCLUDED
