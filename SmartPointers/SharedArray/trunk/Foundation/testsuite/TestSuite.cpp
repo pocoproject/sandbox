@@ -97,26 +97,26 @@ void testConstruction()
 
     // construct from explicit raw pointer to dynamical allocated array
     {        
-        SharedArray<TestObject> ptr2(new TestObject[10]);
-        poco_assert(ptr2.get() != 0);
-        poco_assert(ptr2);
-        poco_assert(!ptr2 == false);
+        SharedArray<TestObject> array2(new TestObject[10]);
+        poco_assert(array2.get() != 0);
+        poco_assert(array2);
+        poco_assert(!array2 == false);
         poco_assert(TestObject::count() == 10);
 
         // the following code wont compile
         TestObject* p = new TestObject[10];
-        SharedArray<TestObject> ptr3(p);
+        SharedArray<TestObject> array3(p);
     }
 
     poco_assert(TestObject::count() == 0);
 
     // copy construction 
     {        
-        SharedArray<TestObject> ptr3(new TestObject[10]);
-        poco_assert(ptr3.get() != 0);
+        SharedArray<TestObject> array3(new TestObject[10]);
+        poco_assert(array3.get() != 0);
         poco_assert(TestObject::count() == 10);
 
-        SharedArray<TestObject> ptr4(ptr3);
+        SharedArray<TestObject> array4(array3);
         poco_assert(TestObject::count() == 10);
     }
     poco_assert(TestObject::count() == 0);
@@ -129,11 +129,11 @@ void testAssignment()
 
     {
         
-        SharedArray<TestObject> ptr1(new TestObject[10]);
-        poco_assert(ptr1.get() != 0);
+        SharedArray<TestObject> array1(new TestObject[10]);
+        poco_assert(array1.get() != 0);
         poco_assert(TestObject::count() == 10);
 
-        SharedArray<TestObject> ptr2 = ptr1;
+        SharedArray<TestObject> array2 = array1;
 
         poco_assert(TestObject::count() == 10);
 
@@ -144,7 +144,7 @@ void testAssignment()
     // note we use explicit constructor for raw pointer, the following wont compile
     // {        
     //    TestObject*p = new TestObject[10];        
-    //    SharedArray<TestObject> ptr1 = p;
+    //    SharedArray<TestObject> array1 = p;
     // }
 
 
@@ -156,21 +156,21 @@ void testSwap()
 
     {
         
-        SharedArray<TestObject> ptr1(new TestObject[10]);
+        SharedArray<TestObject> array1(new TestObject[10]);
 
         // before swap
-        poco_assert(ptr1.get() != 0);
+        poco_assert(array1.get() != 0);
         poco_assert(TestObject::count() == 10);
 
         {
-            SharedArray<TestObject> ptr2(new TestObject[20]);
-            ptr2.swap(ptr1);
+            SharedArray<TestObject> array2(new TestObject[20]);
+            array2.swap(array1);
             poco_assert(TestObject::count() == 30);     
-            poco_assert(ptr2.get() != 0);
+            poco_assert(array2.get() != 0);
         }
 
         // after swap
-        poco_assert(ptr1.get() != 0);
+        poco_assert(array1.get() != 0);
         poco_assert(TestObject::count() == 20);
 
     }
@@ -185,14 +185,14 @@ void testElementAccess()
 
     {
         
-        SharedArray<TestObject> ptr1(new TestObject[10]);
+        SharedArray<TestObject> array1(new TestObject[10]);
 
         for(int i = 0; i<10; i++){
-            ptr1[i].set(i);
+            array1[i].set(i);
         }
 
         for(int i = 0; i<10; i++){
-            poco_assert(i == ptr1[i].data());
+            poco_assert(i == array1[i].data());
         }        
 
     }
@@ -208,25 +208,25 @@ void testAddressComparison()
 
     {
         
-        SharedArray<TestObject> ptr1(new TestObject[10]);
-        SharedArray<TestObject> ptr2(new TestObject[10]);
-        SharedArray<TestObject> ptr3(ptr1);
+        SharedArray<TestObject> array1(new TestObject[10]);
+        SharedArray<TestObject> array2(new TestObject[10]);
+        SharedArray<TestObject> array3(array1);
 
-        poco_assert(ptr1);
-        poco_assert(ptr2 != ptr1);
-        poco_assert(ptr3 == ptr1);
+        poco_assert(array1);
+        poco_assert(array2 != array1);
+        poco_assert(array3 == array1);
 
-        if(ptr1.get() > ptr2.get()){
-           poco_assert(ptr1 > ptr2);
+        if(array1.get() > array2.get()){
+           poco_assert(array1 > array2);
         }
-        if(ptr1.get() >= ptr2.get()){
-            poco_assert(ptr1 >= ptr2);
+        if(array1.get() >= array2.get()){
+            poco_assert(array1 >= array2);
         }
-        if(ptr1.get() < ptr2.get()){
-            poco_assert(ptr1 < ptr2);
+        if(array1.get() < array2.get()){
+            poco_assert(array1 < array2);
         }
-        if(ptr1.get() <= ptr2.get()){
-            poco_assert(ptr1 <= ptr2);
+        if(array1.get() <= array2.get()){
+            poco_assert(array1 <= array2);
         }
 
 
@@ -235,21 +235,21 @@ void testAddressComparison()
 	// test operator(), operator!()  operators and free operators 
 	{
 		TestObject * rawPointer = 0;
-        SharedArray<TestObject> ptr5(rawPointer = new TestObject[10]);
+        SharedArray<TestObject> array5(rawPointer = new TestObject[10]);
 		poco_assert(TestObject::count() == 10);
-        poco_assert(ptr5);
-        poco_assert(!!ptr5);
-        poco_assert(rawPointer == ptr5);
+        poco_assert(array5);
+        poco_assert(!!array5);
+        poco_assert(rawPointer == array5);
 
-        SharedArray<TestObject> ptr6(ptr5);
+        SharedArray<TestObject> array6(array5);
 		poco_assert(TestObject::count() == 10);
-        poco_assert(ptr6);
-        poco_assert(!!ptr6);
-        poco_assert(ptr6 == ptr5);
-        poco_assert(rawPointer == ptr6);
+        poco_assert(array6);
+        poco_assert(!!array6);
+        poco_assert(array6 == array5);
+        poco_assert(rawPointer == array6);
 
 		TestObject* rawPointer2 = rawPointer+1;
-        poco_assert(rawPointer2 > ptr6);
+        poco_assert(rawPointer2 > array6);
 
 	}
 
@@ -315,6 +315,31 @@ void testCustomDeleter()
 
 }
 
+void testReset()
+{
+    poco_assert(TestObject::count() == 0);
+
+    {
+        SharedArray<TestObject> array1(new TestObject[10]);
+        poco_assert(TestObject::count() == 10);
+
+		array1.reset();
+        poco_assert(TestObject::count() == 0);
+    }
+
+	{
+
+        SharedArray<TestObject> array1(new TestObject[10]);
+        poco_assert(TestObject::count() == 10);
+		array1.reset(new TestObject[10], logDeleter<TestObject>() );
+        poco_assert(TestObject::count() == 10);
+	}
+
+    poco_assert(TestObject::count() == 0);
+
+}
+
+
 void testStlContainers()
 {
     poco_assert(TestObject::count() == 0);
@@ -355,5 +380,6 @@ int main()
     testElementAccess();
     testAddressComparison();
     testCustomDeleter();
+    testReset();
     testStlContainers();
 }

@@ -92,15 +92,15 @@ public:
     {
     public:
 
-        CustomDeleter(D deleter) : _deleter(deleter) {}
+        CustomDeleter(D deleter) : _pDeleter(deleter) {}
         virtual ~CustomDeleter() {}
         virtual void operator()(T* p) 
         {
-            (this->_deleter)(p);
+            (this->_pDeleter)(p);
         }
 
     private:
-        D  _deleter;
+        D  _pDeleter;
     };
 
 public:
@@ -115,7 +115,7 @@ public:
     {
         try{
             _pCounter = new RC;
-            _deleter = new DefaultDeleter<C>();
+            _pDeleter = new DefaultDeleter<C>();
         }
         catch(std::bad_alloc& e){
             delete [] _ptr;
@@ -134,7 +134,7 @@ public:
     {
         try{
             _pCounter = new RC;
-            _deleter = new CustomDeleter<C, D>(deleter); 
+            _pDeleter = new CustomDeleter<C, D>(deleter); 
         }
         catch(std::bad_alloc& e){
             delete [] _ptr;
@@ -155,13 +155,13 @@ public:
     void reset(C* ptr = 0)
     {
         poco_assert(ptr == 0 || ptr != _ptr);
-        SharedArray<C>(ptr).swap(*this);
+        SharedArray(ptr).swap(*this);
     }
 
     template <class D> 
     void reset(C* ptr, D deleter)
     {
-        SharedArray<C>(ptr, deleter).swap(*this);
+        SharedArray(ptr, deleter).swap(*this);
     }
 
     SharedArray& operator = (const SharedArray& ptr)
@@ -193,7 +193,7 @@ public:
     {
         std::swap(_ptr, ptr._ptr);
         std::swap(_pCounter, ptr._pCounter);
-        std::swap(_deleter, ptr._deleter);
+        std::swap(_pDeleter, ptr._pDeleter);
     }
 
     C& operator [] (std::ptrdiff_t index)
@@ -357,7 +357,7 @@ private:
             release();
             _pCounter = ptr._pCounter;
             _ptr = ptr._ptr;
-            _deleter = ptr._deleter;
+            _pDeleter = ptr._pDeleter;
             if(_pCounter){
                 _pCounter->duplicate();
             }
@@ -388,13 +388,13 @@ private:
            if (i == 0)
            {
                if (_ptr){
-                   (*_deleter)(_ptr);
+                   (*_pDeleter)(_ptr);
                }
                _ptr = 0;
                delete _pCounter;
                _pCounter = 0;
-               delete _deleter;
-               _deleter = 0;
+               delete _pDeleter;
+               _pDeleter = 0;
            }
         }        
     }
@@ -403,7 +403,7 @@ private:
 
     RC* _pCounter;
     C*  _ptr;
-    Deleter<C>* _deleter;
+    Deleter<C>* _pDeleter;
 };
 
 template<class C> 
