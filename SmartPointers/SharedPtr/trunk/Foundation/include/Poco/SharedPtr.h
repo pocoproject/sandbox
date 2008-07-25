@@ -104,15 +104,15 @@ class CustomDeleter : public Deleter
 {
 public:
 
-	CustomDeleter(D deleter) : _deleter(deleter) {}
+	CustomDeleter(D deleter) : _pDeleter(deleter) {}
     virtual ~CustomDeleter() {}
     virtual void operator()(void* p) 
     {
-        (this->_deleter)(static_cast<T*>(p));
+        (this->_pDeleter)(static_cast<T*>(p));
     }
 
 private:
-    D  _deleter;
+    D  _pDeleter;
 };
 
 template<class T> 
@@ -155,37 +155,70 @@ class SharedPtr
     /// a cast operator in case dynamic casting of the encapsulated data types
     /// is required.
     ///
-    /// TODO : handling the bad_alloc execption for deleter?
 {
 
     typedef typename SharedPtrTraits<C>::reference reference;
 
 public:
     SharedPtr(): _pCounter(new RC), _ptr(0), 
-				 _deleter(new DefaultDeleter<C>())
+				 _pDeleter(new DefaultDeleter<C>())
+        /// Constructs an empty SharedPtr. Throw std::bad_alloc if construction fails.
     {
     }
 
 	template<typename A>
-    SharedPtr(A* ptr): _pCounter(new RC), _ptr(ptr), 
-					   _deleter(new DefaultDeleter<A>())
+    SharedPtr(A* ptr): _pCounter(0), _ptr(ptr), _pDeleter(0)
+        /// Constructs SharedPtr that owns pointer ptr.
+        /// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
+        /// should be deletable and no exception shall be thrown.
+        /// If the construction fails, the incoming pointer ptr will be deleted, and 
+        /// Poco::OutOfMemoryException will be thrown.
     {
+        try
+        {
+            _pCounter = new RC;
+            _pDeleter = new DefaultDeleter<A>();
+        }
+        catch(std::bad_alloc){
+            delete _pCounter;
+            delete _pDeleter;
+            delete ptr;
+            throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
+        }
     }
 
     template <typename A, typename D>
-    SharedPtr(A* ptr, D deleter): _pCounter(new RC), _ptr(ptr)
+    SharedPtr(A* ptr, D deleter): _pCounter(0), _ptr(ptr), _pDeleter(0)
+        /// Constructs SharedPtr that owns pointer ptr and deleter.
+        /// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
+        /// should be deletable and no exception shall be thrown.
+        /// The deleter's constructor must not throw any exception.
+        /// If the construction fails, the incoming pointer ptr will be deleted by the
+        /// provided deleter, and Poco::OutOfMemoryException will be thrown.
     {
-        _deleter = new CustomDeleter<A, D>(deleter); 
+        try
+        {
+            _pCounter = new RC;
+            _pDeleter = new CustomDeleter<A, D>(deleter); 
+        }
+        catch(std::bad_alloc){
+            delete _pCounter;
+            delete _pDeleter;
+            deleter(ptr);
+            throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
+        }
     }
 
     template <class Other> 
     SharedPtr(const SharedPtr<Other, RC>& ptr): _pCounter(ptr._pCounter), _ptr(const_cast<Other*>(ptr.get())) , 
-												_deleter((Deleter*)(ptr._deleter))
+												_pDeleter((Deleter*)(ptr._pDeleter))
+        /// Constructs SharedPtr share the ownership with ptr. 
     {
         _pCounter->duplicate();
     }
 
-    SharedPtr(const SharedPtr& ptr): _pCounter(ptr._pCounter), _ptr(ptr._ptr), _deleter(ptr._deleter)
+    SharedPtr(const SharedPtr& ptr): _pCounter(ptr._pCounter), _ptr(ptr._ptr), _pDeleter(ptr._pDeleter)
+        /// Constructs SharedPtr share the ownership with ptr.
     {
         _pCounter->duplicate();
     }
@@ -193,6 +226,25 @@ public:
     ~SharedPtr()
     {
         release();
+    }
+
+    void reset()
+    {
+        SharedPtr().swap(*this);
+    }
+
+    template<class A>
+    void reset(A* ptr)
+    {
+        poco_assert(ptr == 0 || ptr != _ptr);
+        SharedPtr(ptr).swap(*this);
+    }
+
+    template<class A, class D>
+    void reset(A* ptr, D deleter)
+    {
+        poco_assert(ptr == 0 || ptr != _ptr);
+        SharedPtr(ptr, deleter).swap(*this);
     }
 
     SharedPtr& assign(C* ptr)
@@ -203,7 +255,7 @@ public:
             release();
             _pCounter = pTmp;
             _ptr = ptr;
-			_deleter = new DefaultDeleter<C>(); 
+			_pDeleter = new DefaultDeleter<C>(); 
         }        
         return *this;
     }
@@ -249,7 +301,7 @@ public:
     {
         std::swap(_ptr, ptr._ptr);
         std::swap(_pCounter, ptr._pCounter);
-        std::swap(_deleter, ptr._deleter);
+        std::swap(_pDeleter, ptr._pDeleter);
     }
 
     template <class Other> 
@@ -426,14 +478,14 @@ private:
     void release()
     {
         poco_assert_dbg (_pCounter);
-        poco_assert_dbg (_deleter);
+        poco_assert_dbg (_pDeleter);
         int i = _pCounter->release();
         if (i == 0)
         {
-            if(_deleter){
-                (*_deleter)(_ptr);
-                delete _deleter;
-                _deleter = 0;
+            if(_pDeleter){
+                (*_pDeleter)(_ptr);
+                delete _pDeleter;
+                _pDeleter = 0;
             } 
             // else{
             //  TODO: throw Poco::NullPointerException here ?
@@ -453,7 +505,7 @@ private:
 
 	template<class A>
     SharedPtr(RC* pCounter, A* ptr): _pCounter(pCounter), _ptr(ptr),
-		                             _deleter(new DefaultDeleter<A>())
+		                             _pDeleter(new DefaultDeleter<A>())
         /// for cast operation
     {
         poco_assert_dbg (_pCounter);
@@ -463,7 +515,7 @@ private:
 private:
     RC* _pCounter;
     C*  _ptr;
-    Deleter* _deleter;
+    Deleter* _pDeleter;
 
     template <class OtherC, class OtherRC> friend class SharedPtr;
 };

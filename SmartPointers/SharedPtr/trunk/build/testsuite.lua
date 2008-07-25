@@ -48,7 +48,7 @@ if (not windows) then
     table.insert(package.config["release_shared"].buildoptions, "-shared")
 
     -- for cygwin
-    if(windows) then
+    if(not linux) then
         table.insert(package.config["release_shared"].buildoptions, "-mwindows")
         table.insert(package.config["debug_shared"].buildoptions, "-mwindows")
     end

@@ -338,17 +338,45 @@ void testVoid()
 	assert(TestObject::count() == 0);
 }
 
+void testReset()
+{
+	{
+		SharedPtr<TestObject> ptr1(new TestObject);
+		SharedPtr<TestObject> ptr2(ptr1);
+		assert(ptr1.get() != 0);
+		assert(TestObject::count() == 1);
+		ptr1.reset();
+		assert(ptr1.get() == 0);
+		assert(TestObject::count() == 1);
+		assert(ptr2.get() != 0);
+		assert(TestObject::count() == 1);
+		ptr2.reset();
+		assert(ptr2.get() == 0);
+		assert(TestObject::count() == 0);
+	}
+	assert(TestObject::count() == 0);
+
+	{
+		SharedPtr<TestObject> ptr1(new TestObject, DummyFunctorDeleter<TestObject>() );
+		assert(ptr1.get() != 0);
+		assert(TestObject::count() == 1);
+		TestObject* p = new TestObject;
+		assert(TestObject::count() == 2);
+		ptr1.reset(p, dummyDeleter<TestObject> );
+		assert(ptr1.get() != 0);
+		assert(TestObject::count() == 1);
+	}
+
+	assert(TestObject::count() == 0);
+
+}
+
 int main()
 {
-
 	testRegression();
-
 	testVoid();
-
 	testConstruction();
-
 	testSwap();
-
 	testCustomResource();
-
+	testReset();
 }

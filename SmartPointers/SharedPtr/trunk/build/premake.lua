@@ -37,6 +37,8 @@ elseif (options["target"] == "vs2005") then
     project.name = "Foundation".."_vs80"
 elseif (options["target"] == "vs2008") then
     project.name = "Foundation".."_vs90"
+elseif (options["target"] == "cb-gcc") then
+    project.name = "Foundation".."_cb"
 else 
     project.name = "Foundation"
 end
@@ -73,7 +75,9 @@ project.config["debug_shared"].libdir   = "../lib"
 project.config["release_shared"].bindir = "../bin"
 project.config["release_shared"].libdir = "../lib"
 
+project.config["debug_static"].bindir   = "../bin"
 project.config["debug_static"].libdir   = "../lib"
+project.config["release_static"].bindir = "../bin"
 project.config["release_static"].libdir = "../lib"
 
 -- Build packages
@@ -93,15 +97,13 @@ dopackage("poco.lua")
 
 function doclean(cmd, arg)
     docommand(cmd, arg)
-    os.rmdir("custom")
-    os.rmdir("../lib/debug_shared")
-    os.rmdir("../lib/debug_static")
-    os.rmdir("../lib/release_shared")
-    os.rmdir("../lib/release_static")
+    os.remove("../bin/*")
+    os.remove("../lib/*")
     os.rmdir("gnu/obj")
     os.rmdir("vs2003/obj")
     os.rmdir("vs2005/obj")
     os.rmdir("vs2008/obj")
+    os.rmdir("cb-gcc/obj")
 end
 
 

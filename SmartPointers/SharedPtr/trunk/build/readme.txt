@@ -11,6 +11,9 @@ Currently, the following solution/makefile generation are supported :
   * Code::Blocks with MingW 
   * Cygwin with g++ 3.4.4 
 
+Note the .bat files are supposed to be used on Windows platform and .sh 
+scripts can be used to generate makefiles for GNU/linux platform.
+
 Here is an example, for visual studio 2008, just 
 
   * double click the CreateVs2008Solution.bat, or 
