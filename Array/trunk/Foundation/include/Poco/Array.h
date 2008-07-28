@@ -41,22 +41,13 @@
 // This software is provided "as is" without express or implied
 // warranty, and with no claim as to its suitability for any purpose.
 // ------------------------------------------------------------------------------
-//
-//  * 20 Jul 2008 - Port to POCO library		(Jiang)
-//
 
 
 #ifndef Foundation_Array_INCLUDED
 #define Foundation_Array_INCLUDED
 
-#ifndef Foundation_Exception_INCLUDED
 #include "Poco/Exception.h"
-#endif //  Foundation_Exception_INCLUDED
-
-#ifndef Foundation_Bugcheck_INCLUDED
 #include "Poco/Bugcheck.h"
-#endif //  Foundation_Bugcheck_INCLUDED
-
 #include <algorithm>
 
 namespace Poco {
@@ -227,7 +218,6 @@ public:
 public:
 
 	T elems[N];	// fixed-size array of elements of type T, public specifier used to make this class a aggregate.
-				   
 
 };
 
@@ -268,9 +258,9 @@ bool operator>= (const Array<T,N>& x, const Array<T,N>& y)
 	return !(x<y);
 }
 
-// global swap()
 template<class T, std::size_t N>
 inline void swap (Array<T,N>& x, Array<T,N>& y) 
+	/// global swap()
 {
 	x.swap(y);
 }
@@ -278,5 +268,4 @@ inline void swap (Array<T,N>& x, Array<T,N>& y)
 }// namespace Poco
 
 #endif // Foundation_Array_INCLUDED
-
 
