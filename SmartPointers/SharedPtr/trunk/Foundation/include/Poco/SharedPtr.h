@@ -39,80 +39,76 @@
 #ifndef Foundation_SharedPtr_INCLUDED
 #define Foundation_SharedPtr_INCLUDED
 
-
 #include "Poco/Foundation.h"
 #include "Poco/Exception.h"
 #include "Poco/Mutex.h"
 #include <algorithm>
 
-
 namespace Poco {
 
-
 class ReferenceCounter
-        /// Simple ReferenceCounter object, does not delete itself when count reaches 0
+		/// Simple ReferenceCounter object, does not delete itself when count reaches 0
 {
 public:
-    ReferenceCounter(): _cnt(1)
-    {
-    }
+	ReferenceCounter(): _cnt(1)
+	{
+	}
 
-    void duplicate()
-    {
-        FastMutex::ScopedLock lock(_mutex);
-        ++_cnt;
-    }
+	void duplicate()
+	{
+		FastMutex::ScopedLock lock(_mutex);
+		++_cnt;
+	}
 
-    int release()
-    {
-        FastMutex::ScopedLock lock(_mutex);
-        return --_cnt;
-    }
+	int release()
+	{
+		FastMutex::ScopedLock lock(_mutex);
+		return --_cnt;
+	}
 
 private:
-    FastMutex _mutex;
-    int _cnt;
+	FastMutex _mutex;
+	int _cnt;
 };
 
 class Deleter
-    /// Deleter base
+	/// Deleter base
 {
 public:
-    virtual ~Deleter(){}
-    virtual void operator()(void* p) = 0;
+	virtual ~Deleter(){}
+	virtual void operator()(void* p) = 0;
 };
 
 template <class T>
 class DefaultDeleter : public Deleter
-    /// Default Deleter 
+	/// Default Deleter 
 {
 public:
-    ~DefaultDeleter(){}
+	~DefaultDeleter(){}
 	virtual void operator()(void* p)
 	{
 		delete static_cast<T*>(p);
 	}
-private:
 };
 
 template <class T, class D>
 class CustomDeleter : public Deleter 
-    /// ShardPtrDeleter accepts both the object pointer and concrete deleter.
-    /// The deleter can be function pointer or even functor which provide "operator ()".
-    /// note the deleter shall be default constructible and its constructor
-    /// shall never throw exceptions.
+	/// ShardPtrDeleter accepts both the object pointer and concrete deleter.
+	/// The deleter can be function pointer or even functor which provide "operator ()".
+	/// note the deleter shall be default constructible and its constructor
+	/// shall never throw exceptions.
 {
 public:
 
 	CustomDeleter(D deleter) : _pDeleter(deleter) {}
-    virtual ~CustomDeleter() {}
-    virtual void operator()(void* p) 
-    {
-        (this->_pDeleter)(static_cast<T*>(p));
-    }
+	virtual ~CustomDeleter() {}
+	virtual void operator()(void* p) 
+	{
+		(this->_pDeleter)(static_cast<T*>(p));
+	}
 
 private:
-    D  _pDeleter;
+	D  _pDeleter;
 };
 
 template<class T> 
@@ -129,402 +125,395 @@ struct SharedPtrTraits<void>
 
 template <class C, class RC = ReferenceCounter>
 class SharedPtr
-    /// SharedPtr is a "smart" pointer for classes implementing
-    /// reference counting based garbage collection.
-    /// SharedPtr is thus similar to AutoPtr. Unlike the
-    /// AutoPtr template, which can only be used with
-    /// classes that support reference counting, SharedPtr
-    /// can be used with any class. For this to work, a
-    /// SharedPtr manages a reference count for the object
-    /// it manages.
-    /// 
-    /// SharedPtr works in the following way:
-    /// If an SharedPtr is assigned an ordinary pointer to
-    /// an object (via the constructor or the assignment operator),
-    /// it takes ownership of the object and the object's reference 
-    /// count is initialized to one.
-    /// If the SharedPtr is assigned another SharedPtr, the
-    /// object's reference count is incremented by one.
-    /// The destructor of SharedPtr decrements the object's
-    /// reference count by one and deletes the object if the
-    /// reference count reaches zero.
-    /// SharedPtr supports dereferencing with both the ->
-    /// and the * operator. An attempt to dereference a null
-    /// SharedPtr results in a NullPointerException being thrown.
-    /// SharedPtr also implements all relational operators and
-    /// a cast operator in case dynamic casting of the encapsulated data types
-    /// is required.
-    ///
+	/// SharedPtr is a "smart" pointer for classes implementing
+	/// reference counting based garbage collection.
+	/// SharedPtr is thus similar to AutoPtr. Unlike the
+	/// AutoPtr template, which can only be used with
+	/// classes that support reference counting, SharedPtr
+	/// can be used with any class. For this to work, a
+	/// SharedPtr manages a reference count for the object
+	/// it manages.
+	/// 
+	/// SharedPtr works in the following way:
+	/// If an SharedPtr is assigned an ordinary pointer to
+	/// an object (via the constructor or the assignment operator),
+	/// it takes ownership of the object and the object's reference 
+	/// count is initialized to one.
+	/// If the SharedPtr is assigned another SharedPtr, the
+	/// object's reference count is incremented by one.
+	/// The destructor of SharedPtr decrements the object's
+	/// reference count by one and deletes the object if the
+	/// reference count reaches zero.
+	/// SharedPtr supports dereferencing with both the ->
+	/// and the * operator. An attempt to dereference a null
+	/// SharedPtr results in a NullPointerException being thrown.
+	/// SharedPtr also implements all relational operators and
+	/// a cast operator in case dynamic casting of the encapsulated data types
+	/// is required.
+	///
 {
 
-    typedef typename SharedPtrTraits<C>::reference reference;
+	typedef typename SharedPtrTraits<C>::reference reference;
 
 public:
-    SharedPtr(): _pCounter(new RC), _ptr(0), 
+	SharedPtr(): _pCounter(new RC), _ptr(0), 
 				 _pDeleter(new DefaultDeleter<C>())
-        /// Constructs an empty SharedPtr. Throw std::bad_alloc if construction fails.
-    {
-    }
+		/// Constructs an empty SharedPtr. Throw std::bad_alloc if construction fails.
+	{
+	}
 
 	template<typename A>
-    SharedPtr(A* ptr): _pCounter(0), _ptr(ptr), _pDeleter(0)
-        /// Constructs SharedPtr that owns pointer ptr.
-        /// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
-        /// should be deletable and no exception shall be thrown.
-        /// If the construction fails, the incoming pointer ptr will be deleted, and 
-        /// Poco::OutOfMemoryException will be thrown.
-    {
-        try
-        {
-            _pCounter = new RC;
-            _pDeleter = new DefaultDeleter<A>();
-        }
-        catch(std::bad_alloc){
-            delete _pCounter;
-            delete _pDeleter;
-            delete ptr;
-            throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
-        }
-    }
+	SharedPtr(A* ptr): _pCounter(0), _ptr(ptr), _pDeleter(0)
+		/// Constructs SharedPtr that owns pointer ptr.
+		/// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
+		/// should be deletable and no exception shall be thrown.
+		/// If the construction fails, the incoming pointer ptr will be deleted, and 
+		/// Poco::OutOfMemoryException will be thrown.
+	{
+		try
+		{
+			_pCounter = new RC;
+			_pDeleter = new DefaultDeleter<A>();
+		}
+		catch(std::bad_alloc){
+			delete _pCounter;
+			delete _pDeleter;
+			delete ptr;
+			throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
+		}
+	}
 
-    template <typename A, typename D>
-    SharedPtr(A* ptr, D deleter): _pCounter(0), _ptr(ptr), _pDeleter(0)
-        /// Constructs SharedPtr that owns pointer ptr and deleter.
-        /// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
-        /// should be deletable and no exception shall be thrown.
-        /// The deleter's constructor must not throw any exception.
-        /// If the construction fails, the incoming pointer ptr will be deleted by the
-        /// provided deleter, and Poco::OutOfMemoryException will be thrown.
-    {
-        try
-        {
-            _pCounter = new RC;
-            _pDeleter = new CustomDeleter<A, D>(deleter); 
-        }
-        catch(std::bad_alloc){
-            delete _pCounter;
-            delete _pDeleter;
-            deleter(ptr);
-            throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
-        }
-    }
+	template <typename A, typename D>
+	SharedPtr(A* ptr, D deleter): _pCounter(0), _ptr(ptr), _pDeleter(0)
+		/// Constructs SharedPtr that owns pointer ptr and deleter.
+		/// Here ptr must be convertible to C*, and type A shall be a complete type. Also ptr 
+		/// should be deletable and no exception shall be thrown.
+		/// The deleter's constructor must not throw any exception.
+		/// If the construction fails, the incoming pointer ptr will be deleted by the
+		/// provided deleter, and Poco::OutOfMemoryException will be thrown.
+	{
+		try
+		{
+			_pCounter = new RC;
+			_pDeleter = new CustomDeleter<A, D>(deleter); 
+		}
+		catch(std::bad_alloc)
+		{
+			delete _pCounter;
+			delete _pDeleter;
+			deleter(ptr);
+			throw Poco::OutOfMemoryException("SharedPtr construction failed: Out of memory.");
+		}
+	}
 
-    template <class Other> 
-    SharedPtr(const SharedPtr<Other, RC>& ptr): _pCounter(ptr._pCounter), _ptr(const_cast<Other*>(ptr.get())) , 
+	template <class Other> 
+	SharedPtr(const SharedPtr<Other, RC>& ptr): _pCounter(ptr._pCounter), _ptr(const_cast<Other*>(ptr.get())) , 
 												_pDeleter((Deleter*)(ptr._pDeleter))
-        /// Constructs SharedPtr share the ownership with ptr. 
-    {
-        _pCounter->duplicate();
-    }
+		/// Constructs SharedPtr share the ownership with ptr. 
+	{
+		_pCounter->duplicate();
+	}
 
-    SharedPtr(const SharedPtr& ptr): _pCounter(ptr._pCounter), _ptr(ptr._ptr), _pDeleter(ptr._pDeleter)
-        /// Constructs SharedPtr share the ownership with ptr.
-    {
-        _pCounter->duplicate();
-    }
+	SharedPtr(const SharedPtr& ptr): _pCounter(ptr._pCounter), _ptr(ptr._ptr), _pDeleter(ptr._pDeleter)
+		/// Constructs SharedPtr share the ownership with ptr.
+	{
+		_pCounter->duplicate();
+	}
 
-    ~SharedPtr()
-    {
-        release();
-    }
+	~SharedPtr()
+	{
+		release();
+	}
 
-    void reset()
-    {
-        SharedPtr().swap(*this);
-    }
-
-    template<class A>
-    void reset(A* ptr)
-    {
-        poco_assert(ptr == 0 || ptr != _ptr);
-        SharedPtr(ptr).swap(*this);
-    }
-
-    template<class A, class D>
-    void reset(A* ptr, D deleter)
-    {
-        poco_assert(ptr == 0 || ptr != _ptr);
-        SharedPtr(ptr, deleter).swap(*this);
-    }
-
-    SharedPtr& assign(C* ptr)
-    {
-        if (get() != ptr)
-        {
-            RC* pTmp = new RC;
-            release();
-            _pCounter = pTmp;
-            _ptr = ptr;
-			_pDeleter = new DefaultDeleter<C>(); 
-        }        
-        return *this;
-    }
-    
-    SharedPtr& assign(const SharedPtr& ptr)
-    {
-        if (&ptr != this)
-        {
-            SharedPtr tmp(ptr);
-            swap(tmp);
-        }
-        return *this;
-    }
-    
-    template <class Other>
-    SharedPtr& assign(const SharedPtr<Other, RC>& ptr)
-    {
-        if (ptr.get() != _ptr)
-        {
-            SharedPtr tmp(ptr);
-            swap(tmp);
-        }
-        return *this;
-    }
-
-    SharedPtr& operator = (C* ptr)
-    {
-        return assign(ptr);
-    }
-
-    SharedPtr& operator = (const SharedPtr& ptr)
-    {
-        return assign(ptr);
-    }
-
-    template <class Other>
-    SharedPtr& operator = (const SharedPtr<Other, RC>& ptr)
-    {
-        return assign<Other>(ptr);
-    }
-
-    void swap(SharedPtr& ptr)
-    {
-        std::swap(_ptr, ptr._ptr);
-        std::swap(_pCounter, ptr._pCounter);
-        std::swap(_pDeleter, ptr._pDeleter);
-    }
-
-    template <class Other> 
-    SharedPtr<Other, RC> cast() const
-        /// Casts the SharedPtr via a dynamic cast to the given type.
-        /// Returns an SharedPtr containing NULL if the cast fails.
-        /// Example: (assume class Sub: public Super)
-        ///    SharedPtr<Super> super(new Sub());
-        ///    SharedPtr<Sub> sub = super.cast<Sub>();
-        ///    poco_assert (sub.get());
-    {
-        Other* pOther = dynamic_cast<Other*>(_ptr);
-        if (pOther)
-            return SharedPtr<Other, RC>(_pCounter, pOther);
-        return SharedPtr<Other, RC>();
-    }
-
-    template <class Other> 
-    SharedPtr<Other, RC> unsafeCast() const
-        /// Casts the SharedPtr via a static cast to the given type.
-        /// Example: (assume class Sub: public Super)
-        ///    SharedPtr<Super> super(new Sub());
-        ///    SharedPtr<Sub> sub = super.unsafeCast<Sub>();
-        ///    poco_assert (sub.get());
-    {
-        Other* pOther = static_cast<Other*>(_ptr);
-        return SharedPtr<Other, RC>(_pCounter, pOther);
-    }
-
-    C* operator -> ()
-    {
-        return deref();
-    }
-
-    const C* operator -> () const
-    {
-        return deref();
-    }
-
-    reference operator * ()
-    {
-        return *deref();
-    }
-
-    C* get()
-    {
-        return _ptr;
-    }
-
-    const C* get() const
-    {
-        return _ptr;
-    }
-
-    operator C* ()
-    {
-        return _ptr;
-    }
-    
-    operator const C* () const
-    {
-        return _ptr;
-    }
-
-    bool operator ! () const
-    {
-        return _ptr == 0;
-    }
-
-    bool isNull() const
-    {
-        return _ptr == 0;
-    }
-
-    bool operator == (const SharedPtr& ptr) const
-    {
-        return get() == ptr.get();
-    }
-
-    bool operator == (const C* ptr) const
-    {
-        return get() == ptr;
-    }
-
-    bool operator == (C* ptr) const
-    {
-        return get() == ptr;
-    }
-
-    bool operator != (const SharedPtr& ptr) const
-    {
-        return get() != ptr.get();
-    }
-
-    bool operator != (const C* ptr) const
-    {
-        return get() != ptr;
-    }
-
-    bool operator != (C* ptr) const
-    {
-        return get() != ptr;
-    }
-
-    bool operator < (const SharedPtr& ptr) const
-    {
-        return get() < ptr.get();
-    }
-
-    bool operator < (const C* ptr) const
-    {
-        return get() < ptr;
-    }
-
-    bool operator < (C* ptr) const
-    {
-        return get() < ptr;
-    }
-
-    bool operator <= (const SharedPtr& ptr) const
-    {
-        return get() <= ptr.get();
-    }
-
-    bool operator <= (const C* ptr) const
-    {
-        return get() <= ptr;
-    }
-
-    bool operator <= (C* ptr) const
-    {
-        return get() <= ptr;
-    }
-
-    bool operator > (const SharedPtr& ptr) const
-    {
-        return get() > ptr.get();
-    }
-
-    bool operator > (const C* ptr) const
-    {
-        return get() > ptr;
-    }
-
-    bool operator > (C* ptr) const
-    {
-        return get() > ptr;
-    }
-
-    bool operator >= (const SharedPtr& ptr) const
-    {
-        return get() >= ptr.get();
-    }
-
-    bool operator >= (const C* ptr) const
-    {
-        return get() >= ptr;
-    }
-
-    bool operator >= (C* ptr) const
-    {
-        return get() >= ptr;
-    }
-
-private:
-    C* deref() const
-    {
-        if (!_ptr)
-            throw NullPointerException();
-
-        return _ptr;
-    }
-
-    void release()
-    {
-        poco_assert_dbg (_pCounter);
-        poco_assert_dbg (_pDeleter);
-        int i = _pCounter->release();
-        if (i == 0)
-        {
-            if(_pDeleter){
-                (*_pDeleter)(_ptr);
-                delete _pDeleter;
-                _pDeleter = 0;
-            } 
-            // else{
-            //  TODO: throw Poco::NullPointerException here ?
-            // }
-            
-			/*
-			else if (_ptr){
-                delete _ptr;
-            }
-			*/
-            _ptr = 0;
-
-            delete _pCounter;
-            _pCounter = 0;
-        }
-    }
+	void reset()
+	{
+		SharedPtr().swap(*this);
+	}
 
 	template<class A>
-    SharedPtr(RC* pCounter, A* ptr): _pCounter(pCounter), _ptr(ptr),
-		                             _pDeleter(new DefaultDeleter<A>())
-        /// for cast operation
-    {
-        poco_assert_dbg (_pCounter);
-        _pCounter->duplicate();
-    }
+	void reset(A* ptr)
+	{
+		poco_assert(ptr == 0 || ptr != _ptr);
+		SharedPtr(ptr).swap(*this);
+	}
+
+	template<class A, class D>
+	void reset(A* ptr, D deleter)
+	{
+		poco_assert(ptr == 0 || ptr != _ptr);
+		SharedPtr(ptr, deleter).swap(*this);
+	}
+
+	SharedPtr& assign(C* ptr)
+	{
+		if (get() != ptr)
+		{
+			RC* pTmp = new RC;
+			release();
+			_pCounter = pTmp;
+			_ptr = ptr;
+			_pDeleter = new DefaultDeleter<C>(); 
+		}		
+		return *this;
+	}
+	
+	SharedPtr& assign(const SharedPtr& ptr)
+	{
+		if (&ptr != this)
+		{
+			SharedPtr tmp(ptr);
+			swap(tmp);
+		}
+		return *this;
+	}
+	
+	template <class Other>
+	SharedPtr& assign(const SharedPtr<Other, RC>& ptr)
+	{
+		if (ptr.get() != _ptr)
+		{
+			SharedPtr tmp(ptr);
+			swap(tmp);
+		}
+		return *this;
+	}
+
+	SharedPtr& operator = (C* ptr)
+	{
+		return assign(ptr);
+	}
+
+	SharedPtr& operator = (const SharedPtr& ptr)
+	{
+		return assign(ptr);
+	}
+
+	template <class Other>
+	SharedPtr& operator = (const SharedPtr<Other, RC>& ptr)
+	{
+		return assign<Other>(ptr);
+	}
+
+	void swap(SharedPtr& ptr)
+	{
+		std::swap(_ptr, ptr._ptr);
+		std::swap(_pCounter, ptr._pCounter);
+		std::swap(_pDeleter, ptr._pDeleter);
+	}
+
+	template <class Other> 
+	SharedPtr<Other, RC> cast() const
+		/// Casts the SharedPtr via a dynamic cast to the given type.
+		/// Returns an SharedPtr containing NULL if the cast fails.
+		/// Example: (assume class Sub: public Super)
+		///	SharedPtr<Super> super(new Sub());
+		///	SharedPtr<Sub> sub = super.cast<Sub>();
+		///	poco_assert (sub.get());
+	{
+		Other* pOther = dynamic_cast<Other*>(_ptr);
+		if (pOther)
+			return SharedPtr<Other, RC>(_pCounter, pOther);
+		return SharedPtr<Other, RC>();
+	}
+
+	template <class Other> 
+	SharedPtr<Other, RC> unsafeCast() const
+		/// Casts the SharedPtr via a static cast to the given type.
+		/// Example: (assume class Sub: public Super)
+		///	SharedPtr<Super> super(new Sub());
+		///	SharedPtr<Sub> sub = super.unsafeCast<Sub>();
+		///	poco_assert (sub.get());
+	{
+		Other* pOther = static_cast<Other*>(_ptr);
+		return SharedPtr<Other, RC>(_pCounter, pOther);
+	}
+
+	C* operator -> ()
+	{
+		return deref();
+	}
+
+	const C* operator -> () const
+	{
+		return deref();
+	}
+
+	reference operator * ()
+	{
+		return *deref();
+	}
+
+	C* get()
+	{
+		return _ptr;
+	}
+
+	const C* get() const
+	{
+		return _ptr;
+	}
+
+	operator C* ()
+	{
+		return _ptr;
+	}
+	
+	operator const C* () const
+	{
+		return _ptr;
+	}
+
+	bool operator ! () const
+	{
+		return _ptr == 0;
+	}
+
+	bool isNull() const
+	{
+		return _ptr == 0;
+	}
+
+	bool operator == (const SharedPtr& ptr) const
+	{
+		return get() == ptr.get();
+	}
+
+	bool operator == (const C* ptr) const
+	{
+		return get() == ptr;
+	}
+
+	bool operator == (C* ptr) const
+	{
+		return get() == ptr;
+	}
+
+	bool operator != (const SharedPtr& ptr) const
+	{
+		return get() != ptr.get();
+	}
+
+	bool operator != (const C* ptr) const
+	{
+		return get() != ptr;
+	}
+
+	bool operator != (C* ptr) const
+	{
+		return get() != ptr;
+	}
+
+	bool operator < (const SharedPtr& ptr) const
+	{
+		return get() < ptr.get();
+	}
+
+	bool operator < (const C* ptr) const
+	{
+		return get() < ptr;
+	}
+
+	bool operator < (C* ptr) const
+	{
+		return get() < ptr;
+	}
+
+	bool operator <= (const SharedPtr& ptr) const
+	{
+		return get() <= ptr.get();
+	}
+
+	bool operator <= (const C* ptr) const
+	{
+		return get() <= ptr;
+	}
+
+	bool operator <= (C* ptr) const
+	{
+		return get() <= ptr;
+	}
+
+	bool operator > (const SharedPtr& ptr) const
+	{
+		return get() > ptr.get();
+	}
+
+	bool operator > (const C* ptr) const
+	{
+		return get() > ptr;
+	}
+
+	bool operator > (C* ptr) const
+	{
+		return get() > ptr;
+	}
+
+	bool operator >= (const SharedPtr& ptr) const
+	{
+		return get() >= ptr.get();
+	}
+
+	bool operator >= (const C* ptr) const
+	{
+		return get() >= ptr;
+	}
+
+	bool operator >= (C* ptr) const
+	{
+		return get() >= ptr;
+	}
 
 private:
-    RC* _pCounter;
-    C*  _ptr;
-    Deleter* _pDeleter;
 
-    template <class OtherC, class OtherRC> friend class SharedPtr;
+	C* deref() const
+	{
+		if (!_ptr)
+			throw NullPointerException();
+
+		return _ptr;
+	}
+
+	void release()
+	{
+		poco_assert_dbg (_pCounter);
+		poco_assert_dbg (_pDeleter);
+		int i = _pCounter->release();
+		if (i == 0)
+		{
+			if(_pDeleter){
+				(*_pDeleter)(_ptr);
+				_ptr = 0;
+				delete _pDeleter;
+				_pDeleter = 0;
+			} 
+			delete _pCounter;
+			_pCounter = 0;
+		}
+	}
+
+	template<class A>
+	SharedPtr(RC* pCounter, A* ptr): _pCounter(pCounter), _ptr(ptr),
+									 _pDeleter(new DefaultDeleter<A>())
+		/// for cast operation
+	{
+		poco_assert_dbg (_pCounter);
+		_pCounter->duplicate();
+	}
+
+private:
+
+	RC*			_pCounter;
+	C*			_ptr;
+	Deleter*	_pDeleter;
+
+	template <class OtherC, class OtherRC> friend class SharedPtr;
 };
 
 
 template <class C, class RC>
 inline void swap(SharedPtr<C, RC>& p1, SharedPtr<C, RC>& p2)
 {
-    p1.swap(p2);
+	p1.swap(p2);
 }
 
 
@@ -532,5 +521,4 @@ inline void swap(SharedPtr<C, RC>& p1, SharedPtr<C, RC>& p2)
 
 
 #endif // Foundation_SharedPtr_INCLUDED
-
 

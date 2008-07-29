@@ -39,429 +39,429 @@
 #ifndef Foundation_SharedArray_INCLUDED
 #define Foundation_SharedArray_INCLUDED
 
-
 #include "Poco/SharedPtr.h"
 
 namespace Poco {
 
 template <class C, class RC = ReferenceCounter>
 class SharedArray
-/// SharedArray is a "smart" pointer for classes implementing reference 
-/// counting based garbage collection. SharedArray is thus similar to 
-/// SharedPtr. Unlike the SharedPtr template, which can only be used with
-/// single object pointer management, SharedArray can be used with 
-/// dynamically allocated array (Dynamically allocated array are allocated
-/// with the C++ new[] expression).
-///
-/// SharedArray works as SharedPtr but using delete[] expression to
-/// destroy the array object.
-//
-/// For temporal array buffer class, check Poco::Buffer.
+	/// SharedArray is a "smart" pointer for classes implementing reference 
+	/// counting based garbage collection. SharedArray is thus similar to 
+	/// SharedPtr. Unlike the SharedPtr template, which can only be used with
+	/// single object pointer management, SharedArray can be used with 
+	/// dynamically allocated array (Dynamically allocated array are allocated
+	/// with the C++ new[] expression).
+	///
+	/// SharedArray works as SharedPtr but using delete[] expression to
+	/// destroy the array object.
+	//
+	/// For temporal buffer without reference counting, please check Poco::Buffer.
 {
 
 public:
 
 	template<class T>
-    class Deleter
-        /// Deleter base
-    {
-    public:
-        virtual ~Deleter(){}
-        virtual void operator()(T* p) = 0;
-    };
+	class Deleter
+		/// Deleter base
+	{
+	public:
+		virtual ~Deleter(){}
+		virtual void operator()(T* p) = 0;
+	};
 
 	template<class T>
-    class DefaultDeleter : public Deleter<T>
-        /// Default Deleter 
-    {
-    public:
-        ~DefaultDeleter(){}
-        virtual void operator()(T* p)
-        {
-            delete [] p;
-        }
-    private:
-    };
+	class DefaultDeleter : public Deleter<T>
+		/// Default Deleter 
+	{
+	public:
+		~DefaultDeleter(){}
+		virtual void operator()(T* p)
+		{
+			delete [] p;
+		}
+	};
 
-    template <class T, class D>
-    class CustomDeleter : public Deleter<T>
-        /// ShardPtrDeleter accepts both the object pointer and concrete deleter.
-        /// The deleter can be function pointer or even functor which provide "operator ()".
-        /// note the deleter shall be default constructible and its constructor and destrucotor
-        /// shall never throw exceptions.
-    {
-    public:
+	template <class T, class D>
+	class CustomDeleter : public Deleter<T>
+		/// ShardPtrDeleter accepts both the object pointer and concrete deleter.
+		/// The deleter can be function pointer or even functor which provide "operator ()".
+		/// note the deleter shall be default constructible and its constructor and destrucotor
+		/// shall never throw exceptions.
+	{
+	public:
 
-        CustomDeleter(D deleter) : _pDeleter(deleter) {}
-        virtual ~CustomDeleter() {}
-        virtual void operator()(T* p) 
-        {
-            (this->_pDeleter)(p);
-        }
+		CustomDeleter(D deleter) : _pDeleter(deleter) {}
+		virtual ~CustomDeleter() {}
+		virtual void operator()(T* p) 
+		{
+			(this->_pDeleter)(p);
+		}
 
-    private:
-        D  _pDeleter;
-    };
+	private:
+		D  _pDeleter;
+	};
 
 public:
 
-    explicit SharedArray(C* ptr = 0): _ptr(ptr)
-        /// Constructs a SharedArray object from user provided raw pointer.
-        ///
-        /// ptr must be a pointer to an dynamically allocated array or null pointer 0.
-        /// 
-        /// Exception: Thown std::bad_alloc if allocation for reference counting object
-        /// fails. If this exception is thrown, the array object will also be deallocated.
-    {
-        try{
-            _pCounter = new RC;
-            _pDeleter = new DefaultDeleter<C>();
-        }
-        catch(std::bad_alloc& e){
-            delete [] _ptr;
-            throw e;
-        }
-    }
+	explicit SharedArray(C* ptr = 0): _ptr(ptr)
+		/// Constructs a SharedArray object from user provided raw pointer.
+		///
+		/// ptr must be a pointer to an dynamically allocated array or null pointer 0.
+		/// 
+		/// Exception: Thown std::bad_alloc if allocation for reference counting object
+		/// fails. If this exception is thrown, the array object will also be deallocated.
+	{
+		try{
+			_pCounter = new RC;
+			_pDeleter = new DefaultDeleter<C>();
+		}
+		catch(std::bad_alloc& e){
+			delete [] _ptr;
+			throw e;
+		}
+	}
 
-    template <class D>
-    SharedArray(C* ptr, D deleter): _ptr(ptr)
-        /// Copy constructs a SharedArray object from another SharedArray object.
-        ///
-        /// Reference count will be added by 1.
-        /// 
-        /// Exception: Thown std::bad_alloc if allocation for reference counting object and deleter
-        /// fails. If this exception is thrown, the array object will also be deallocated.
-    {
-        try{
-            _pCounter = new RC;
-            _pDeleter = new CustomDeleter<C, D>(deleter); 
-        }
-        catch(std::bad_alloc& e){
-            delete [] _ptr;
-            throw e;
-        }
-    }
+	template <class D>
+	SharedArray(C* ptr, D deleter): _ptr(ptr)
+		/// Copy constructs a SharedArray object from another SharedArray object.
+		///
+		/// Reference count will be added by 1.
+		/// 
+		/// Exception: Thown std::bad_alloc if allocation for reference counting object and deleter
+		/// fails. If this exception is thrown, the array object will also be deallocated.
+	{
+		try{
+			_pCounter = new RC;
+			_pDeleter = new CustomDeleter<C, D>(deleter); 
+		}
+		catch(std::bad_alloc& e){
+			delete [] _ptr;
+			throw e;
+		}
+	}
 
-    SharedArray(const SharedArray& ptr) : _pCounter(0), _ptr(0)
-        /// Copy constructs a SharedArray object from another SharedArray object.
-        ///
-        /// Reference count will be added by 1.
-        /// 
-        /// Exception: No exception will be thrown.
-    {
-        assign(ptr);
-    }
+	SharedArray(const SharedArray& ptr) : _pCounter(0), _ptr(0)
+		/// Copy constructs a SharedArray object from another SharedArray object.
+		///
+		/// Reference count will be added by 1.
+		/// 
+		/// Exception: No exception will be thrown.
+	{
+		assign(ptr);
+	}
 
-    void reset(C* ptr = 0)
-    {
-        poco_assert(ptr == 0 || ptr != _ptr);
-        SharedArray(ptr).swap(*this);
-    }
+	void reset(C* ptr = 0)
+		/// Reset the SharedArray object.
+	{
+		poco_assert(ptr == 0 || ptr != _ptr);
+		SharedArray(ptr).swap(*this);
+	}
 
-    template <class D> 
-    void reset(C* ptr, D deleter)
-    {
-        SharedArray(ptr, deleter).swap(*this);
-    }
+	template <class D> 
+	void reset(C* ptr, D deleter)
+		/// Reset the SharedArray object.
+	{
+		SharedArray(ptr, deleter).swap(*this);
+	}
 
-    SharedArray& operator = (const SharedArray& ptr)
-        /// Assignment from another SharedArray object.
-        ///
-        /// Reference count will be added by 1.
-        /// 
-        /// Exception: No exception will be thrown.
-    {
-        return assign(ptr);
-    }
+	SharedArray& operator = (const SharedArray& ptr)
+		/// Assignment from another SharedArray object.
+		///
+		/// Reference count will be added by 1.
+		/// 
+		/// Exception: No exception will be thrown.
+	{
+		return assign(ptr);
+	}
 
-    ~SharedArray()
-        /// The reference count will be decremented by 1. 
-        ///
-        /// If the count becomes 0, both the array and the reference counting object will be
-        /// destroyed. 
-        ///
-        /// Exception: No exception will be thrown, if and only if the underlying array element's
-        /// destructor does not throw.
-    {
-        release();
-    }
+	~SharedArray()
+		/// The reference count will be decremented by 1. 
+		///
+		/// If the count becomes 0, both the array and the reference counting object will be
+		/// destroyed. 
+		///
+		/// Exception: No exception will be thrown, if and only if the underlying array element's
+		/// destructor does not throw.
+	{
+		release();
+	}
 
-    void swap(SharedArray& ptr)
-        /// Swap the two pointer
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        std::swap(_ptr, ptr._ptr);
-        std::swap(_pCounter, ptr._pCounter);
-        std::swap(_pDeleter, ptr._pDeleter);
-    }
+	void swap(SharedArray& ptr)
+		/// Swap the two pointer
+		///
+		/// Exception: No exception will be thrown.
+	{
+		std::swap(_ptr, ptr._ptr);
+		std::swap(_pCounter, ptr._pCounter);
+		std::swap(_pDeleter, ptr._pDeleter);
+	}
 
-    C& operator [] (std::ptrdiff_t index)
-        /// Element access, returns a reference to the desired element according to the given index.
-        ///
-        /// The user provided index must be less than the object's size, otherwise the behavior is 
-        /// undefined. 
-        ///
-        /// If the SharedArray does not have a valid pointer, which pointer to a dynamically 
-        /// allocated array object, NullPointerException will be thrown.
-        ///
-        /// Exception: Throws NullPointerException if the SharedArray does not have a valid 
-        /// pointer to an array.
-    {
-        return deref(index);
-    }
+	C& operator [] (std::ptrdiff_t index)
+		/// Element access, returns a reference to the desired element according to the given index.
+		///
+		/// The user provided index must be less than the object's size, otherwise the behavior is 
+		/// undefined. 
+		///
+		/// If the SharedArray does not have a valid pointer, which pointer to a dynamically 
+		/// allocated array object, NullPointerException will be thrown.
+		///
+		/// Exception: Throws NullPointerException if the SharedArray does not have a valid 
+		/// pointer to an array.
+	{
+		return deref(index);
+	}
 
-    const C& operator [] (std::ptrdiff_t index) const
-        /// Element access, returns a const reference to the desired element according to the given index.
-        ///
-        /// The user provided index must be less than the object's size, otherwise the behavior is 
-        /// undefined. 
-        ///
-        /// If the SharedArray does not have a valid pointer, which pointer to a dynamically 
-        /// allocated array object, NullPointerException will be thrown.
-        ///
-        /// Exception: Throws NullPointerException if the SharedArray does not have a valid 
-        /// pointer to an array.
-    {
-        return deref(index);
-    }
+	const C& operator [] (std::ptrdiff_t index) const
+		/// Element access, returns a const reference to the desired element according to the given index.
+		///
+		/// The user provided index must be less than the object's size, otherwise the behavior is 
+		/// undefined. 
+		///
+		/// If the SharedArray does not have a valid pointer, which pointer to a dynamically 
+		/// allocated array object, NullPointerException will be thrown.
+		///
+		/// Exception: Throws NullPointerException if the SharedArray does not have a valid 
+		/// pointer to an array.
+	{
+		return deref(index);
+	}
 
-    C* get() const
-        /// Returns the const raw pointer.
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        return _ptr;
-    }
+	C* get() const
+		/// Returns the const raw pointer.
+		///
+		/// Exception: No exception will be thrown.
+	{
+		return _ptr;
+	}
 
-    operator bool () const
-        /// Returns true if the underlying pionter is not null pointer. 
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        return (! isNull() );
-    }
+	operator bool () const
+		/// Returns true if the underlying pionter is not null pointer. 
+		///
+		/// Exception: No exception will be thrown.
+	{
+		return (! isNull() );
+	}
 
-    bool operator ! () const
-        /// Returns true if the underlying pionter is null pointer. 
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        return isNull();
-    }
+	bool operator ! () const
+		/// Returns true if the underlying pionter is null pointer. 
+		///
+		/// Exception: No exception will be thrown.
+	{
+		return isNull();
+	}
 
-    bool operator == (const SharedArray& ptr) const
-        /// Returns true if the underlying pionter is same. 
-        ///
-        /// Exception: No exception will be thrown.
-    {
-        return get() == ptr.get();
-    }
+	bool operator == (const SharedArray& ptr) const
+		/// Returns true if the underlying pionter is same. 
+		///
+		/// Exception: No exception will be thrown.
+	{
+		return get() == ptr.get();
+	}
 
-    bool operator == (const C* ptr) const
-    {
-        return get() == ptr;
-    }
+	bool operator == (const C* ptr) const
+	{
+		return get() == ptr;
+	}
 
-    bool operator == (C* ptr) const
-    {
-        return get() == ptr;
-    }
+	bool operator == (C* ptr) const
+	{
+		return get() == ptr;
+	}
 
-    bool operator != (const SharedArray& ptr) const
-    {
-        return get() != ptr.get();
-    }
+	bool operator != (const SharedArray& ptr) const
+	{
+		return get() != ptr.get();
+	}
 
-    bool operator != (const C* ptr) const
-    {
-        return get() != ptr;
-    }
+	bool operator != (const C* ptr) const
+	{
+		return get() != ptr;
+	}
 
-    bool operator != (C* ptr) const
-    {
-        return get() != ptr;
-    }
+	bool operator != (C* ptr) const
+	{
+		return get() != ptr;
+	}
 
-    bool operator < (const SharedArray& ptr) const
-    {
-        return get() < ptr.get();
-    }
+	bool operator < (const SharedArray& ptr) const
+	{
+		return get() < ptr.get();
+	}
 
-    bool operator < (const C* ptr) const
-    {
-        return get() < ptr;
-    }
+	bool operator < (const C* ptr) const
+	{
+		return get() < ptr;
+	}
 
-    bool operator < (C* ptr) const
-    {
-        return get() < ptr;
-    }
+	bool operator < (C* ptr) const
+	{
+		return get() < ptr;
+	}
 
-    bool operator <= (const SharedArray& ptr) const
-    {
-        return get() <= ptr.get();
-    }
+	bool operator <= (const SharedArray& ptr) const
+	{
+		return get() <= ptr.get();
+	}
 
-    bool operator <= (const C* ptr) const
-    {
-        return get() <= ptr;
-    }
+	bool operator <= (const C* ptr) const
+	{
+		return get() <= ptr;
+	}
 
-    bool operator <= (C* ptr) const
-    {
-        return get() <= ptr;
-    }
+	bool operator <= (C* ptr) const
+	{
+		return get() <= ptr;
+	}
 
-    bool operator > (const SharedArray& ptr) const
-    {
-        return get() > ptr.get();
-    }
+	bool operator > (const SharedArray& ptr) const
+	{
+		return get() > ptr.get();
+	}
 
-    bool operator > (const C* ptr) const
-    {
-        return get() > ptr;
-    }
+	bool operator > (const C* ptr) const
+	{
+		return get() > ptr;
+	}
 
-    bool operator > (C* ptr) const
-    {
-        return get() > ptr;
-    }
+	bool operator > (C* ptr) const
+	{
+		return get() > ptr;
+	}
 
-    bool operator >= (const SharedArray& ptr) const
-    {
-        return get() >= ptr.get();
-    }
+	bool operator >= (const SharedArray& ptr) const
+	{
+		return get() >= ptr.get();
+	}
 
-    bool operator >= (const C* ptr) const
-    {
-        return get() >= ptr;
-    }
+	bool operator >= (const C* ptr) const
+	{
+		return get() >= ptr;
+	}
 
-    bool operator >= (C* ptr) const
-    {
-        return get() >= ptr;
-    }
-
-private:
-
-    bool isNull() const
-    {
-        return _ptr == 0;
-    }
-
-    SharedArray& assign(const SharedArray& ptr)
-    {
-        if (&ptr != this)
-        {
-            release();
-            _pCounter = ptr._pCounter;
-            _ptr = ptr._ptr;
-            _pDeleter = ptr._pDeleter;
-            if(_pCounter){
-                _pCounter->duplicate();
-            }
-        }
-        return *this;
-    }
-
-    C& deref(std::ptrdiff_t index)
-    {
-        if (!_ptr)
-            throw NullPointerException();
-
-        return _ptr[index];
-    }
-
-    const C& deref(std::ptrdiff_t index) const
-    {
-        if (!_ptr)
-            throw NullPointerException();
-
-        return _ptr[index];
-    }
-
-    void release()
-    {
-        if(_pCounter){
-           int i = _pCounter->release();
-           if (i == 0)
-           {
-               if (_ptr){
-                   (*_pDeleter)(_ptr);
-               }
-               _ptr = 0;
-               delete _pCounter;
-               _pCounter = 0;
-               delete _pDeleter;
-               _pDeleter = 0;
-           }
-        }        
-    }
+	bool operator >= (C* ptr) const
+	{
+		return get() >= ptr;
+	}
 
 private:
 
-    RC* _pCounter;
-    C*  _ptr;
-    Deleter<C>* _pDeleter;
+	bool isNull() const
+	{
+		return _ptr == 0;
+	}
+
+	SharedArray& assign(const SharedArray& ptr)
+	{
+		if (&ptr != this)
+		{
+			release();
+			_pCounter = ptr._pCounter;
+			_ptr = ptr._ptr;
+			_pDeleter = ptr._pDeleter;
+			if(_pCounter){
+				_pCounter->duplicate();
+			}
+		}
+		return *this;
+	}
+
+	C& deref(std::ptrdiff_t index)
+	{
+		if (!_ptr)
+			throw NullPointerException();
+
+		return _ptr[index];
+	}
+
+	const C& deref(std::ptrdiff_t index) const
+	{
+		if (!_ptr)
+			throw NullPointerException();
+
+		return _ptr[index];
+	}
+
+	void release()
+	{
+		if(_pCounter)
+		{
+		   int i = _pCounter->release();
+		   if (i == 0)
+		   {
+			   if (_ptr){
+				   (*_pDeleter)(_ptr);
+			   }
+			   _ptr = 0;
+			   delete _pCounter;
+			   _pCounter = 0;
+			   delete _pDeleter;
+			   _pDeleter = 0;
+		   }
+		}		
+	}
+
+private:
+
+	RC* _pCounter;
+	C*  _ptr;
+	Deleter<C>* _pDeleter;
 };
 
 template<class C> 
 void swap(SharedArray<C> & a, SharedArray<C> & b) // never throws
 {
-    a.swap(b);
+	a.swap(b);
 }
 
 template<class C, class RC>
 bool operator==(const C* a, SharedArray<C, RC> const & b)
 {
-    return b == a;
+	return b == a;
 }
 
 template<class C, class RC>
 bool operator==(C* a, SharedArray<C,RC> const & b)
 {
-    return b == a;
+	return b == a;
 }
 
 template<class C, class RC>
 bool operator!=(const C* a, SharedArray<C,RC>  const & b)
 {
-    return b != a;
+	return b != a;
 }
 
 template<class C, class RC>
 bool operator!=(C* a, SharedArray<C,RC> const & b)
 {
-    return b != a;
+	return b != a;
 }
 
 template<class C, class RC>
 bool operator<(const C* a, SharedArray<C,RC> const & b)
 {
-    return b > a;
+	return b > a;
 }
 
 template<class C, class RC>
 bool operator<(C* a, SharedArray<C,RC> const & b)
 {
-    return b > a;
+	return b > a;
 }
 
 template<class C, class RC>
 bool operator>(const C* a, SharedArray<C,RC> const & b)
 {
-    return b < a;
+	return b < a;
 }
 
 template<class C, class RC>
 bool operator>(C* a, SharedArray<C,RC> const & b)
 {
-    return b < a;
+	return b < a;
 }
 
 } // namespace Poco
-
 
 #endif // Foundation_SharedArray_INCLUDED
 
