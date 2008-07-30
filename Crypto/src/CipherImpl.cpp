@@ -169,11 +169,8 @@ std::streamsize CryptoTransformImpl::finalize(
 }
 
 
-CipherImpl::CipherImpl(const EVP_CIPHER* pCipher) :
-	_pCipher(pCipher),
-	_name(EVP_CIPHER_name(pCipher)),
-	_key(keySize()),
-	_iv(ivSize())
+CipherImpl::CipherImpl(const CipherKey& key):
+	_key(key)
 {
 }
 
@@ -183,81 +180,18 @@ CipherImpl::~CipherImpl()
 }
 
 
-Cipher::Mode CipherImpl::mode() const
-{
-	switch (EVP_CIPHER_mode(_pCipher))
-	{
-	case EVP_CIPH_STREAM_CIPHER:
-		return MODE_STREAM_CIPHER;
-
-	case EVP_CIPH_ECB_MODE:
-		return MODE_ECB;
-
-	case EVP_CIPH_CBC_MODE:
-		return MODE_CBC;
-
-	case EVP_CIPH_CFB_MODE:
-		return MODE_CFB;
-
-	case EVP_CIPH_OFB_MODE:
-		return MODE_OFB;
-	}
-	throw Poco::IllegalStateException("Unexpected value of EVP_CIPHER_mode()");
-}
-
-
-void CipherImpl::generateKey(
-	const std::string& password,
-	const std::string& salt,
-	int iterationCount)
-{
-	unsigned char keyBytes[EVP_MAX_KEY_LENGTH];
-	unsigned char ivBytes[EVP_MAX_IV_LENGTH];
-
-	// OpenSSL documentation specifies that the salt must be an 8-byte array.
-	unsigned char saltBytes[8];
-
-	if (!salt.empty())
-	{
-		int len = salt.size();
-		// Create the salt array from the salt string
-		for (int i = 0; i < 8; ++i)
-			saltBytes[i] = salt.at(i % len);
-		for (int i = 8; i < len; ++i)
-			saltBytes[i % 8] ^= salt.at(i);
-	}
-
-	// Now create the key and IV, using the MD5 digest algorithm.
-	int keySize = EVP_BytesToKey(
-		_pCipher,
-		EVP_md5(),
-		(salt.empty() ? 0 : saltBytes),
-		reinterpret_cast<const unsigned char*>(password.data()),
-		password.size(),
-		iterationCount,
-		keyBytes,
-		ivBytes);
-
-	// Copy the buffers to our member byte vectors.
-	_key.assign(keyBytes, keyBytes + keySize);
-
-	if (ivSize() == 0)
-		_iv.clear();
-	else
-		_iv.assign(ivBytes, ivBytes + ivSize());
-}
-
-
 CryptoTransform* CipherImpl::createEncryptor()
 {
-	return new CryptoTransformImpl(_pCipher, _key, _iv,
+	CipherKeyImpl::Ptr p = _key.impl();
+	return new CryptoTransformImpl(p->cipher(), p->getKey(), p->getIV(),
 		CryptoTransformImpl::DIR_ENCRYPT);
 }
 
 
 CryptoTransform* CipherImpl::createDecryptor()
 {
-	return new CryptoTransformImpl(_pCipher, _key, _iv,
+	CipherKeyImpl::Ptr p = _key.impl();
+	return new CryptoTransformImpl(p->cipher(), p->getKey(), p->getIV(),
 		CryptoTransformImpl::DIR_DECRYPT);
 }
 

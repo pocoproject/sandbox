@@ -48,6 +48,8 @@ namespace Crypto {
 
 
 class Cipher;
+class CipherKey;
+class RSAKey;
 
 
 class Crypto_API CipherFactory
@@ -61,7 +63,8 @@ public:
 	virtual ~CipherFactory();
 		/// Destroys the CipherFactory.
 
-	Cipher* createCipher(const std::string& name);
+	
+	Cipher* createCipher(const CipherKey& key);
 		/// Creates a Cipher object for the given Cipher name. Valid cipher names
 		/// depend on the OpenSSL version the library is linked with; see the output
 		/// of
@@ -75,6 +78,10 @@ public:
 		///   * AES: "aes-128", "aes-256"
 		///   * DES: "des", "des3"
 		///   * Blowfish: "bf"
+
+	Cipher* createCipher(const RSAKey& key);
+		/// Creates a RSACipher
+	
 
 	static CipherFactory& defaultFactory();
 		/// Returns the default CipherFactory.

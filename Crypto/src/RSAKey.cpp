@@ -1,7 +1,7 @@
 //
 // RSAKey.cpp
 //
-// $Id: //poco/Main/Crypto/src/RSAKey.cpp#1 $
+// $Id: //poco/Main/Crypto/src/RSAKey.cpp#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -87,6 +87,13 @@ void RSAKey::save(const std::string& pubKeyFile, const std::string& privKeyFile,
 void RSAKey::save(std::ostream* pPubKey, std::ostream* pPrivKey, const std::string& privateKeyPwd)
 {
 	_pImpl->save(pPubKey, pPrivKey, privateKeyPwd);
+}
+
+
+const std::string& RSAKey::name() const
+{
+	static const std::string n("rsa");
+	return n;
 }
 
 

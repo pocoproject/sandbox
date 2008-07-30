@@ -1,7 +1,7 @@
 //
 // RSAKey.h
 //
-// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKey.h#1 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKey.h#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -80,7 +80,8 @@ public:
 		std::istream* pPrivKey = 0, 
 		const std::string& privateKeyPwd="");
 		/// Creates the RSAKey. Can only by used for signing if pPrivKey
-		/// is not null.
+		/// is not null. If a private key file is specified, you don't need to
+		/// specify a public key file. OpenSSL will auto-create it from the private key.
 
 	~RSAKey();
 		/// Destroys the RSAKey.
@@ -89,31 +90,23 @@ public:
 		/// Returns the RSA_size
 
 	void save(const std::string& pubKeyFile, const std::string& privKeyFile="", const std::string& privKeyPwd="");
-		/// Exports the keys to the given files. privKeyFile can be empty
+		/// Exports the keys to the given files. pubKeyFile/privKeyFile can be empty
 
 	void save(std::ostream* pPubKey, std::ostream* pPrivKey = 0, const std::string& privateKeyPwd = "");
-		/// Exports the keys to the given streams. Can be empty
+		/// Exports the keys to the given streams. pPubKey/pPrivKey can be empty
 
-protected:
-	RSAKeyImpl::Ptr getImpl();
+	RSAKeyImpl::Ptr impl();
 		/// Returns the impl object
 
-	RSAKeyImpl::Ptr getImpl() const;
-		/// Returns the impl object
+	const std::string& name() const;
+		/// Returns "rsa"
 	
 private:
 	RSAKeyImpl::Ptr _pImpl;
-	friend class RSADigestEngine;
 };
 
 
-inline RSAKeyImpl::Ptr RSAKey::getImpl()
-{
-	return _pImpl;
-}
-
-
-inline RSAKeyImpl::Ptr RSAKey::getImpl() const
+inline RSAKeyImpl::Ptr RSAKey::impl()
 {
 	return _pImpl;
 }

@@ -1,7 +1,7 @@
 //
 // RSATest.cpp
 //
-// $Id: //poco/Main/Crypto/testsuite/src/RSATest.cpp#1 $
+// $Id: //poco/Main/Crypto/testsuite/src/RSATest.cpp#2 $
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,6 +34,8 @@
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
 #include "Poco/Crypto/RSADigestEngine.h"
+#include "Poco/Crypto/CipherFactory.h"
+#include "Poco/Crypto/Cipher.h"
 #include <sstream>
 
 using namespace Poco::Crypto;
@@ -62,6 +64,13 @@ void RSATest::testNewKeys()
 	std::istringstream iPub(pubKey);
 	std::istringstream iPriv(privKey);
 	RSAKey key2(&iPub, &iPriv, "testpwd");
+
+	std::istringstream iPriv2(privKey);
+	RSAKey key3(0, &iPriv2,  "testpwd");
+	std::ostringstream strPub3;
+	key3.save(&strPub3);
+	std::string pubFromPrivate = strPub3.str();
+	assert (pubFromPrivate == pubKey);
 }
 
 
@@ -115,6 +124,27 @@ void RSATest::testSignManipulated()
 }
 
 
+void RSATest::createRSACipher()
+{
+	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(RSAKey(RSAKey::KL_1024,RSAKey::EXP_SMALL));
+	std::string val("lets do some encryption");
+	std::string enc = pCipher->encryptString(val);
+	std::string dec = pCipher->decryptString(enc);
+	assert (dec == val);
+}
+
+
+
+void RSATest::createRSACipherLarge()
+{
+	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(RSAKey(RSAKey::KL_1024,RSAKey::EXP_SMALL));
+	std::string val(16385, 'x');
+	std::string enc = pCipher->encryptString(val);
+	std::string dec = pCipher->decryptString(enc);
+	assert (dec == val);
+}
+
+
 void RSATest::setUp()
 {
 }
@@ -132,6 +162,8 @@ CppUnit::Test* RSATest::suite()
 	CppUnit_addTest(pSuite, RSATest, testNewKeys);
 	CppUnit_addTest(pSuite, RSATest, testSign);
 	CppUnit_addTest(pSuite, RSATest, testSignManipulated);
+	CppUnit_addTest(pSuite, RSATest, createRSACipher);
+	CppUnit_addTest(pSuite, RSATest, createRSACipherLarge);
 
 	return pSuite;
 }

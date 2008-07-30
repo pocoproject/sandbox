@@ -118,7 +118,7 @@ public:
 		/// ownership of the given CryptoTransform object.
 
 	CryptoInputStream(std::istream& istr, Cipher& cipher, std::size_t bufferSize = 8192);
-		/// Create a new CryptoInputStream objectusing the given cipher.
+		/// Create a new encrypting CryptoInputStream object using the given cipher.
 
 	~CryptoInputStream();
 };
@@ -141,7 +141,7 @@ public:
 		/// ownership of the given CryptoTransform object.
 
 	CryptoOutputStream(std::ostream& ostr, Cipher& cipher, std::size_t bufferSize = 8192);
-		/// Create a new CryptoOutputStream object using the given cipher.
+		/// Create a new decrypting CryptoOutputStream object using the given cipher.
 
 	~CryptoOutputStream();
 

@@ -1,11 +1,13 @@
 //
-// RSATest.h
+// CipherKey.cpp
 //
-// $Id: //poco/Main/Crypto/testsuite/src/RSATest.h#2 $
+// $Id: //poco/Main/Crypto/src/CipherKey.cpp#1 $
 //
-// Definition of the RSATest class.
+// Library: Crypto
+// Package: CryptoCore
+// Module:  CipherKey
 //
-// Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2007, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -32,33 +34,39 @@
 //
 
 
-#ifndef RSATest_INCLUDED
-#define RSATest_INCLUDED
+#include "Poco/Crypto/CipherKey.h"
 
 
-#include "Poco/Crypto/Crypto.h"
-#include "CppUnit/TestCase.h"
+namespace Poco {
+namespace Crypto {
 
 
-class RSATest: public CppUnit::TestCase
+CipherKey::CipherKey(const std::string& name, 
+	const std::string& passphrase, 
+	const std::string& salt,
+	int iterationCount):
+		_pImpl(new CipherKeyImpl(name, passphrase, salt, iterationCount))
 {
-public:
-	RSATest(const std::string& name);
-	~RSATest();
-
-	void testNewKeys();
-	void testSign();
-	void testSignManipulated();
-	void createRSACipher();
-	void createRSACipherLarge();
-
-	void setUp();
-	void tearDown();
-
-	static CppUnit::Test* suite();
-
-private:
-};
+}
 
 
-#endif // RSATest_INCLUDED
+CipherKey::CipherKey(const std::string& name, 
+	const ByteVec& key, 
+	const ByteVec& iv):
+		_pImpl(new CipherKeyImpl(name, key, iv))
+{
+}
+
+
+CipherKey::CipherKey(const std::string& name):
+	_pImpl(new CipherKeyImpl(name))
+{
+}
+
+
+CipherKey::~CipherKey()
+{
+}
+
+
+} } // namespace Poco::Crypto

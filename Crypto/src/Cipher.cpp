@@ -38,7 +38,6 @@
 #include "Poco/Crypto/CryptoStream.h"
 #include "Poco/Crypto/CryptoTransform.h"
 
-#include "Poco/RandomStream.h"
 #include "Poco/Base64Encoder.h"
 #include "Poco/Base64Decoder.h"
 #include "Poco/HexBinaryEncoder.h"
@@ -61,30 +60,6 @@ Cipher::Cipher()
 
 Cipher::~Cipher()
 {
-}
-
-
-void Cipher::generateKey()
-{
-	ByteVec vector;
-
-	getRandomBytes(vector, keySize());
-	setKey(vector);
-	
-	getRandomBytes(vector, ivSize());
-	setIV(vector);
-}
-
-
-void Cipher::getRandomBytes(ByteVec& vector, std::size_t count)
-{
-	Poco::RandomInputStream random;
-	
-	vector.clear();
-	vector.reserve(count);
-
-	for (int i = 0; i < count; ++i)
-		vector.push_back(static_cast<unsigned char>(random.get()));
 }
 
 
@@ -111,7 +86,7 @@ std::string Cipher::decryptString(const std::string& str, Encoding encoding)
 
 void Cipher::encrypt(std::istream& source, std::ostream& sink, Encoding encoding)
 {
-	CryptoInputStream encryptor(source, *this);
+	CryptoInputStream encryptor(source, createEncryptor());
 
 	switch (encoding)
 	{
@@ -143,7 +118,7 @@ void Cipher::encrypt(std::istream& source, std::ostream& sink, Encoding encoding
 
 void Cipher::decrypt(std::istream& source, std::ostream& sink, Encoding encoding)
 {
-	CryptoOutputStream decryptor(sink, *this);
+	CryptoOutputStream decryptor(sink, createDecryptor());
 
 	switch (encoding)
 	{

@@ -1,7 +1,7 @@
 //
 // CipherImpl.h
 //
-// $Id: //poco/Main/Crypto/include/Poco/Crypto/CipherImpl.h#1 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/CipherImpl.h#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -42,6 +42,7 @@
 
 #include "Poco/Crypto/Crypto.h"
 #include "Poco/Crypto/Cipher.h"
+#include "Poco/Crypto/CipherKey.h"
 
 #include <openssl/evp.h>
 
@@ -54,8 +55,8 @@ class CipherImpl : public Cipher
 	/// An implementation of the Cipher class for OpenSSL's crypto library.
 {
 public:
-	CipherImpl(const EVP_CIPHER* pCipher);
-		/// Creates a new CipherImpl object for the given OpenSSL cipher structure.
+	CipherImpl(const CipherKey& key);
+		/// Creates a new CipherImpl object for the given CipherKey.
 
 	virtual ~CipherImpl();
 		/// Destroys the CipherImpl.
@@ -63,35 +64,6 @@ public:
 	const std::string& name() const;
 		/// Returns the name of the Cipher.
 
-	int keySize() const;
-		/// Returns the key size of the Cipher.
-
-	int blockSize() const;
-		/// Returns the block size of the Cipher.
-
-	int ivSize() const;
-		/// Returns the IV size of the Cipher.
-
-	Mode mode() const;
-		/// Returns the Cipher's mode of operation.
-	
-	const ByteVec& getKey() const;
-		/// Returns the key for the Cipher.
-
-	void setKey(const ByteVec& key);
-		/// Sets the key for the Cipher.
-
-	const ByteVec& getIV() const;
-		/// Returns the initialization vector (IV) for the Cipher.
-
-	void setIV(const ByteVec& iv);
-		/// Sets the initialization vector (IV) for the Cipher.
-
-	void generateKey(const std::string& passphrase,
-		const std::string& salt = "",
-		int iterationCount = DEFAULT_ITERATION_COUNT);
-	 	/// Generates key and IV from a password and optional salt string.
-	
 	CryptoTransform* createEncryptor();
 		/// Creates an encrytor object.
 
@@ -99,10 +71,7 @@ public:
 		/// Creates a decrytor object.
 
 private:
-	const EVP_CIPHER* _pCipher;
-	std::string		  _name;
-	ByteVec			  _key;
-	ByteVec			  _iv;
+	CipherKey _key;
 };
 
 
@@ -111,51 +80,7 @@ private:
 //
 inline const std::string& CipherImpl::name() const
 {
-	return _name;
-}
-
-
-inline int CipherImpl::keySize() const
-{
-	return EVP_CIPHER_key_length(_pCipher);
-}
-
-
-inline int CipherImpl::blockSize() const
-{
-	return EVP_CIPHER_block_size(_pCipher);
-}
-
-
-inline int CipherImpl::ivSize() const
-{
-	return EVP_CIPHER_iv_length(_pCipher);
-}
-
-
-inline const CipherImpl::ByteVec& CipherImpl::getKey() const
-{
-	return _key;
-}
-
-
-inline void CipherImpl::setKey(const ByteVec& key)
-{
-	poco_assert(key.size() == keySize());
-	_key = key;
-}
-
-
-inline const CipherImpl::ByteVec& CipherImpl::getIV() const
-{
-	return _iv;
-}
-
-
-inline void CipherImpl::setIV(const ByteVec& iv)
-{
-	poco_assert(iv.size() == ivSize());
-	_iv = iv;
+	return _key.name();
 }
 
 

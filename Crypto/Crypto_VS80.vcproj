@@ -222,6 +222,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\include\Poco\Crypto\CipherKey.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\CipherKeyImpl.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\Poco\Crypto\Crypto.h"
 					>
 				</File>
@@ -231,6 +239,10 @@
 				</File>
 				<File
 					RelativePath=".\include\Poco\Crypto\CryptoTransform.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Crypto\RSACipherImpl.h"
 					>
 				</File>
 				<File
@@ -262,11 +274,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\CipherKey.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\CipherKeyImpl.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\CryptoStream.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\src\CryptoTransform.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\RSACipherImpl.cpp"
 					>
 				</File>
 				<File

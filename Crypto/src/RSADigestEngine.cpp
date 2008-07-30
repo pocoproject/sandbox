@@ -1,7 +1,7 @@
 //
 // RSADigestEngine.cpp
 //
-// $Id: //poco/Main/Crypto/src/RSADigestEngine.cpp#1 $
+// $Id: //poco/Main/Crypto/src/RSADigestEngine.cpp#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -79,7 +79,7 @@ const DigestEngine::Digest& RSADigestEngine::signature()
 {
 	const DigestEngine::Digest& digest = _sha1.digest();
 	unsigned int sigLen = _sig.size();
-	RSA_sign(NID_sha1, &digest[0], (unsigned int)digest.size(), &_sig[0], &sigLen, _key.getImpl()->getRSA());
+	RSA_sign(NID_sha1, &digest[0], (unsigned int)digest.size(), &_sig[0], &sigLen, _key.impl()->getRSA());
 	// truncate _sig to sigLen
 	if (sigLen < _sig.size())
 		_sig.resize(sigLen);
@@ -91,7 +91,7 @@ void RSADigestEngine::verify(const DigestEngine::Digest& sig)
 {
 	const DigestEngine::Digest& digest = _sha1.digest();
 	DigestEngine::Digest sigCpy = sig; // copy becausse RSA_verify can modify sigCpy
-	int ret = RSA_verify(NID_sha1, &digest[0], (unsigned int)digest.size(), &sigCpy[0], (unsigned int)sigCpy.size(), _key.getImpl()->getRSA());
+	int ret = RSA_verify(NID_sha1, &digest[0], (unsigned int)digest.size(), &sigCpy[0], (unsigned int)sigCpy.size(), _key.impl()->getRSA());
 	if (ret == 0)
 		throw Poco::DataFormatException("Signature does not match");
 }

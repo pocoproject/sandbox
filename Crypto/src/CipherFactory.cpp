@@ -36,8 +36,10 @@
 
 #include "Poco/Crypto/CipherFactory.h"
 #include "Poco/Crypto/Cipher.h"
-
+#include "Poco/Crypto/CipherKey.h"
+#include "Poco/Crypto/RSAKey.h"
 #include "Poco/Crypto/CipherImpl.h"
+#include "Poco/Crypto/RSACipherImpl.h"
 
 #include "Poco/Exception.h"
 #include "Poco/SingletonHolder.h"
@@ -75,21 +77,22 @@ CipherFactory::~CipherFactory()
 }
 
 
-Cipher* CipherFactory::createCipher(const std::string& name)
-{
-	const EVP_CIPHER* pCipher = EVP_get_cipherbyname(name.c_str());
-
-	if (!pCipher)
-		throw Poco::NotFoundException("Cipher " + name + " was not found");
-
-	return new CipherImpl(pCipher);
-}
-
-
 CipherFactory& CipherFactory::defaultFactory()
 {
 	static Poco::SingletonHolder<CipherFactory> holder;
 	return *holder.get();
+}
+
+
+Cipher* CipherFactory::createCipher(const CipherKey& key)
+{
+	return new CipherImpl(key);
+}
+
+
+Cipher* CipherFactory::createCipher(const RSAKey& key)
+{
+	return new RSACipherImpl(key);
 }
 
 

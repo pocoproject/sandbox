@@ -56,34 +56,21 @@ class CryptoTransform;
 
 class Crypto_API Cipher: public Poco::RefCountedObject
 	/// Represents the abstract base class from which all implementations of
-	/// symmetric encryption algorithms must inherit.  Use the CipherFactory
+	/// symmetric/assymetric encryption algorithms must inherit.  Use the CipherFactory
 	/// class to obtain an instance of this class:
 	///
 	///     CipherFactory& factory = CipherFactory::defaultFactory();
 	///     // Creates a 256-bit AES cipher
-	///     Cipher* pCipher = factory.createCipher("aes-256");
+	///     Cipher* pCipher = factory.createCipher(CipherKey("aes-256"));
+	///     Cipher* pRSACipher = factory.createCipher(RSAKey(RSAKey::KL_1024, RSAKey::EXP_SMALL));
 	///
-	/// Once you have created a Cipher object you should setup a (secret) key
-	/// and initialization vector (IV) to use for encrypting and decrypting
-	/// data.  The easiest way to do this is by using one of the generateKey()
-	/// methods.
-	///
-	/// To create a random key:
-	///
-	///     pCipher->generateKey();
+	/// Check the different Key constructors on how to initialize/create
+	/// a key. The above example auto-generates random keys.
 	///
 	/// Note that you won't be able to decrypt data encrypted with a random key
 	/// once the Cipher is destroyed unless you persist the generated key and IV.
 	/// An example usage for random keys is to encrypt data saved in a temporary
 	/// file.
-	///
-	/// More often you will want to create a key using a human-readable password
-	/// string. This can be achieved by using the second overload of generateKey(),
-	/// optionally providing an additional "salt" string to make the key more
-	/// robust:
-	///
-	///     std::string password = "secret";
-	///     pCipher->generateKey(password, "my unique salt string");
 	///
 	/// Once your key is set up, you can use the Cipher object to encrypt or
 	/// decrypt strings or, in conjunction with a CryptoInputStream or a
@@ -95,7 +82,7 @@ class Crypto_API Cipher: public Poco::RefCountedObject
 	/// encode (or decode, respectively) encrypted data using a "transport encoding".
 	/// Supported encodings are Base64 and BinHex.
 	///
-	/// The following example encrypts an decrypts a string utilizing Base64
+	/// The following example encrypts and decrypts a string utilizing Base64
 	/// encoding:
 	///
 	///     std::string plainText = "This is my secret information";
@@ -121,17 +108,6 @@ public:
 	typedef Poco::AutoPtr<Cipher> Ptr;
 	typedef std::vector<unsigned char> ByteVec;
 
-	enum Mode
-		/// Cipher mode of operation. This mode determines how multiple blocks
-		/// are connected; this is essential to improve security.
-	{
-		MODE_STREAM_CIPHER,	/// Stream cipher
-		MODE_ECB,			/// Electronic codebook (plain concatenation)
-		MODE_CBC,			/// Cipher block chaining (default)
-		MODE_CFB,			/// Cipher feedback
-		MODE_OFB			/// Output feedback
-	};
-
 	enum Encoding
 		/// Transport encoding to use for encryptString() and decryptString().
 	{
@@ -140,49 +116,11 @@ public:
 		ENC_BINHEX		/// BinHex-encoded output
 	};
 
-	enum
-	{
-		DEFAULT_ITERATION_COUNT = 2000	/// Default iteration count to use with
-										/// generateKey().  RSA security recommends
-										/// an iteration count of at least 1000.
-	};
-
 	virtual ~Cipher();
 		/// Destroys the Cipher.
 
 	virtual const std::string& name() const = 0;
 		/// Returns the name of the Cipher.
-
-	virtual int keySize() const = 0;
-		/// Returns the key size of the Cipher.
-
-	virtual int blockSize() const = 0;
-		/// Returns the block size of the Cipher.
-
-	virtual int ivSize() const = 0;
-		/// Returns the initialization vector (IV) size of the Cipher.
-
-	virtual Mode mode() const = 0;
-		/// Returns the Cipher's mode of operation.
-
-	virtual const ByteVec& getKey() const = 0;
-		/// Returns the key for the Cipher.
-
-	virtual void setKey(const ByteVec& key) = 0;
-		/// Sets the key for the Cipher.
-
-	virtual const ByteVec& getIV() const = 0;
-		/// Returns the initialization vector (IV) for the Cipher.
-
-	virtual void setIV(const ByteVec& iv) = 0;
-		/// Sets the initialization vector (IV) for the Cipher.
-
-	virtual void generateKey();
-		/// Generates a random key and IV.
-
-	virtual void generateKey(const std::string& password, const std::string& salt = "", int iterationCount = DEFAULT_ITERATION_COUNT) = 0;
-		/// Generates key and IV from a password and an optional salt string.
-		/// RSA security recommends an iteration count of at least 1000.
 
 	virtual CryptoTransform* createEncryptor() = 0;
 		/// Creates an encrytor object to be used with a CryptoStream.
@@ -205,9 +143,6 @@ public:
 protected:
 	Cipher();
 		/// Creates a new Cipher object.
-
-	void getRandomBytes(ByteVec& vector, std::size_t count);
-		/// Fills the given vector with random bytes.
 
 private:
 	Cipher(const Cipher&);

@@ -1,7 +1,7 @@
 //
 // CryptoTest.cpp
 //
-// $Id: //poco/Main/Crypto/testsuite/src/CryptoTest.cpp#1 $
+// $Id: //poco/Main/Crypto/testsuite/src/CryptoTest.cpp#2 $
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -35,6 +35,7 @@
 #include "CppUnit/TestSuite.h"
 #include "Poco/Crypto/CipherFactory.h"
 #include "Poco/Crypto/Cipher.h"
+#include "Poco/Crypto/CipherKey.h"
 
 
 using namespace Poco::Crypto;
@@ -52,8 +53,8 @@ CryptoTest::~CryptoTest()
 
 void CryptoTest::testEncoding()
 {
-	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher("aes256");
-	pCipher->generateKey();
+	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(CipherKey("aes256"));
+
 	std::string in("1234567890");
 	std::string out = pCipher->encryptString(in, Cipher::ENC_BASE64);
 	std::string result = pCipher->decryptString(out, Cipher::ENC_BASE64);
@@ -63,13 +64,13 @@ void CryptoTest::testEncoding()
 
 void CryptoTest::testEncoding2()
 {
-	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher("aes256");
-	pCipher->generateKey("simplepwd", "Too much salt");
+	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(CipherKey("aes256", "simplepwd", "Too much salt"));
+	
 	std::string in("1234567890");
 	std::string out = pCipher->encryptString(in, Cipher::ENC_BASE64);
 
-	Cipher::Ptr pCipher2 = CipherFactory::defaultFactory().createCipher("aes256");
-	pCipher2->generateKey("simplepwd", "Too much salt");
+	Cipher::Ptr pCipher2 = CipherFactory::defaultFactory().createCipher(CipherKey("aes256", "simplepwd", "Too much salt"));
+	
 	std::string result = pCipher2->decryptString(out, Cipher::ENC_BASE64);
 	poco_assert (in == result);
 }

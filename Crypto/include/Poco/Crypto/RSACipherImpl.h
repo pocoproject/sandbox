@@ -1,9 +1,13 @@
 //
-// RSATest.h
+// RSACipherImpl.h
 //
-// $Id: //poco/Main/Crypto/testsuite/src/RSATest.h#2 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSACipherImpl.h#1 $
 //
-// Definition of the RSATest class.
+// Library: Crypto
+// Package: CryptoCore
+// Module:  RSACipherImpl
+//
+// Definition of the RSACipherImpl class.
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,33 +36,55 @@
 //
 
 
-#ifndef RSATest_INCLUDED
-#define RSATest_INCLUDED
+#ifndef Crypto_RSACipherImpl_INCLUDED
+#define Crypto_RSACipherImpl_INCLUDED
 
 
 #include "Poco/Crypto/Crypto.h"
-#include "CppUnit/TestCase.h"
+#include "Poco/Crypto/Cipher.h"
+#include "Poco/Crypto/RSAKey.h"
+
+#include <openssl/evp.h>
 
 
-class RSATest: public CppUnit::TestCase
+namespace Poco {
+namespace Crypto {
+
+
+class RSACipherImpl : public Cipher
+	/// An implementation of the RSA class for OpenSSL's crypto library.
 {
 public:
-	RSATest(const std::string& name);
-	~RSATest();
+	RSACipherImpl(const RSAKey& key);
+		/// Creates a new RSACipherImpl object for the given RSAKey.
 
-	void testNewKeys();
-	void testSign();
-	void testSignManipulated();
-	void createRSACipher();
-	void createRSACipherLarge();
+	virtual ~RSACipherImpl();
+		/// Destroys the RSACipherImpl.
 
-	void setUp();
-	void tearDown();
+	const std::string& name() const;
+		/// Returns the name of the Cipher.
+	
+	CryptoTransform* createEncryptor();
+		/// Creates an encrytor object.
 
-	static CppUnit::Test* suite();
+	CryptoTransform* createDecryptor();
+		/// Creates a decrytor object.
 
 private:
+	RSAKey _key;
 };
 
 
-#endif // RSATest_INCLUDED
+//
+// Inlines
+//
+inline const std::string& RSACipherImpl::name() const
+{
+	return _key.name();
+}
+
+
+} } // namespace Poco::Crypto
+
+
+#endif // Crypto_RSACipherImpl_INCLUDED
