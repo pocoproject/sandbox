@@ -1,7 +1,7 @@
 //
 // RSAKey.cpp
 //
-// $Id: //poco/Main/Crypto/src/RSAKey.cpp#2 $
+// $Id: //poco/Main/Crypto/src/RSAKey.cpp#3 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -41,6 +41,11 @@
 namespace Poco {
 namespace Crypto {
 
+
+RSAKey::RSAKey(const Poco::Net::X509Certificate& cert):
+	_pImpl(new RSAKeyImpl(cert))
+{
+}
 
 
 RSAKey::RSAKey(KeyLength keyLength, Exponent exp):

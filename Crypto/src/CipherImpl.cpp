@@ -73,9 +73,9 @@ public:
 
 	CryptoTransformImpl(
 		const EVP_CIPHER* pCipher,
-		const ByteVec&	  key,
-		const ByteVec&	  iv,
-		Direction		  dir);
+		const ByteVec&    key,
+		const ByteVec&    iv,
+		Direction         dir);
 
 	~CryptoTransformImpl();
 	
@@ -83,27 +83,27 @@ public:
 
 	std::streamsize transform(
 		const unsigned char* input,
-		std::streamsize		 inputLength,
-		unsigned char*		 output,
-		std::streamsize		 outputLength);
+		std::streamsize      inputLength,
+		unsigned char*       output,
+		std::streamsize      outputLength);
 	
 	std::streamsize finalize(
-		unsigned char*	output,
+		unsigned char*  output,
 		std::streamsize length);
 
 private:
 	const EVP_CIPHER* _pCipher;
-	EVP_CIPHER_CTX	  _ctx;
-	ByteVec			  _key;
-	ByteVec			  _iv;
+	EVP_CIPHER_CTX    _ctx;
+	ByteVec           _key;
+	ByteVec           _iv;
 };
 
 
 CryptoTransformImpl::CryptoTransformImpl(
 	const EVP_CIPHER* pCipher,
-	const ByteVec&	  key,
-	const ByteVec&	  iv,
-	Direction		  dir) :
+	const ByteVec&    key,
+	const ByteVec&    iv,
+	Direction         dir) :
 		_pCipher(pCipher),
 		_key(key),
 		_iv(iv)
@@ -131,18 +131,18 @@ std::size_t CryptoTransformImpl::blockSize() const
 
 std::streamsize CryptoTransformImpl::transform(
 	const unsigned char* input,
-	std::streamsize		 inputLength,
-	unsigned char*		 output,
-	std::streamsize		 outputLength)
+	std::streamsize      inputLength,
+	unsigned char*       output,
+	std::streamsize      outputLength)
 {
 	poco_assert (outputLength >= (inputLength + blockSize() - 1));
 
 	int rc = EVP_CipherUpdate(
 		&_ctx,
 		output,
-		&outputLength,
+		static_cast<int*>(&outputLength),
 		input,
-		inputLength);
+		static_cast<int>(inputLength));
 
 	if (rc == 0)
 		throwError();
@@ -160,7 +160,7 @@ std::streamsize CryptoTransformImpl::finalize(
 	// Use the '_ex' version that does not perform implicit cleanup since we
 	// will call EVP_CIPHER_CTX_cleanup() from the dtor as there is no
 	// guarantee that finalize() will be called if an error occurred.
-	int rc = EVP_CipherFinal_ex(&_ctx, output, &length);
+	int rc = EVP_CipherFinal_ex(&_ctx, output, static_cast<int*>(&length));
 
 	if (rc == 0)
 		throwError();

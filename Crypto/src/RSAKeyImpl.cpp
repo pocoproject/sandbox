@@ -1,7 +1,7 @@
 //
 // RSAKeyImpl.cpp
 //
-// $Id: //poco/Main/Crypto/src/RSAKeyImpl.cpp#1 $
+// $Id: //poco/Main/Crypto/src/RSAKeyImpl.cpp#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -39,6 +39,7 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/TemporaryFile.h"
 #include "Poco/Net/SSLManager.h"
+#include "Poco/Net/X509Certificate.h"
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 
@@ -46,6 +47,16 @@
 namespace Poco {
 namespace Crypto {
 
+
+RSAKeyImpl::RSAKeyImpl(const Poco::Net::X509Certificate& cert):
+	_pRSA(0)
+{
+	const X509* pCert = cert.certificate();
+	EVP_PKEY* pKey = X509_get_pubkey(const_cast<X509*>(pCert));
+	
+	RSA* pRSA = pKey->pkey.rsa;
+	_pRSA = RSAPublicKey_dup(pRSA);
+}
 
 
 RSAKeyImpl::RSAKeyImpl(int keyLength, unsigned long exponent):

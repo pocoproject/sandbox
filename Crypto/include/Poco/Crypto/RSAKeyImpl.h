@@ -1,7 +1,7 @@
 //
 // RSAKeyImpl.h
 //
-// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKeyImpl.h#1 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKeyImpl.h#2 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -50,6 +50,9 @@ typedef struct rsa_st RSA;
 
 
 namespace Poco {
+	namespace Net {
+		class X509Certificate;
+	}
 namespace Crypto {
 
 
@@ -58,6 +61,9 @@ class RSAKeyImpl: public Poco::RefCountedObject
 {
 public:
 	typedef Poco::AutoPtr<RSAKeyImpl> Ptr;
+
+	RSAKeyImpl(const Poco::Net::X509Certificate& cert);
+		/// Extracts the RSAKey from the certificate
 
 	RSAKeyImpl(int keyLength, unsigned long exponent);
 		/// Creates the RSAKeyImpl.

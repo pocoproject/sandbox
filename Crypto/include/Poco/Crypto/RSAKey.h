@@ -1,7 +1,7 @@
 //
 // RSAKey.h
 //
-// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKey.h#2 $
+// $Id: //poco/Main/Crypto/include/Poco/Crypto/RSAKey.h#3 $
 //
 // Library: Crypto
 // Package: CryptoCore
@@ -45,6 +45,9 @@
 
 
 namespace Poco {
+	namespace Net {
+		class X509Certificate;
+	}
 namespace Crypto {
 
 
@@ -65,6 +68,9 @@ public:
 		EXP_SMALL = 0,
 		EXP_LARGE
 	};
+
+	RSAKey(const Poco::Net::X509Certificate& cert);
+		/// Extracts the RSAKey from the certificate
 
 	RSAKey(KeyLength keyLength, Exponent exp);
 		/// Creates the RSAKey. Creates a new public/private keypair using the given parameters.

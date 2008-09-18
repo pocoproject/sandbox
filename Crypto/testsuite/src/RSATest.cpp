@@ -1,7 +1,7 @@
 //
 // RSATest.cpp
 //
-// $Id: //poco/Main/Crypto/testsuite/src/RSATest.cpp#2 $
+// $Id: //poco/Main/Crypto/testsuite/src/RSATest.cpp#3 $
 //
 // Copyright (c) 2008, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,9 +36,13 @@
 #include "Poco/Crypto/RSADigestEngine.h"
 #include "Poco/Crypto/CipherFactory.h"
 #include "Poco/Crypto/Cipher.h"
+#include "Poco/Net/X509Certificate.h"
+#include "Poco/Net/Context.h"
 #include <sstream>
 
+
 using namespace Poco::Crypto;
+using namespace Poco::Net;
 
 
 RSATest::RSATest(const std::string& name): CppUnit::TestCase(name)
@@ -134,7 +138,6 @@ void RSATest::createRSACipher()
 }
 
 
-
 void RSATest::createRSACipherLarge()
 {
 	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(RSAKey(RSAKey::KL_1024,RSAKey::EXP_SMALL));
@@ -142,6 +145,19 @@ void RSATest::createRSACipherLarge()
 	std::string enc = pCipher->encryptString(val);
 	std::string dec = pCipher->decryptString(enc);
 	assert (dec == val);
+}
+
+
+void RSATest::testCertificate()
+{
+	X509Certificate cert("any.pem");
+	Context::Ptr pContext(new Context("", "", false));
+	bool ok = cert.verify("www.appinf.com", pContext);
+	RSAKey key(cert);
+	Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(key);
+	std::string val("lets do some encryption");
+	
+	std::string enc = pCipher->encryptString(val);
 }
 
 
@@ -164,6 +180,7 @@ CppUnit::Test* RSATest::suite()
 	CppUnit_addTest(pSuite, RSATest, testSignManipulated);
 	CppUnit_addTest(pSuite, RSATest, createRSACipher);
 	CppUnit_addTest(pSuite, RSATest, createRSACipherLarge);
+	CppUnit_addTest(pSuite, RSATest, testCertificate);
 
 	return pSuite;
 }
