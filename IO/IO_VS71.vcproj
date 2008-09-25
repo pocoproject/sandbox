@@ -149,201 +149,12 @@
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\include\Poco\IO\AbstractChannel.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\ActiveChannel.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\Channel.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\ChannelStream.h">
-				</File>
-				<File
 					RelativePath=".\include\Poco\IO\IO.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
-				<File
-					RelativePath=".\src\ChannelStream.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Serial"
-			Filter="">
-			<Filter
-				Name="Header Files"
-				Filter="">
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_POSIX.h">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32.h">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialChannel_WIN32U.h">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig.h">
-				</File>
-				<File
-					RelativePath=".\include\Poco\IO\SerialConfig_POSIX.h">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\include\Poco\Io\SerialConfig_WIN32.h">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCustomBuildTool"/>
-					</FileConfiguration>
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="">
-				<File
-					RelativePath=".\src\SerialChannel.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_POSIX.cpp">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_WIN32.cpp">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialChannel_WIN32U.cpp">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig_POSIX.cpp">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\src\SerialConfig_WIN32.cpp">
-					<FileConfiguration
-						Name="debug_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="release_shared|Win32"
-						ExcludedFromBuild="TRUE">
-						<Tool
-							Name="VCCLCompilerTool"/>
-					</FileConfiguration>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -371,26 +182,71 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Net"
+			Name="AsyncIO"
 			Filter="">
 			<Filter
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\include\Poco\IO\NetChannel.h">
+					RelativePath=".\include\Poco\IO\ActiveChannel.h">
 				</File>
 				<File
-					RelativePath=".\include\Poco\IO\NetConfig.h">
+					RelativePath=".\include\Poco\Io\AsyncChannel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Io\AsyncCommand.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Io\AsyncEvent.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Io\AsyncStreamChannel.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
 				<File
-					RelativePath=".\src\NetChannel.cpp">
+					RelativePath=".\src\AsyncChannel.cpp">
 				</File>
 				<File
-					RelativePath=".\src\NetConfig.cpp">
+					RelativePath=".\src\AsyncCommand.cpp">
+				</File>
+				<File
+					RelativePath=".\src\AsyncEvent.cpp">
+				</File>
+				<File
+					RelativePath=".\src\AsyncStreamChannel.cpp">
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="IO"
+			Filter="">
+			<Filter
+				Name="Header Files"
+				Filter="">
+				<File
+					RelativePath=".\include\Poco\IO\Channel.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\Io\ChannelConfig.h">
+				</File>
+				<File
+					RelativePath=".\include\Poco\IO\ChannelStream.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				Filter="">
+				<File
+					RelativePath=".\src\Channel.cpp">
+				</File>
+				<File
+					RelativePath=".\src\ChannelConfig.cpp">
+				</File>
+				<File
+					RelativePath=".\src\ChannelStream.cpp">
 				</File>
 			</Filter>
 		</Filter>

@@ -133,42 +133,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Net"
-			Filter="">
-			<Filter
-				Name="Header Files"
-				Filter="">
-				<File
-					RelativePath=".\src\EchoServer.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.h">
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="">
-				<File
-					RelativePath=".\src\EchoServer.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="_Suite"
 			Filter="">
 			<Filter
@@ -210,6 +174,9 @@
 					RelativePath=".\src\ProtocolTestSuite.h">
 				</File>
 				<File
+					RelativePath=".\src\TestChannel.h">
+				</File>
+				<File
 					RelativePath=".\src\TestProtocol.h">
 				</File>
 			</Filter>
@@ -221,6 +188,9 @@
 				</File>
 				<File
 					RelativePath=".\src\ProtocolTestSuite.cpp">
+				</File>
+				<File
+					RelativePath=".\src\TestChannel.cpp">
 				</File>
 				<File
 					RelativePath=".\src\TestProtocol.cpp">

@@ -133,56 +133,26 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Net"
-			Filter="">
-			<Filter
-				Name="Header Files"
-				Filter="">
-				<File
-					RelativePath=".\src\EchoServer.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.h">
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="">
-				<File
-					RelativePath=".\src\EchoServer.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\UDPEchoServer.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="_Suite"
 			Filter="">
 			<Filter
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\src\IOTestSuite.h">
+					RelativePath=".\src\ProtocolTestSuite.h">
+				</File>
+				<File
+					RelativePath=".\src\SerialTestHWSuite.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
 				<File
-					RelativePath=".\src\IOTestSuite.cpp">
+					RelativePath=".\src\ProtocolTestSuite.cpp">
+				</File>
+				<File
+					RelativePath=".\src\SerialTestSuite.cpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -207,9 +177,6 @@
 					RelativePath=".\src\ProtocolTest.h">
 				</File>
 				<File
-					RelativePath=".\src\ProtocolTestSuite.h">
-				</File>
-				<File
 					RelativePath=".\src\TestProtocol.h">
 				</File>
 			</Filter>
@@ -218,9 +185,6 @@
 				Filter="">
 				<File
 					RelativePath=".\src\ProtocolTest.cpp">
-				</File>
-				<File
-					RelativePath=".\src\ProtocolTestSuite.cpp">
 				</File>
 				<File
 					RelativePath=".\src\TestProtocol.cpp">
@@ -235,9 +199,6 @@
 				Filter="">
 				<File
 					RelativePath=".\src\SerialTestHW.h">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestHWSuite.h">
 				</File>
 				<File
 					RelativePath=".\src\SerialTestSuite.h">
@@ -257,9 +218,6 @@
 				</File>
 				<File
 					RelativePath=".\src\SerialTestHWSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.cpp">
 				</File>
 				<File
 					RelativePath=".\src\SerialTestSW.cpp">

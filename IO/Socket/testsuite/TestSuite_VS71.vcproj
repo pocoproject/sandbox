@@ -133,19 +133,13 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Net"
+			Name="Socket"
 			Filter="">
 			<Filter
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\src\EchoServer.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.h">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.h">
+					RelativePath=".\src\SocketChannelTest.h">
 				</File>
 				<File
 					RelativePath=".\src\UDPEchoServer.h">
@@ -155,13 +149,7 @@
 				Name="Source Files"
 				Filter="">
 				<File
-					RelativePath=".\src\EchoServer.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTest.cpp">
-				</File>
-				<File
-					RelativePath=".\src\NetTestSuite.cpp">
+					RelativePath=".\src\SocketChannelTest.cpp">
 				</File>
 				<File
 					RelativePath=".\src\UDPEchoServer.cpp">
@@ -175,14 +163,14 @@
 				Name="Header Files"
 				Filter="">
 				<File
-					RelativePath=".\src\IOTestSuite.h">
+					RelativePath=".\src\SocketTestSuite.h">
 				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
 				Filter="">
 				<File
-					RelativePath=".\src\IOTestSuite.cpp">
+					RelativePath=".\src\SocketTestSuite.cpp">
 				</File>
 			</Filter>
 		</Filter>
@@ -194,78 +182,6 @@
 				Filter="">
 				<File
 					RelativePath=".\src\WinDriver.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Protocol"
-			Filter="">
-			<Filter
-				Name="Header Files"
-				Filter="">
-				<File
-					RelativePath=".\src\ProtocolTest.h">
-				</File>
-				<File
-					RelativePath=".\src\ProtocolTestSuite.h">
-				</File>
-				<File
-					RelativePath=".\src\TestProtocol.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Source Files"
-				Filter="">
-				<File
-					RelativePath=".\src\ProtocolTest.cpp">
-				</File>
-				<File
-					RelativePath=".\src\ProtocolTestSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\TestProtocol.cpp">
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Serial"
-			Filter="">
-			<Filter
-				Name="Header Files"
-				Filter="">
-				<File
-					RelativePath=".\src\SerialTestHW.h">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestHWSuite.h">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.h">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.h">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.h">
-				</File>
-			</Filter>
-			<Filter
-				Name="Source files"
-				Filter="">
-				<File
-					RelativePath=".\src\SerialTestHW.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestHWSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSuite.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSW.cpp">
-				</File>
-				<File
-					RelativePath=".\src\SerialTestSWSuite.cpp">
 				</File>
 			</Filter>
 		</Filter>
