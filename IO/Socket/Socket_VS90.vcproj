@@ -175,7 +175,7 @@
 				OptimizeForWindows98="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="..\lib\PocoIO.lib"
+				ImportLibrary="..\..\lib\PocoSocket.lib"
 				TargetMachine="1"
 			/>
 			<Tool
