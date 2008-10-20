@@ -50,9 +50,8 @@ Channel::Channel(const std::string& name):
 
 Channel::Channel(ChannelConfig* pConfig, const std::string& name):
 	_name(name),	
-	_pConfig(pConfig)
+	_pConfig(pConfig, true)
 {
-	if (pConfig) pConfig->duplicate();
 }
 
 

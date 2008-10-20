@@ -48,7 +48,7 @@ namespace Poco {
 namespace DeviceIO {
 
 
-class DeviceIO_API ChannelConfig: public Poco::RefCountedObject
+class DeviceIO_API ChannelConfig: virtual public Poco::RefCountedObject
 {
 public:
 	enum ChannelType

@@ -49,7 +49,7 @@ namespace DeviceIO {
 namespace Serial {
 
 
-class Serial_API SerialConfigImpl: public RefCountedObject
+class Serial_API SerialConfigImpl: virtual public RefCountedObject
 {
 public:
 	static const int MSEC = 1000;
