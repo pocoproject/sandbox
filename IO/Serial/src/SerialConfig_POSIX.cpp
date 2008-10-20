@@ -60,7 +60,7 @@ SerialConfigImpl::SerialConfigImpl(SerialConfigImpl::BPSRateImpl bpsRate,
 	int bufferSize,
 	int timeout)
 {
-	memset(&_termios, 0, sizeof(_termios)) ;
+	std::memset(&_termios, 0, sizeof(_termios)) ;
 
 	setBPSRateImpl(bpsRate);
 	setDataBitsImpl(dataBits);

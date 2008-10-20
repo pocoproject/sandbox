@@ -229,7 +229,7 @@ inline void SerialConfigImpl::setUseEOFImpl(bool) const
 
 inline SerialConfigImpl::BPSRateImpl SerialConfigImpl::getBPSRateImpl() const
 {
-	return (BPSRateImpl) _termios.c_ospeed;
+	return (BPSRateImpl) cfgetospeed(&_termios);
 }
 
 

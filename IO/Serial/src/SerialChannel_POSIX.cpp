@@ -36,6 +36,7 @@
 
 #include "Poco/IO/Serial/SerialChannel_POSIX.h"
 #include <fcntl.h>
+#include <unistd.h>
 #include <errno.h>
 #include <termios.h>
 #include "Poco/Exception.h"
@@ -54,6 +55,7 @@ SerialChannelImpl::SerialChannelImpl(SerialConfigImpl* pConfig):
 	_handle(0),
 	_pConfig(pConfig)
 {
+	if (pConfig) pConfig->duplicate();
 	openImpl();
 }
 

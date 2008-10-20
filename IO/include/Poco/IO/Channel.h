@@ -122,7 +122,7 @@ public:
 
 protected:
 	ChannelConfig& config();
-		/// Returns the reference to the configuration for this cahannel.
+		/// Returns the reference to the configuration for this channel.
 
 	virtual void init();
 		/// (Re)initializes the internal channel configuration.

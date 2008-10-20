@@ -52,6 +52,7 @@ Channel::Channel(ChannelConfig* pConfig, const std::string& name):
 	_name(name),	
 	_pConfig(pConfig)
 {
+	if (pConfig) pConfig->duplicate();
 }
 
 

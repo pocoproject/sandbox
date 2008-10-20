@@ -48,6 +48,7 @@ namespace Serial {
 SerialChannelImpl::SerialChannelImpl(SerialConfigImpl* pConfig): 
 	_pConfig(pConfig)
 {
+	if (pConfig) pConfig->duplicate();
 }
 
 
