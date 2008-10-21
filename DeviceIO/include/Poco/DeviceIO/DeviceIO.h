@@ -67,4 +67,26 @@
 #endif
 
 
+//
+// Automatically link DeviceIO library.
+//
+#if defined(_MSC_VER)
+	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(DeviceIO_EXPORTS)
+		#if defined(POCO_DLL)
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoDeviceIOd.lib")
+			#else
+				#pragma comment(lib, "PocoDeviceIO.lib")
+			#endif
+		#else
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoDeviceIOmtd.lib")
+			#else
+				#pragma comment(lib, "PocoDeviceIOmt.lib")
+			#endif
+		#endif
+	#endif
+#endif
+
+
 #endif // DeviceIO_DeviceIO_INCLUDED

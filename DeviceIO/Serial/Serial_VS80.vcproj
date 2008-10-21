@@ -4,7 +4,7 @@
 	Version="8.00"
 	Name="Serial"
 	ProjectGUID="{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
-	RootNamespace="DeviceIO"
+	RootNamespace="Serial"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -166,14 +166,14 @@
 				OutputFile="..\..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoDeviceIO.lib"
+				ImportLibrary="..\..\lib\Poco$(ProjectName).lib"
 				TargetMachine="1"
 			/>
 			<Tool

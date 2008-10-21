@@ -67,4 +67,26 @@
 #endif
 
 
+//
+// Automatically link Socket library.
+//
+#if defined(_MSC_VER)
+	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(Socket_EXPORTS)
+		#if defined(POCO_DLL)
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoSocketd.lib")
+			#else
+				#pragma comment(lib, "PocoSocket.lib")
+			#endif
+		#else
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoSocketmtd.lib")
+			#else
+				#pragma comment(lib, "PocoSocketmt.lib")
+			#endif
+		#endif
+	#endif
+#endif
+
+
 #endif // Socket_Socket_INCLUDED

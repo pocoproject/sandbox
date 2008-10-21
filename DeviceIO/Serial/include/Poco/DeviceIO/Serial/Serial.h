@@ -67,4 +67,26 @@
 #endif
 
 
+//
+// Automatically link Serial library.
+//
+#if defined(_MSC_VER)
+	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(Serial_EXPORTS)
+		#if defined(POCO_DLL)
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoSeriald.lib")
+			#else
+				#pragma comment(lib, "PocoSerial.lib")
+			#endif
+		#else
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoSerialmtd.lib")
+			#else
+				#pragma comment(lib, "PocoSerialmt.lib")
+			#endif
+		#endif
+	#endif
+#endif
+
+
 #endif // Serial_Serial_INCLUDED

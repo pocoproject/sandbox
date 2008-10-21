@@ -4,7 +4,7 @@
 	Version="7.10"
 	Name="Socket"
 	ProjectGUID="{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
-	RootNamespace="Socket_VS71"
+	RootNamespace="Socket"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib PocoDeviceIOd.lib"
+				AdditionalDependencies="PocoFoundationd.lib"
 				OutputFile="..\..\bin\Poco$(ProjectName)d.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -48,7 +48,7 @@
 				ProgramDatabaseFile="..\..\bin\Poco$(ProjectName)d.pdb"
 				SubSystem="1"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\..\lib\PocoDeviceIOd.lib"
+				ImportLibrary="..\..\lib\Poco$(ProjectName)d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -104,18 +104,18 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib PocoNet.lib"
-				OutputFile="..\bin\Poco$(ProjectName).dll"
+				AdditionalDependencies="PocoFoundation.lib"
+				OutputFile="..\..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile=""
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoDeviceIO.lib"
+				ImportLibrary="..\..\lib\Poco$(ProjectName).lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>

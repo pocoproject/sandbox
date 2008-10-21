@@ -4,7 +4,7 @@
 	Version="7.10"
 	Name="Serial"
 	ProjectGUID="{3E9A4C7A-A8B1-49B7-964E-463C63ED42F1}"
-	RootNamespace="Serial_VS71"
+	RootNamespace="Serial"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -105,17 +105,17 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="PocoFoundation.lib PocoNet.lib"
-				OutputFile="..\bin\Poco$(ProjectName).dll"
+				OutputFile="..\..\bin\Poco$(ProjectName).dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\lib"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile=""
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="1"
-				ImportLibrary="..\lib\PocoDeviceIO.lib"
+				ImportLibrary="..\..\lib\PocoDeviceIO.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
