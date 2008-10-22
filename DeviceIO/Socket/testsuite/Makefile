@@ -13,6 +13,6 @@ objects = SocketTestSuite Driver \
 
 target         = testrunner
 target_version = 1
-target_libs    = PocoSocket PocoIO PocoFoundation PocoNet CppUnit
+target_libs    = PocoSocket PocoDeviceIO PocoFoundation PocoNet CppUnit
 
 include $(POCO_BASE)/build/rules/exec

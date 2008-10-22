@@ -12,6 +12,6 @@ objects = SocketChannel AsyncSocketChannel
 
 target         = PocoSocket
 target_version = $(LIBVERSION)
-target_libs    = PocoFoundation PocoIO PocoNet
+target_libs    = PocoFoundation PocoDeviceIO PocoNet
 
 include $(POCO_BASE)/build/rules/lib
