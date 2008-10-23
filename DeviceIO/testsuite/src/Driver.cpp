@@ -33,7 +33,7 @@
 
 
 #include "CppUnit/TestRunner.h"
-#include "SocketTestSuite.h"
+#include "DeviceIOTestSuite.h"
 
 
-CppUnitMain(SocketTestSuite)
+CppUnitMain(DeviceIOTestSuite)

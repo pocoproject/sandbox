@@ -8,12 +8,12 @@
 
 include $(POCO_BASE)/build/rules/global
 
-objects = IOTestSuite Driver \
-	AsyncChannelTest AsyncIOTestSuite \
+objects = DeviceIOTestSuite Driver \
+	AsyncChannelTest AsyncDeviceIOTestSuite \
 	ProtocolTest ProtocolTestSuite TestProtocol TestChannel
 
 target         = testrunner
 target_version = 1
-target_libs    = PocoIO PocoFoundation CppUnit
+target_libs    = PocoDeviceIO PocoFoundation CppUnit
 
 include $(POCO_BASE)/build/rules/exec
