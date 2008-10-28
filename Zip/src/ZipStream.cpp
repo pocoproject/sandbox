@@ -140,7 +140,8 @@ ZipStreamBuf::ZipStreamBuf(std::ostream& ostr, ZipLocalFileHeader& fileEntry, bo
 		}
 		else if (fileEntry.getCompressionMethod() == ZipCommon::CM_STORE)
 		{
-			_ptrOBuf = &ostr;
+			_ptrOHelper = new PartialOutputStream(*_pOstr, 0, 0, false);
+			_ptrOBuf = _ptrOHelper;
 		}
 		else
 		{

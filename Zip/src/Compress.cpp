@@ -115,6 +115,12 @@ void Compress::addFile(std::istream& in, const Poco::DateTime& lastModifiedAt, c
 void Compress::addFile(const Poco::Path& file, const Poco::Path& fileName, ZipCommon::CompressionMethod cm, ZipCommon::CompressionLevel cl)
 {
 	Poco::File aFile(file);
+	Poco::File::FileSize size = aFile.getSize();
+	if (size < 16)
+	{
+		cm = ZipCommon::CM_STORE;
+		cl = ZipCommon::CL_NORMAL;
+	}
 	std::ifstream in(file.toString().c_str(), std::ios::binary);
 	if (!in.good())
 		throw ZipException("Invalid input stream for " + aFile.path());
