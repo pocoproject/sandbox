@@ -63,7 +63,7 @@ for k,v in ipairs(project.configs) do
         table.insert(package.config[v].defines, "_DEBUG")
     else
         -- Allow asserts to be included in release build by default
-        --      table.insert(package.config[v].defines, "NDEBUG")
+        table.insert(package.config[v].defines, "NDEBUG")
     end
 end
 

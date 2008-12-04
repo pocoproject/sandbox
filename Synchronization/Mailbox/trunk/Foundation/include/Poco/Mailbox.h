@@ -70,10 +70,10 @@ public:
 
 	Mailbox(long length) : _isReset(false), _length(length)
 		/// Create Mailbox object
-	{
+	{        
 	}
 
-	virtual ~Mailbox()
+	~Mailbox()
 		/// Destroy Mailbox object
 	{
 		try{
@@ -82,7 +82,7 @@ public:
 		catch(...){}
 	}
 
-	bool post(T msg) 
+	bool post(const T& msg) 
 		/// Post the given message by adding it to the end of the queue (FIFO).
 		/// Note the message is copied by value.
 	{
@@ -103,7 +103,7 @@ public:
 		return true;
 	}
 
-	bool tryPost(T msg, long milliseconds) 
+	bool tryPost(const T& msg, long milliseconds) 
 		/// Post the given message by adding it to the end of the queue (FIFO).
 		/// Note the message is copied by value.
 		/// If message can not be 
@@ -161,8 +161,7 @@ public:
 			Poco::ScopedLock<M> lock(_mutex, milliseconds);
 
 			while(_queue.size() == 0 && !_isReset) {
-				if(!_poster.wait(_mutex, milliseconds))
-					throw Poco::TimeoutException();
+				_poster.wait(_mutex, milliseconds);					
 			}
 
 			if( _queue.size() == 0) // Queue canceled
@@ -190,8 +189,7 @@ public:
 		Poco::ScopedLock<M> lock(_mutex, milliseconds);
 
 		while(_queue.size() == 0 && !_isReset) {
-			if(!_poster.wait(_mutex, milliseconds))
-				throw Poco::TimeoutException();
+			_poster.wait(_mutex, milliseconds);
 		}
 
 		if( _queue.size() == 0) // Queue canceled
@@ -241,14 +239,14 @@ public:
 		return _queue.size();
 	}
 
-	bool empty() 
+	bool empty()
 		/// Empty query.
 	{
 		Poco::ScopedLock<M> lock(_mutex);
 		return _queue.empty();
 	}
 
-	bool empty(long millseconds) 
+	bool empty(long millseconds)
 		/// Empty query with timeout.
 	{
 		Poco::ScopedLock<M> lock(_mutex, millseconds);

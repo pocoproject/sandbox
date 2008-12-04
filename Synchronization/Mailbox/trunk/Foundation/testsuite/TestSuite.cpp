@@ -33,6 +33,7 @@
 #include "Poco/Thread.h"
 #include "Poco/Mailbox.h"
 #include "Poco/Random.h"
+#include <assert.h>
 
 #include <iostream>
 #if defined(__sun) && defined(__SVR4)
@@ -51,11 +52,12 @@ typedef int TMessage;
 typedef Poco::Mailbox<TMessage, Poco::Mutex> IntMailbox;
 
 static IntMailbox gMailbox(10);
+static int gCount = 0;
 
 class Sender: public Runnable
 {
 public:
-	Sender()
+	Sender() 
 	{
 
 	}
@@ -64,11 +66,11 @@ public:
 	{
 		try
 		{
-			while(true){
+			while(gCount++ < 100){
 				TMessage msg = rg.next(100);
 				std::cout << "sender: " << msg << std::endl;
 				gMailbox.post(msg);
-				Thread::sleep(rg.next(100));
+				Thread::sleep(rg.next(10));
 			}
 		}
 		catch(...)
@@ -94,20 +96,87 @@ public:
 	{
 		try
 		{
-			while(true){
+			while(gCount<100){
 				TMessage msg = gMailbox.pend();
 				std::cout << "receiver: " << msg << std::endl;
 			}
 		}
+		catch(Poco::TimeoutException& except)
+		{
+			std::cout << except.displayText() << std::endl;
+			return;
+		}
+		catch(Poco::NoPermissionException& except)
+		{
+			std::cout << except.displayText() << std::endl;
+			return;
+		}
 		catch(...)
 		{
-			std::cout << "error\n";
+			std::cout << "unexpected exception!\n";
+			return;
 		}
 	}
 };
 
+void testQuery()
+{
+	assert(gMailbox.length() == 10);
+	TMessage msg = 1;
+	assert(gMailbox.empty());
+	gMailbox.post(msg);
+	assert(gMailbox.size() == 1);
+	assert(!gMailbox.empty());
+	msg = gMailbox.pend();
+	assert(gMailbox.size() == 0);
+	assert(gMailbox.empty());
+}
+
+void testPost()
+{
+	TMessage msg = 1;
+	IntMailbox mailbox(1);
+	mailbox.post(msg);
+	bool ret = mailbox.tryPost(msg, 1000);
+	assert(!ret);
+	mailbox.pend();
+	ret = mailbox.tryPost(msg, 1000);
+	assert(ret);
+}
+
+void testPend()
+{
+	TMessage msg1 = 1;
+	IntMailbox mailbox(2);
+	mailbox.post(msg1);
+	mailbox.post(msg1);
+	assert(mailbox.size() == 2);
+	TMessage msg2 = mailbox.pend();
+	assert(msg2 == msg1);
+	msg2 = mailbox.pend();
+	assert(msg2 == msg1);
+
+	try
+	{
+		TMessage msg3 = mailbox.tryPend(1000);
+	}
+	catch(Poco::TimeoutException & except)
+	{       
+		std::cout << except.displayText() << std::endl;
+	}
+	catch(...)
+	{
+		assert("unexpected exception!\n");
+	}
+
+	TMessage msg4;
+	bool ret = mailbox.tryPend(msg4, 1000);
+	assert(!ret);
+}
+
 void testBlockPostPend()
 {
+    gCount = 0;
 	Thread thread1;
 	Thread thread2;
 	Sender sender;    
@@ -120,7 +189,63 @@ void testBlockPostPend()
 	thread2.join();
 }
 
+void testReset()
+{
+	Thread thread1("thread1");
+	Thread thread2("thread2");
+	Thread thread3("thread3");
+	Thread thread4("thread4");
+
+	Receiver receiver;    
+
+	bool isReset = gMailbox.isReset();
+	assert(!isReset);
+
+	thread1.start(receiver);
+	thread2.start(receiver);
+	thread3.start(receiver);
+	thread4.start(receiver);
+
+	try
+	{
+		gMailbox.reset();
+	}
+	catch(...)
+	{
+		assert(0);
+	}
+
+	isReset = gMailbox.isReset();
+	assert(isReset);
+	
+	thread1.join();
+	thread2.join();
+	thread3.join();
+	thread4.join();
+
+	try
+	{
+		TMessage msg = 1;
+		gMailbox.post(msg);
+	}
+	catch(Poco::NoPermissionException& except)
+	{
+		std::cout << except.displayText() << std::endl;
+        return;
+	}
+	catch(...)
+	{
+		std::cout << "unexpected exception!\n";
+        return;
+	}
+
+}
+
 int main()
 {
+	testQuery();
+	testPost();
+	testPend();
 	testBlockPostPend();
+	testReset();
 }

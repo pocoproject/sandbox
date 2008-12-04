@@ -32,7 +32,7 @@
 package.name = "testsuite"
 package.kind = "exe"
 package.language = "c++"
-package.path = "custom"
+package.path = options["target"]
 package.objdir = "obj/tests"
 package.bindir = "../../bin"
 
@@ -41,6 +41,14 @@ package.config["release_shared"].target= package.name .."Shared"
 package.config["debug_static"].target= package.name .. "d"
 package.config["release_static"].target= package.name
 
+for k,v in ipairs(project.configs) do
+    if (string.find(v, "debug") ~= nil) then
+        table.insert(package.config[v].defines, "_DEBUG")
+    else
+        -- Allow asserts to be included in release build by default
+        --      table.insert(package.config[v].defines, "NDEBUG")
+    end
+end
 
 if (not windows) then
 
@@ -82,12 +90,34 @@ if (windows) then
 end
 
 -- Output is placed in a directory named for the target toolset.
-package.path = options["target"]
 
-table.insert(package.config["debug_shared"].defines, "_USRDLL")
-table.insert(package.config["debug_shared"].defines, "Foundation_EXPORTS")
-table.insert(package.config["release_shared"].defines, "_USRDLL")
-table.insert(package.config["release_shared"].defines, "Foundation_EXPORTS")
 
-table.insert(package.config["debug_static"].defines, "POCO_STATIC")
-table.insert(package.config["release_static"].defines, "POCO_STATIC")
+package.config["debug_shared"].defines = { 
+     "_DEBUG" ,
+	 "_USRDLL",
+	 "Foundation_EXPORTS",
+     "NOPCH"
+}
+
+package.config["release_shared"].defines = { 
+     "NDEBUG" ,
+	 "_USRDLL",
+	 "Foundation_EXPORTS",
+     "NOPCH"
+}
+
+package.config["debug_static"].defines = { 
+     "_DEBUG" ,
+	 "POCO_STATIC",
+     "NOPCH"
+}
+
+package.config["release_static"].defines = { 
+     "NDEBUG" ,
+	 "POCO_STATIC",
+     "NOPCH"
+}
+
+package.config["release_shared"].buildflags = { "optimize", "no-symbols", "no-frame-pointer" }
+package.config["release_static"].buildflags = { "optimize", "no-symbols", "no-frame-pointer" }
+
