@@ -54,9 +54,18 @@ class Mailbox
 	/// and messaging. Using post() method to put a message to a mailbox and 
 	/// pend() method can be used to fetch a message from it. Thread will block
 	/// for following cases:
+	///
 	///  1. Calling post() method when the mailbox is full.
 	///  2. Calling pend() method when the mailbox is empty.
+	///
 	/// Block period can be specified by means of timeout parameter. 
+	/// Usually the message should be defined as POD struct, and at least the 
+	/// message type should be both copy-constructable and assignable.
+	///
+	/// The main benefits of Mailbox are:
+	///  1. No dynamical memory allocation, therefore less possible memory 
+	///     fragmentations for embedded system.
+	///  2. Can be used for both data communication and synchronization. 
 	///
 	/// The differences between Mailbox and NotificationQueue are:
 	///  1. For Mailbox, message will be copied by value during dispatching
@@ -68,7 +77,7 @@ class Mailbox
 
 public:
 
-	Mailbox(long length) : _isReset(false), _length(length)
+	Mailbox(long length) : _length(length), _isReset(false)
 		/// Create Mailbox object
 	{        
 	}
@@ -226,7 +235,7 @@ public:
 	}
 
 	size_t size()
-		/// Message count query. 
+		/// Message count query, usually used for debug
 	{
 		Poco::ScopedLock<M> lock(_mutex);
 		return _queue.size();
@@ -254,6 +263,7 @@ public:
 	}
 
 	long length() const
+		/// length query
 	{
 		return _length;
 	}
