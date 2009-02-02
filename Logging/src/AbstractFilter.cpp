@@ -70,7 +70,7 @@ AbstractFilter::~AbstractFilter()
 
 void AbstractFilter::setPassChannel(Poco::Channel* pChannel)
 {
-	_pPassNext = pChannel;
+	_pPassNext = Poco::AutoPtr<Poco::Channel>(pChannel, true);
 }
 
 
@@ -82,7 +82,7 @@ Poco::Channel* AbstractFilter::getPassChannel() const
 
 void AbstractFilter::setFailChannel(Poco::Channel* pChannel)
 {
-	_pFailNext = pChannel;
+	_pFailNext = Poco::AutoPtr<Poco::Channel>(pChannel, true);
 }
 
 
