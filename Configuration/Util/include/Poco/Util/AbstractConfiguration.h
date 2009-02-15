@@ -78,6 +78,10 @@ public:
 		/// Returns true if the property with the given key exists.
 		/// Same as hasProperty().
 
+	bool removeProperty(const std::string& key);
+		/// Removes the property with the given key if exists.
+		/// Returns true if the property with the given key was removed.
+
 	std::string getString(const std::string& key) const;
 		/// Returns the string value of the property with the given name.
 		/// Throws a NotFoundException if the key does not exist.
@@ -237,6 +241,12 @@ protected:
 	virtual void enumerate(const std::string& key, Keys& range) const = 0;
 		/// Returns in range the names of all subkeys under the given key.
 		/// If an empty key is passed, all root level keys are returned.
+
+	virtual bool removePropertyImpl(const std::string& key);
+		/// Removes the property with the given key if exists.
+		/// Returns true if the property with the given key was removed.
+		///
+		/// Must be overridden by subclasses.
 
 	static int parseInt(const std::string& value);
 

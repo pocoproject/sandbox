@@ -69,6 +69,9 @@ bool AbstractConfiguration::hasProperty(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::hasProperty()");
+
 	std::string value;
 	return getRaw(key, value);
 }
@@ -80,9 +83,23 @@ bool AbstractConfiguration::hasOption(const std::string& key) const
 }
 
 
+bool AbstractConfiguration::removeProperty(const std::string& key)
+{
+	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::removeProperty()");
+
+	return removePropertyImpl(key);
+}
+
+
 std::string AbstractConfiguration::getString(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getString()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -96,6 +113,9 @@ std::string AbstractConfiguration::getString(const std::string& key, const std::
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getString()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return internalExpand(value);
@@ -107,6 +127,9 @@ std::string AbstractConfiguration::getString(const std::string& key, const std::
 std::string AbstractConfiguration::getRawString(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getRawString()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -120,6 +143,9 @@ std::string AbstractConfiguration::getRawString(const std::string& key, const st
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getRawString()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return value;
@@ -132,6 +158,9 @@ int AbstractConfiguration::getInt(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getInt()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return parseInt(internalExpand(value));
@@ -143,6 +172,9 @@ int AbstractConfiguration::getInt(const std::string& key) const
 int AbstractConfiguration::getInt(const std::string& key, int defaultValue) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getInt()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -157,6 +189,9 @@ Int64 AbstractConfiguration::getInt64(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getInt64()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return parseInt64(internalExpand(value));
@@ -168,6 +203,9 @@ Int64 AbstractConfiguration::getInt64(const std::string& key) const
 Int64 AbstractConfiguration::getInt64(const std::string& key, Int64 defaultValue) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getInt64()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -182,6 +220,9 @@ double AbstractConfiguration::getDouble(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getDouble()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return NumberParser::parseFloat(internalExpand(value));
@@ -193,6 +234,9 @@ double AbstractConfiguration::getDouble(const std::string& key) const
 double AbstractConfiguration::getDouble(const std::string& key, double defaultValue) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getDouble()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -206,6 +250,9 @@ bool AbstractConfiguration::getBool(const std::string& key) const
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getBool()");
+
 	std::string value;
 	if (getRaw(key, value))
 		return parseBool(internalExpand(value));
@@ -217,6 +264,9 @@ bool AbstractConfiguration::getBool(const std::string& key) const
 bool AbstractConfiguration::getBool(const std::string& key, bool defaultValue) const
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::getString()");
 
 	std::string value;
 	if (getRaw(key, value))
@@ -230,6 +280,9 @@ void AbstractConfiguration::setString(const std::string& key, const std::string&
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::setString()");
+
 	setRaw(key, value);
 }
 
@@ -237,6 +290,9 @@ void AbstractConfiguration::setString(const std::string& key, const std::string&
 void AbstractConfiguration::setInt(const std::string& key, int value)
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::setInt()");
 
 	setRaw(key, NumberFormatter::format(value));
 }
@@ -247,6 +303,9 @@ void AbstractConfiguration::setInt64(const std::string& key, Int64 value)
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::setInt64()");
+
 	setRaw(key, NumberFormatter::format(value));
 }
 
@@ -256,6 +315,9 @@ void AbstractConfiguration::setDouble(const std::string& key, double value)
 {
 	FastMutex::ScopedLock lock(_mutex);
 
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::setDouble()");
+
 	setRaw(key, NumberFormatter::format(value));
 }
 
@@ -263,6 +325,9 @@ void AbstractConfiguration::setDouble(const std::string& key, double value)
 void AbstractConfiguration::setBool(const std::string& key, bool value)
 {
 	FastMutex::ScopedLock lock(_mutex);
+
+	if (key.empty())
+		throw InvalidArgumentException("An empty key in AbstractConfiguration::setBool()");
 
 	setRaw(key, value ? "true" : "false");
 }
@@ -413,5 +478,10 @@ bool AbstractConfiguration::parseBool(const std::string& value)
 		throw SyntaxException("Cannot convert to boolean", value);
 }
 
+
+bool AbstractConfiguration::removePropertyImpl(const std::string& key)
+{
+	throw Poco::NotImplementedException("Removing a property in an AbstractConfiguration for key " + key);
+}
 
 } } // namespace Poco::Util
