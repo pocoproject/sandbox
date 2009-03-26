@@ -51,6 +51,7 @@ public:
 	LocalSocketTest(const std::string& name);
 	~LocalSocketTest();
 
+	void testSocketsPerformance();
 	void testEcho();
 	void testPoll();
 	void testAvailable();

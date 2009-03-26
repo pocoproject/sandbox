@@ -41,9 +41,10 @@ using Poco::Sockets::DatagramSocket;
 using Poco::Sockets::SocketAddress;
 
 
-UDPEchoServer::UDPEchoServer():
+UDPEchoServer::UDPEchoServer(int bufferSize):
 	_thread("UDPEchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_socket.bind(SocketAddress(), true);
 	_thread.start(*this);
@@ -51,9 +52,10 @@ UDPEchoServer::UDPEchoServer():
 }
 
 
-UDPEchoServer::UDPEchoServer(const SocketAddress& sa):
+UDPEchoServer::UDPEchoServer(const SocketAddress& sa, int bufferSize):
 	_thread("UDPEchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_socket.bind(sa, true);
 	_thread.start(*this);
@@ -78,16 +80,16 @@ void UDPEchoServer::run()
 {
 	_ready.set();
 	Poco::Timespan span(250000);
+	char* pBuffer = new char[_bufferSize];
 	while (!_stop)
 	{
 		if (_socket.poll(span, Socket::SELECT_READ))
 		{
 			try
 			{
-				char buffer[256];
 				SocketAddress sender;
-				int n = _socket.receiveFrom(buffer, sizeof(buffer), sender);
-				_socket.sendTo(buffer, n, sender);
+				int n = _socket.receiveFrom(pBuffer, _bufferSize, sender);
+				_socket.sendTo(pBuffer, n, sender);
 			}
 			catch (Poco::Exception& exc)
 			{
@@ -95,6 +97,7 @@ void UDPEchoServer::run()
 			}
 		}
 	}
+	delete pBuffer;
 }
 
 

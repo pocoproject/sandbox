@@ -47,10 +47,10 @@ class UDPLocalEchoServer: public Poco::Runnable
 	/// A simple sequential UDP echo server.
 {
 public:
-	UDPLocalEchoServer();
+	UDPLocalEchoServer(int bufferSize = 256);
 		/// Creates the UDPLocalEchoServer.
 
-	UDPLocalEchoServer(const Poco::Sockets::SocketAddress& sa);
+	UDPLocalEchoServer(const Poco::Sockets::SocketAddress& sa, int bufferSize = 256);
 		/// Creates the UDPLocalEchoServer and binds it to
 		/// the given address.
 
@@ -68,6 +68,7 @@ private:
 	Poco::Thread _thread;
 	Poco::Event  _ready;
 	bool         _stop;
+	int          _bufferSize;
 };
 
 

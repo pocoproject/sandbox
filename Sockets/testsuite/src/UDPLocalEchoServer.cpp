@@ -43,10 +43,11 @@ using Poco::Sockets::Address;
 using Poco::Sockets::SocketAddress;
 
 
-UDPLocalEchoServer::UDPLocalEchoServer():
+UDPLocalEchoServer::UDPLocalEchoServer(int bufferSize):
 	_socket(Address::LOCAL),
 	_thread("UDPLocalEchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_socket.bind(SocketAddress("/tmp/poco.server.udp.sock"), true);
 	_thread.start(*this);
@@ -54,10 +55,11 @@ UDPLocalEchoServer::UDPLocalEchoServer():
 }
 
 
-UDPLocalEchoServer::UDPLocalEchoServer(const SocketAddress& sa):
+UDPLocalEchoServer::UDPLocalEchoServer(const SocketAddress& sa, int bufferSize):
 	_socket(Address::LOCAL),
 	_thread("UDPLocalEchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_socket.bind(sa, true);
 	_thread.start(*this);
@@ -76,24 +78,24 @@ void UDPLocalEchoServer::run()
 {
 	_ready.set();
 	Poco::Timespan span(250000);
+	char* pBuffer = new char[_bufferSize];
 	while (!_stop)
 	{
 		if (_socket.poll(span, Socket::SELECT_READ))
 		{
 			try
 			{
-				char buffer[256];
 				SocketAddress sender;
-				int n = _socket.receiveFrom(buffer, sizeof(buffer), sender);
-				buffer[n] = '\0';
-				_socket.sendTo(buffer, n, sender);
+				int n = _socket.receiveFrom(pBuffer, _bufferSize, sender);
+				_socket.sendTo(pBuffer, n, sender);
 			}
 			catch (Poco::Exception& exc)
 			{
-				std::cerr << "UDPEchoServer: " << exc.displayText() << std::endl;
+				std::cerr << "UDPLocalEchoServer: " << exc.displayText() << std::endl;
 			}
 		}
 	}
+	delete pBuffer;
 }
 
 

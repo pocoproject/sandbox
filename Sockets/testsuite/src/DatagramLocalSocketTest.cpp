@@ -33,12 +33,19 @@
 #include "DatagramLocalSocketTest.h"
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
+#include "UDPEchoServer.h"
 #include "UDPLocalEchoServer.h"
 #include "Poco/Sockets/DatagramSocket.h"
 #include "Poco/Sockets/SocketAddress.h"
 #include "Poco/Sockets/SocketException.h"
 #include "Poco/Timespan.h"
+#include "Poco/Timestamp.h"
 #include "Poco/Stopwatch.h"
+#include "Poco/Environment.h"
+#include "Poco/File.h"
+#include "Poco/FileStream.h"
+#include <iostream>
+#include <sstream>
 
 
 using Poco::Sockets::Socket;
@@ -46,11 +53,15 @@ using Poco::Sockets::DatagramSocket;
 using Poco::Sockets::SocketAddress;
 using Poco::Sockets::Address;
 using Poco::Timespan;
+using Poco::Timestamp;
 using Poco::Stopwatch;
+using Poco::Environment;
+using Poco::File;
+using Poco::FileOutputStream;
 using Poco::TimeoutException;
 using Poco::InvalidArgumentException;
 using Poco::IOException;
-#include <iostream>
+
 
 DatagramLocalSocketTest::DatagramLocalSocketTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -59,6 +70,150 @@ DatagramLocalSocketTest::DatagramLocalSocketTest(const std::string& name): CppUn
 
 DatagramLocalSocketTest::~DatagramLocalSocketTest()
 {
+}
+
+
+void DatagramLocalSocketTest::testDatagramSocketPerformance()
+{
+	Timestamp::TimeDiff local, net;
+	std::size_t initBufSize = 1;
+	std::size_t initReps = 1;
+	double locData = 0.0, locTime = 0.0, netData = 0.0, netTime = 0.0;
+
+	std::cout << std::endl << "OS Name:         " << Environment::osName() << std::endl;
+	std::cout << "OS Version:      " << Environment::osVersion() << std::endl;
+	std::cout << "OS Architecture: " << Environment::osArchitecture() << std::endl;
+
+	std::ostringstream os;
+	os << Environment::osName() << '-' 
+		<< Environment::osVersion() << '-' 
+		<< Environment::osArchitecture()
+		<< "-UDP.csv";
+	File f(os.str());
+	if (f.exists()) f.remove();
+	FileOutputStream fos(os.str());
+
+	for (std::size_t repetitions = initReps;
+			repetitions <= 100000;
+			repetitions *= 10)
+	{
+		for (std::size_t bufSize = initBufSize; bufSize < 20000; bufSize *= 2)
+		{
+			char* pBuf = new char[bufSize];
+			{
+				UDPLocalEchoServer echoServer(bufSize);
+				DatagramSocket ss(SocketAddress("/tmp/poco.client.udp.sock"), true);
+				
+				SocketAddress addr(echoServer.address().toString());
+				ss.connect(addr);
+				int recv = 0, sent = 0;
+				Stopwatch sw; int i = 0;
+				for (; i < repetitions; ++i)
+				{
+					sent = 0; recv = 0; local = 0;
+
+					do
+					{
+						int s;
+						sw.restart();
+						s = ss.sendBytes(pBuf + sent, bufSize - sent);
+						sw.stop();
+						local += sw.elapsed();
+						sent += s;
+					} while (sent < bufSize);
+
+					do
+					{
+						int r;
+						sw.restart();
+						r = ss.receiveBytes(pBuf + recv, bufSize - recv);
+						sw.stop();
+						local += sw.elapsed();
+						recv += r;
+					} while (recv < bufSize);
+
+					locData += sent;
+					locData += recv;
+					locTime += local;
+
+					poco_assert (sent == bufSize && recv == bufSize);
+				}
+
+				std::cout << "Local UDP socket, " << i << " repetitions, " << bufSize << " bytes, " 
+					<< local << " [us]." << std::endl;
+				ss.close();
+			}
+
+			{
+				UDPEchoServer echoServer(bufSize);
+				DatagramSocket ss;
+				ss.connect(SocketAddress("localhost", echoServer.port()));
+				int recv = 0, sent = 0;
+				Stopwatch sw; int i = 0; 
+				for (; i < repetitions; ++i)
+				{
+					sent = 0; recv = 0; net = 0;
+
+					do
+					{
+						int s;
+						sw.restart();
+						s = ss.sendBytes(pBuf + sent, bufSize - sent);
+						sw.stop();
+						net += sw.elapsed();
+						sent += s;
+					} while (sent < bufSize);
+
+					do
+					{
+						int r;
+						sw.restart();
+						r = ss.receiveBytes(pBuf + recv, bufSize - recv);
+						sw.stop();
+						net += sw.elapsed();
+						recv += r;
+					} while (recv < bufSize);
+
+					netData += sent;
+					netData += recv;
+					netTime += net;
+
+					poco_assert (sent == bufSize && recv == bufSize);
+				}
+				
+				std::cout << "Network UDP socket, " << i << " repetitions, " << bufSize << " bytes, " 
+					<< net << " [us]." << std::endl;
+				fos << i << ',' << bufSize << ',';
+				ss.close();
+			}
+			delete pBuf;
+
+			double ratio = local ? ((double) net) / ((double) local) : (double) net;
+			double diff = ((double) net) - ((double) local);
+			std::cout << "Ratio: " << ratio << "(" << diff / 1000.0 << "[us/msg]" << ')' << std::endl;
+
+			fos << ratio << std::endl;
+		}
+	}
+
+	poco_assert (locData == netData);
+
+	double locDTR = ((locData / (locTime / Timestamp::resolution())) * 8) / 1000000;
+	double netDTR = ((netData / (netTime / Timestamp::resolution())) * 8) / 1000000;
+
+	std::cout << "=================================" << std::endl
+		<< "Local DTR: " << locDTR << " [Mbit/s]" << std::endl
+		<< "Network DTR: " << netDTR << " [Mbit/s]" << std::endl
+		<< "Local sockets speedup: " << ((locDTR / netDTR) * 100) - 100 << '%' << std::endl
+		<< "=================================" << std::endl;
+
+	fos << "=================================" << std::endl
+		<< "Local DTR: " << locDTR << " [Mbit/s]" << std::endl
+		<< "Network DTR: " << netDTR << " [Mbit/s]" << std::endl
+		<< "Local sockets speedup: " << ((locDTR / netDTR) * 100) - 100 << '%' << std::endl
+		<< "=================================" << std::endl;
+
+	fos.close();
 }
 
 
@@ -112,6 +267,7 @@ CppUnit::Test* DatagramLocalSocketTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("DatagramLocalSocketTest");
 
+	CppUnit_addTest(pSuite, DatagramLocalSocketTest, testDatagramSocketPerformance);
 	CppUnit_addTest(pSuite, DatagramLocalSocketTest, testEcho);
 	CppUnit_addTest(pSuite, DatagramLocalSocketTest, testSendToReceiveFrom);
 

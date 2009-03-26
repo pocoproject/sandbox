@@ -47,10 +47,10 @@ class EchoServer: public Poco::Runnable
 	/// A simple sequential echo server.
 {
 public:
-	EchoServer();
+	EchoServer(int bufferSize = 256);
 		/// Creates the EchoServer.
 
-	EchoServer(const Poco::Sockets::SocketAddress& addr);
+	EchoServer(const Poco::Sockets::SocketAddress& addr,int bufferSize = 256);
 		/// Creates the EchoServer.
 
 	~EchoServer();
@@ -68,6 +68,7 @@ private:
 	Poco::Thread _thread;
 	Poco::Event  _ready;
 	bool         _stop;
+	int          _bufferSize;
 };
 
 

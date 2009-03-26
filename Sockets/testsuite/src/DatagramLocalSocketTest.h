@@ -46,6 +46,7 @@ public:
 	DatagramLocalSocketTest(const std::string& name);
 	~DatagramLocalSocketTest();
 
+	void testDatagramSocketPerformance();
 	void testEcho();
 	void testSendToReceiveFrom();
 

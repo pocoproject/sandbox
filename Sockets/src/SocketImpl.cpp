@@ -40,7 +40,8 @@
 #include "Poco/NumberFormatter.h"
 #include "Poco/Timestamp.h"
 #include "Poco/File.h"
-#include <string.h> // FD_SET needs memset on some platforms, so we can't use <cstring>
+//#include <string.h> // FD_SET needs memset on some platforms, so we can't use <cstring>
+#include <cstring> // g++ 4.3 won't compile without <cstring>
 #if defined(POCO_HAVE_FD_POLL)
 	#include <poll.h>
 #endif

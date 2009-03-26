@@ -47,10 +47,10 @@ class UDPEchoServer: public Poco::Runnable
 	/// A simple sequential UDP echo server.
 {
 public:
-	UDPEchoServer();
+	UDPEchoServer(int bufferSize = 256);
 		/// Creates the UDPEchoServer.
 
-	UDPEchoServer(const Poco::Sockets::SocketAddress& sa);
+	UDPEchoServer(const Poco::Sockets::SocketAddress& sa, int bufferSize = 256);
 		/// Creates the UDPEchoServer and binds it to
 		/// the given address.
 
@@ -72,6 +72,7 @@ private:
 	Poco::Thread _thread;
 	Poco::Event  _ready;
 	bool         _stop;
+	int          _bufferSize;
 };
 
 

@@ -39,8 +39,13 @@
 #include "Poco/Sockets/SocketAddress.h"
 #include "Poco/Sockets/SocketException.h"
 #include "Poco/Timespan.h"
+#include "Poco/Timestamp.h"
 #include "Poco/Stopwatch.h"
+#include "Poco/Environment.h"
+#include "Poco/File.h"
+#include "Poco/FileStream.h"
 #include <iostream>
+#include <sstream>
 
 
 using Poco::Sockets::Socket;
@@ -50,7 +55,11 @@ using Poco::Sockets::SocketAddress;
 using Poco::Sockets::ConnectionRefusedException;
 using Poco::Sockets::SocketException;
 using Poco::Timespan;
+using Poco::Timestamp;
 using Poco::Stopwatch;
+using Poco::Environment;
+using Poco::File;
+using Poco::FileOutputStream;
 using Poco::TimeoutException;
 using Poco::InvalidArgumentException;
 
@@ -65,16 +74,167 @@ LocalSocketTest::~LocalSocketTest()
 }
 
 
+void LocalSocketTest::testSocketsPerformance()
+{
+	Timestamp::TimeDiff local = 0, net = 0;
+	std::size_t initBufSize = 1;
+	std::size_t initReps = 1;
+	bool noDelay[2] = { true, false };
+
+	std::cout << std::endl << "OS Name:         " << Environment::osName() << std::endl;
+	std::cout << "OS Version:      " << Environment::osVersion() << std::endl;
+	std::cout << "OS Architecture: " << Environment::osArchitecture() << std::endl;
+
+	for (int d = 0; d < 2; ++d)
+	{
+		double locData = 0.0, locTime = 0.0, netData = 0.0, netTime = 0.0;
+		std::ostringstream os;
+		os << Environment::osName() << '-' 
+			<< Environment::osVersion() << '-' 
+			<< Environment::osArchitecture() << "-TCP";
+		if (noDelay[d]) os << "-nodelay";
+		os << ".csv";
+		File f(os.str());
+		if (f.exists()) f.remove();
+		FileOutputStream fos(os.str());
+
+		for (std::size_t repetitions = initReps;
+				repetitions <= 100000;
+				repetitions *= 10)
+		{
+			for (std::size_t bufSize = initBufSize; bufSize < 20000; bufSize *= 2)
+			{
+				char* pBuf = new char[bufSize];
+				{
+					SocketAddress sas("/tmp/poco.server.tcp.sock");
+					EchoServer echoServer(sas, bufSize);
+					SocketAddress sac("/tmp/poco.client.tcp.sock");
+					StreamSocket ss(sas, &sac);
+					int recv = 0, sent = 0;
+					Stopwatch sw; int i = 0;
+					for (; i < repetitions; ++i)
+					{
+						sent = 0; recv = 0; local = 0;
+
+						do
+						{
+							int s;
+							sw.restart();
+							s = ss.sendBytes(pBuf + sent, bufSize - sent);
+							sw.stop();
+							local += sw.elapsed();
+							sent += s;
+						} while (sent < bufSize);
+
+						do
+						{
+							int r;
+							sw.restart();
+							r = ss.receiveBytes(pBuf + recv, bufSize - recv);
+							sw.stop();
+							local += sw.elapsed();
+							recv += r;
+						} while (recv < bufSize);
+
+						locData += sent;
+						locData += recv;
+						locTime += local;
+
+						poco_assert (sent == bufSize && recv == bufSize);
+					}
+					
+					std::cout << "Local TCP socket, " << i << " repetitions, " << bufSize << " bytes, " 
+						<< local << " [us]." << std::endl;
+					ss.close();
+				}
+
+				{
+					SocketAddress sa("localhost", 12345);
+					EchoServer echoServer(sa, bufSize);
+					StreamSocket ss;
+					ss.connect(SocketAddress(sa.host(), echoServer.port()));
+					if (noDelay[d]) ss.setNoDelay(true);
+					int recv = 0, sent = 0;
+					Stopwatch sw; int i = 0; 
+					for (; i < repetitions; ++i)
+					{
+						sent = 0; recv = 0; net = 0;
+						do
+						{
+							int s;
+							sw.restart();
+							s = ss.sendBytes(pBuf + sent, bufSize - sent);
+							sw.stop();
+							net += sw.elapsed();
+							sent += s;
+						} while (sent < bufSize);
+
+						do
+						{
+							int r;
+							sw.restart();
+							r = ss.receiveBytes(pBuf + recv, bufSize - recv);
+							sw.stop();
+							net += sw.elapsed();
+							recv += r;
+						} while (recv < bufSize);
+
+						netData += sent;
+						netData += recv;
+						netTime += net;
+
+						poco_assert (sent == bufSize && recv == bufSize);
+					}
+					
+					std::cout << "Network TCP socket, " << i << " repetitions, " << bufSize << " bytes, " 
+						<< net << " [us]." << std::endl;
+					fos << i << ',' << bufSize << ',';
+					ss.close();
+				}
+				delete pBuf;
+
+				double ratio = ((double) net) / ((double) local);
+				double diff = ((double) net) - ((double) local);
+				std::cout << "Ratio: " << ratio << "(" << diff / 1000.0 << "[us/msg]" << std::endl;
+
+				fos << ratio << std::endl;
+			}
+		}
+		poco_assert (locData == netData);
+
+		double locDTR = ((locData / (locTime / Timestamp::resolution())) * 8) / 1000000;
+		double netDTR = ((netData / (netTime / Timestamp::resolution())) * 8) / 1000000;
+
+		std::cout << (d ? "NO DELAY" : "DELAY") << std::endl
+			<< "=================================" << std::endl
+			<< "Local DTR: " << ((locData / (locTime / Timestamp::resolution())) * 8) / 1000000 << " [Mbit/s]" << std::endl
+			<< "Network DTR: " << ((netData / (netTime / Timestamp::resolution())) * 8) / 1000000 << " [Mbit/s]" << std::endl
+			<< "Local sockets speedup: " << ((locDTR / netDTR) * 100) - 100 << '%' << std::endl
+			<< "=================================" << std::endl;
+		
+		fos << "=================================" << std::endl
+			<< "Local DTR: " << ((locData / (locTime / Timestamp::resolution())) * 8) / 1000000 << " [Mbit/s]" << std::endl
+			<< "Network DTR: " << ((netData / (netTime / Timestamp::resolution())) * 8) / 1000000 << " [Mbit/s]" << std::endl
+			<< "Local sockets speedup: " << ((locDTR / netDTR) * 100) - 100 << '%' << std::endl
+			<< "=================================" << std::endl;
+
+		fos.close();
+	}
+}
+
+
 void LocalSocketTest::testEcho()
 {
 	SocketAddress sas("/tmp/poco.server.tcp.sock");
 	EchoServer echoServer(sas);
 	SocketAddress sac("/tmp/poco.client.tcp.sock");
 	StreamSocket ss(sas, &sac);
+	
 	int n = ss.sendBytes("hello", 5);
 	assert (n == 5);
 	char buffer[256];
 	n = ss.receiveBytes(buffer, sizeof(buffer));
+		
 	assert (n == 5);
 	assert (std::string(buffer, n) == "hello");
 	ss.close();
@@ -275,13 +435,6 @@ void LocalSocketTest::testOptions()
 	ss.getLinger(f, t);
 	assert (!f);
 	
-	/* TODO: fails on linux?
-	ss.setNoDelay(true);
-	assert (ss.getNoDelay());
-	ss.setNoDelay(false);
-	assert (!ss.getNoDelay());
-	*/
-	
 	//NB: these probably should have no effect for local sockets
 	ss.setKeepAlive(true);
 	assert (ss.getKeepAlive());
@@ -445,6 +598,7 @@ CppUnit::Test* LocalSocketTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("LocalSocketTest");
 
+	CppUnit_addTest(pSuite, LocalSocketTest, testSocketsPerformance);
 	CppUnit_addTest(pSuite, LocalSocketTest, testEcho);
 	CppUnit_addTest(pSuite, LocalSocketTest, testPoll);
 	CppUnit_addTest(pSuite, LocalSocketTest, testAvailable);

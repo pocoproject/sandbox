@@ -41,20 +41,22 @@ using Poco::Sockets::StreamSocket;
 using Poco::Sockets::SocketAddress;
 
 
-EchoServer::EchoServer():
+EchoServer::EchoServer(int bufferSize):
 	_socket(SocketAddress()),
 	_thread("EchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_thread.start(*this);
 	_ready.wait();
 }
 
 
-EchoServer::EchoServer(const SocketAddress& addr):
+EchoServer::EchoServer(const SocketAddress& addr, int bufferSize):
 	_socket(addr),
 	_thread("EchoServer"),
-	_stop(false)
+	_stop(false),
+	_bufferSize(bufferSize)
 {
 	_thread.start(*this);
 	_ready.wait();
@@ -78,6 +80,7 @@ void EchoServer::run()
 {
 	_ready.set();
 	Poco::Timespan span(250000);
+	char* pBuffer = new char[_bufferSize];
 	while (!_stop)
 	{
 		if (_socket.poll(span, Socket::SELECT_READ))
@@ -85,12 +88,11 @@ void EchoServer::run()
 			StreamSocket ss = _socket.acceptConnection();
 			try
 			{
-				char buffer[256];
-				int n = ss.receiveBytes(buffer, sizeof(buffer));
+				int n = ss.receiveBytes(pBuffer, _bufferSize);
 				while (n > 0 && !_stop)
 				{
-					ss.sendBytes(buffer, n);
-					n = ss.receiveBytes(buffer, sizeof(buffer));
+					ss.sendBytes(pBuffer, n);
+					n = ss.receiveBytes(pBuffer, _bufferSize);
 				}
 			}
 			catch (Poco::Exception& exc)
@@ -99,5 +101,6 @@ void EchoServer::run()
 			}
 		}
 	}
+	delete pBuffer;
 }
 
