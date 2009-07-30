@@ -1,9 +1,13 @@
 //
-// SOAPTest.cpp
+// JSONEntity.cpp
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Web/src/JSONEntity.cpp#7 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: Web
+// Package: Configuration
+// Module:  JSONEntity
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +34,67 @@
 //
 
 
-#include "SOAPTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
+#include "Poco/Web/JSONEntity.h"
+//#include "Poco/Web/JSON_parser.h"
+#include "Poco/Exception.h"
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+using Poco::Dynamic::Var;
+using Poco::InvalidArgumentException;
+
+
+namespace Poco {
+namespace Web {
+
+
+JSONEntity::JSONEntity(): _type(JSON_T_NONE)
+{
+}
+
+/*
+JSONEntity::JSONEntity(Type type, JSON_value* pValue): _type(type)
+{
+	switch (type)
+	{
+		case JSON_T_INTEGER:
+			poco_check_ptr (pValue);
+			_value = pValue->vu.integer_value;	break;
+		case JSON_T_FLOAT:
+			poco_check_ptr (pValue);
+			_value = pValue->vu.float_value; break;
+		case JSON_T_STRING:
+		case JSON_T_KEY:
+			poco_check_ptr (pValue);
+			_value = pValue->vu.str.value;
+			break;
+		default:
+			break;
+	}
+}
+*/
+
+JSONEntity::JSONEntity(Type type, const Var& value): _type(type)
+{
+	switch (type)
+	{
+		case JSON_T_INTEGER:
+			//_value = value->vu.integer_value;	break;
+		case JSON_T_FLOAT:
+			//_value = value->vu.float_value; break;
+		case JSON_T_STRING:
+		case JSON_T_KEY:
+			_value = value;//->vu.str.value;
+			break;
+		default:
+			poco_assert (value.isEmpty());
+			break;
+	}
+}
+
+
+JSONEntity::~JSONEntity()
 {
 }
 
 
-SOAPTest::~SOAPTest()
-{
-}
-
-
-void SOAPTest::testA()
-{
-	// add code for first test here
-}
-
-
-void SOAPTest::testB()
-{
-	// add code for second test here
-}
-
-
-void SOAPTest::setUp()
-{
-}
-
-
-void SOAPTest::tearDown()
-{
-}
-
-
-CppUnit::Test* SOAPTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
-
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
-
-	return pSuite;
-}
+} } // namespace Poco::Web

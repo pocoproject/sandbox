@@ -1,9 +1,13 @@
 //
-// SOAPTest.cpp
+// JSONPrinter.cpp
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Web/src/JSONPrinter.cpp#7 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: Web
+// Package: Configuration
+// Module:  JSONPrinter
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +34,31 @@
 //
 
 
-#include "SOAPTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
+#include "Poco/Web/JSONPrinter.h"
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+namespace Poco {
+namespace Web {
+
+
+JSONPrinter::JSONPrinter(std::ostream& out, const std::string& indent): _out(out), _indent(indent)
 {
 }
 
 
-SOAPTest::~SOAPTest()
+JSONPrinter::~JSONPrinter()
 {
 }
 
 
-void SOAPTest::testA()
+void JSONPrinter::indent()
 {
-	// add code for first test here
+	std::size_t i;
+	std::size_t lev = level();
+
+	for (i = 0; i < lev; ++i)
+		_out << _indent;
 }
 
 
-void SOAPTest::testB()
-{
-	// add code for second test here
-}
-
-
-void SOAPTest::setUp()
-{
-}
-
-
-void SOAPTest::tearDown()
-{
-}
-
-
-CppUnit::Test* SOAPTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
-
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
-
-	return pSuite;
-}
+} } // namespace Poco::Web

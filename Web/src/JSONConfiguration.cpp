@@ -1,9 +1,13 @@
 //
-// SOAPTest.cpp
+// JSONConfiguration.cpp
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Web/src/JSONConfiguration.cpp#7 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: Web
+// Package: Configuration
+// Module:  JSONConfiguration
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +34,48 @@
 //
 
 
-#include "SOAPTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
+#include "Poco/Web/JSONConfiguration.h"
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+namespace Poco {
+namespace Web {
+
+
+JSONConfiguration::JSONConfiguration(int depth,	bool allowComments):
+	_depth(depth),
+	_allowComments(allowComments)
+
+{
+	poco_assert (_depth != 0);
+}
+
+
+JSONConfiguration::~JSONConfiguration()
 {
 }
 
 
-SOAPTest::~SOAPTest()
+JSONConfiguration::JSONConfiguration(const JSONConfiguration& other)
 {
+	_depth = other._depth;
+	_allowComments = other._allowComments;
 }
 
 
-void SOAPTest::testA()
+JSONConfiguration& JSONConfiguration::operator = (const JSONConfiguration& other)
 {
-	// add code for first test here
+	JSONConfiguration tmp(other);
+	swap(tmp);
+	return *this;
 }
 
 
-void SOAPTest::testB()
+void JSONConfiguration::swap(JSONConfiguration& other)
 {
-	// add code for second test here
+	using std::swap;
+	swap(_depth, other._depth);
+	swap(_allowComments, other._allowComments);
 }
 
 
-void SOAPTest::setUp()
-{
-}
-
-
-void SOAPTest::tearDown()
-{
-}
-
-
-CppUnit::Test* SOAPTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
-
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
-
-	return pSuite;
-}
+} } // namespace Poco::Web

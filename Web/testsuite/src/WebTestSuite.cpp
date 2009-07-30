@@ -32,6 +32,7 @@
 
 #include "WebTestSuite.h"
 #include "SOAPTest.h"
+#include "JSONTest.h"
 
 
 CppUnit::Test* WebTestSuite::suite()
@@ -39,6 +40,7 @@ CppUnit::Test* WebTestSuite::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("WebTestSuite");
 
 	pSuite->addTest(SOAPTest::suite());
+	pSuite->addTest(JSONTest::suite());
 
 	return pSuite;
 }

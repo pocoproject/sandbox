@@ -1,9 +1,15 @@
 //
-// SOAPTest.cpp
+// JSONConfiguration.h
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Web/include/Poco/Web/JSONConfiguration.h#2 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Library: Web
+// Package: Configuration
+// Module:  JSONConfiguration
+//
+// Definition of the JSONConfiguration class.
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +36,68 @@
 //
 
 
-#include "SOAPTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
+#ifndef Web_JSONConfiguration_INCLUDED
+#define Web_JSONConfiguration_INCLUDED
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+#include "Poco/Web/Web.h"
+#include "Poco/Web/JSONHandler.h"
+
+
+namespace Poco {
+namespace Web {
+
+
+class Web_API JSONConfiguration
 {
+public:
+	typedef void* ContextPtr;
+	static const int UNLIMITED_DEPTH = -1;
+
+	JSONConfiguration(int depth = UNLIMITED_DEPTH,
+		bool allowComments = true);
+		/// Creates JSONConfiguration.
+
+	~JSONConfiguration();
+		/// Destroys JSONConfiguration.
+
+	JSONConfiguration(const JSONConfiguration&);
+		/// Copy constructor.
+
+	JSONConfiguration& operator = (const JSONConfiguration&);
+		/// Assignment operator.
+
+	int parseDepth() const;
+		/// Returns the value of the parse depth parameter.
+
+	bool allowComments() const;
+		/// Returns the value of the allow comments parameter.
+
+private:
+	void swap(JSONConfiguration& other);
+
+    int      _depth;
+    int      _allowComments;
+};
+
+
+//
+// inlines
+//
+
+inline int JSONConfiguration::parseDepth() const
+{
+	return _depth;
 }
 
 
-SOAPTest::~SOAPTest()
+inline bool JSONConfiguration::allowComments() const
 {
+	return 0 != _allowComments;
 }
 
 
-void SOAPTest::testA()
-{
-	// add code for first test here
-}
+} } // namespace Poco::Web
 
 
-void SOAPTest::testB()
-{
-	// add code for second test here
-}
-
-
-void SOAPTest::setUp()
-{
-}
-
-
-void SOAPTest::tearDown()
-{
-}
-
-
-CppUnit::Test* SOAPTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
-
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
-
-	return pSuite;
-}
+#endif // Web_JSONConfiguration_INCLUDED

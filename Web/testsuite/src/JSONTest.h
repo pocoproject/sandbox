@@ -1,9 +1,11 @@
 //
-// SOAPTest.cpp
+// JSONTest.h
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Util/testsuite/src/JSONTest.h#5 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Definition of the JSONTest class.
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +32,29 @@
 //
 
 
-#include "SOAPTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
+#ifndef JSONTest_INCLUDED
+#define JSONTest_INCLUDED
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+#include "Poco/Web/Web.h"
+#include "CppUnit/TestCase.h"
+
+
+class JSONTest: public CppUnit::TestCase
 {
-}
+public:
+	JSONTest(const std::string& name);
+	~JSONTest();
+
+	void testPrinter();
+	
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+};
 
 
-SOAPTest::~SOAPTest()
-{
-}
-
-
-void SOAPTest::testA()
-{
-	// add code for first test here
-}
-
-
-void SOAPTest::testB()
-{
-	// add code for second test here
-}
-
-
-void SOAPTest::setUp()
-{
-}
-
-
-void SOAPTest::tearDown()
-{
-}
-
-
-CppUnit::Test* SOAPTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
-
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
-
-	return pSuite;
-}
+#endif // JSONTest_INCLUDED

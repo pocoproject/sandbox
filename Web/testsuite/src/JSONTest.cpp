@@ -1,9 +1,9 @@
 //
-// SOAPTest.cpp
+// JSONTest.cpp
 //
-// $Id: //poco/Main/template/test.cpp#6 $
+// $Id: //poco/Main/Util/testsuite/src/JSONTest.cpp#6 $
 //
-// Copyright (c) 2006, Applied Informatics Software Engineering GmbH.
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
 //
 // Permission is hereby granted, free of charge, to any person or organization
@@ -30,49 +30,66 @@
 //
 
 
-#include "SOAPTest.h"
+#include "JSONTest.h"
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
+#include "Poco/Web/JSONParser.h"
+#include "Poco/Web/JSONPrinter.h"
 
 
-SOAPTest::SOAPTest(const std::string& name): CppUnit::TestCase(name)
+using Poco::Web::JSONParser;
+using Poco::Web::JSONPrinter;
+
+
+JSONTest::JSONTest(const std::string& name): CppUnit::TestCase(name)
 {
 }
 
 
-SOAPTest::~SOAPTest()
+JSONTest::~JSONTest()
 {
 }
 
 
-void SOAPTest::testA()
+void JSONTest::testPrinter()
 {
-	// add code for first test here
+	JSONParser jp(new JSONPrinter(std::cout));
+
+	jp.parse("{"
+		"\"firstName\": \"John\","
+		"\"lastName\": \"Smith\","
+		"\"address\": {"
+			"\"streetAddress\": \"21 2nd Street\","
+			"\"city\": \"New York\","
+			"\"state\": \"NY\","
+			"\"postalCode\": 10021"
+		"},"
+	"\"phoneNumbers\": ["
+		"\"212 555-1234\","
+		"\"646 555-4567\""
+	"],"
+	"\"weight\": {"
+		"\"value\": 123.456, \"units\": \"lbs\""
+		"}"
+	"}");
 }
 
 
-void SOAPTest::testB()
-{
-	// add code for second test here
-}
-
-
-void SOAPTest::setUp()
+void JSONTest::setUp()
 {
 }
 
 
-void SOAPTest::tearDown()
+void JSONTest::tearDown()
 {
 }
 
 
-CppUnit::Test* SOAPTest::suite()
+CppUnit::Test* JSONTest::suite()
 {
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOAPTest");
+	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("JSONTest");
 
-	CppUnit_addTest(pSuite, SOAPTest, testA);
-	CppUnit_addTest(pSuite, SOAPTest, testB);
+	CppUnit_addTest(pSuite, JSONTest, testPrinter);
 
 	return pSuite;
 }
