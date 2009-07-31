@@ -279,6 +279,10 @@
 				Name="Source Files"
 				>
 				<File
+					RelativePath=".\src\JSONCondenser.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\JSONConfiguration.cpp"
 					>
 				</File>
@@ -295,6 +299,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\src\JSONPrettyPrinter.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\src\JSONPrinter.cpp"
 					>
 				</File>
@@ -302,6 +310,10 @@
 			<Filter
 				Name="Header Files"
 				>
+				<File
+					RelativePath=".\include\Poco\Web\JSONCondenser.h"
+					>
+				</File>
 				<File
 					RelativePath=".\include\Poco\Web\JSONConfiguration.h"
 					>
@@ -316,6 +328,10 @@
 				</File>
 				<File
 					RelativePath=".\include\Poco\Web\JSONParser.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\Poco\Web\JSONPrettyPrinter.h"
 					>
 				</File>
 				<File

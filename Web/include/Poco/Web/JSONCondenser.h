@@ -1,13 +1,13 @@
 //
-// JSONPrinter.h
+// JSONCondenser.h
 //
-// $Id: //poco/Main/Web/include/Poco/Web/JSONPrinter.h#2 $
+// $Id: //poco/Main/Web/include/Poco/Web/JSONCondenser.h#2 $
 //
 // Library: Web
 // Package: Configuration
-// Module:  JSONPrinter
+// Module:  JSONCondenser
 //
-// Definition of the JSONPrinter class.
+// Definition of the JSONCondenser class.
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,8 +36,8 @@
 //
 
 
-#ifndef Web_JSONPrinter_INCLUDED
-#define Web_JSONPrinter_INCLUDED
+#ifndef Web_JSONCondenser_INCLUDED
+#define Web_JSONCondenser_INCLUDED
 
 
 #include "Poco/Web/Web.h"
@@ -50,16 +50,15 @@ namespace Poco {
 namespace Web {
 
 
-class Web_API JSONPrinter: public JSONHandler
-	/// Class that prints out he structure and values of a
-	/// JSON string.
+class Web_API JSONCondenser: public JSONHandler
+	/// Class prints out "condensed" JSON string (with unnecessary whitespace removed).
 {
 public:
-	JSONPrinter(std::ostream& out, const std::string& indent = "\t");
-		/// Creates JSONPrinter.
+	JSONCondenser(std::ostream& out);
+		/// Creates JSONCondenser.
 
-	~JSONPrinter();
-		/// Destroys JSONPrinter.
+	~JSONCondenser();
+		/// Destroys JSONCondenser.
 
 	virtual void handleArrayBegin();
 		/// Handles the array begin event.
@@ -72,6 +71,9 @@ public:
 
 	virtual void handleObjectEnd();
 		/// Handles the object end event.
+
+	virtual void handleValueSeparator();
+		/// Handles the value separator event.
 
 	virtual void handleInteger(const JSONEntity& val);
 		/// Handles the integer value event.
@@ -95,94 +97,86 @@ public:
 		/// Handles the string value event.
 
 private:
-	void indent();
-
 	std::ostream& _out;
-	std::string   _indent;
 };
 
 
 //
 // inlines
 //
-inline void JSONPrinter::handleArrayBegin()
+inline void JSONCondenser::handleArrayBegin()
 {
-	if (!isKey()) indent();
-	_out << '[' << std::endl;
+	_out << '[';
 }
 
 
-inline void JSONPrinter::handleArrayEnd()
+inline void JSONCondenser::handleArrayEnd()
 {
-	indent();
-	_out << ']' << std::endl;
+	_out << ']';
 }
 
 
-inline void JSONPrinter::handleObjectBegin()
+inline void JSONCondenser::handleObjectBegin()
 {
-	if (!isKey()) indent();
-	_out << '{' << std::endl;
+	_out << '{';
 }
 
 
-inline void JSONPrinter::handleObjectEnd()
+inline void JSONCondenser::handleObjectEnd()
 {
-	indent();
-	_out << '}' << std::endl;
+	_out << '}';
 }
 
 
-inline void JSONPrinter::handleInteger(const JSONEntity& val)
+inline void JSONCondenser::handleValueSeparator()
 {
-	if (!isKey()) indent();
-	_out << "integer: " << val.toInteger() << std::endl;
+	_out << ',';
 }
 
 
-inline void JSONPrinter::handleFloat(const JSONEntity& val)
+inline void JSONCondenser::handleInteger(const JSONEntity& val)
 {
-	if (!isKey()) indent();
-	_out << "float: " << val.toFloat() << std::endl;
+	_out << val.toInteger();
 }
 
 
-inline void JSONPrinter::handleNull()
+inline void JSONCondenser::handleFloat(const JSONEntity& val)
 {
-	if (!isKey()) indent();
-	_out << "null" << std::endl;
+	_out << val.toFloat();
 }
 
 
-inline void JSONPrinter::handleTrue()
+inline void JSONCondenser::handleNull()
 {
-	if (!isKey()) indent();
-	_out << "true" << std::endl;
+	_out << "null";
 }
 
 
-inline void JSONPrinter::handleFalse()
+inline void JSONCondenser::handleTrue()
 {
-	if (!isKey()) indent();
-	_out << "false" << std::endl;
+	_out << "true";
 }
 
 
-inline void JSONPrinter::handleKey(const JSONEntity& val)
+inline void JSONCondenser::handleFalse()
 {
-	setKey(true);
-	_out << "key = '" << val.toString() << "', value = ";
+	_out << "false\n";
 }
 
 
-inline void JSONPrinter::handleString(const JSONEntity& val)
+inline void JSONCondenser::handleKey(const JSONEntity& val)
 {
-	if (!isKey()) indent();
-	_out << "string: '" << val.toString() << '\'' << std::endl;
+	_out << '"' << val.toString() << "\":";
+}
+
+
+inline void JSONCondenser::handleString(const JSONEntity& val)
+{
+	_out << '"' << val.toString() << '"';
 }
 
 
 } } // namespace Poco::Web
 
 
-#endif // Web_JSONPrinter_INCLUDED
+#endif // Web_JSONCondenser_INCLUDED

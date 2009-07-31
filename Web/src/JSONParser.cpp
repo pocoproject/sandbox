@@ -132,19 +132,17 @@ const int JSONParser::_stateTransitionTable[NR_STATES][NR_CLASSES] = {
 JSONParser::JSONParser(const JSONConfiguration& config, JSONHandler::Ptr pHandler):
 	_config(config),
 	_pHandler(pHandler),
-	_state(0),
+	_state(GO),
 	_beforeCommentState(0),
 	_type(JSONEntity::JSON_T_NONE),
 	_escaped(0),
 	_comment(0),
 	_utf16HighSurrogate(0),
-	_depth(config.parseDepth()),
-	_top(0),
-	_pStack(0),
-	_stackCapacity(0),
+	_depth(config.parseDepth() ? config.parseDepth() : -1),
+	_top(-1),
+	_stack(PARSER_STACK_SIZE),
+	_parseBuffer(PARSE_BUFFER_SIZE),
 	_decimalPoint(0),
-	_pParseBuffer(0),
-	_pParseBufferCapacity(0),
 	_parseBufferCount(0),
 	_commentBeginOffset(0)
 {
@@ -153,19 +151,17 @@ JSONParser::JSONParser(const JSONConfiguration& config, JSONHandler::Ptr pHandle
 
 
 JSONParser::JSONParser(JSONHandler::Ptr pHandler): _pHandler(pHandler),
-	_state(0),
+	_state(GO),
 	_beforeCommentState(0),
 	_type(JSONEntity::JSON_T_NONE),
 	_escaped(0),
 	_comment(0),
 	_utf16HighSurrogate(0),
-	_depth(0),
-	_top(0),
-	_pStack(0),
-	_stackCapacity(0),
+	_depth(-1),
+	_top(-1),
+	_stack(PARSER_STACK_SIZE),
+	_parseBuffer(PARSE_BUFFER_SIZE),
 	_decimalPoint(0),
-	_pParseBuffer(0),
-	_pParseBufferCapacity(0),
 	_parseBufferCount(0),
 	_commentBeginOffset(0)
 {
@@ -175,46 +171,16 @@ JSONParser::JSONParser(JSONHandler::Ptr pHandler): _pHandler(pHandler),
 
 JSONParser::~JSONParser()
 {
-	if (_pStack != &_staticStack[0]) std::free(_pStack);
-	if (_pParseBuffer != &_staticParseBuffer[0]) std::free(_pParseBuffer);
 }
 
 
 void JSONParser::init()
 {
-	std::memset(_staticStack, 0, PARSER_STACK_SIZE);
-	std::memset(_staticParseBuffer, 0, PARSE_BUFFER_SIZE);
-
-	_state = GO;
-	_top = -1;
-
-	// non-bound _pStack?
-	if (_depth > 0)
-	{
-		_stackCapacity = _depth;
-		_depth = _depth;
-		if (_depth <= (int) COUNTOF(_staticStack))
-			_pStack = &_staticStack[0];
-		else
-			_pStack = (signed char*) std::malloc(_stackCapacity * sizeof(_staticStack[0]));
-	}
-	else
-	{
-		_stackCapacity = COUNTOF(_staticStack);
-		_depth = -1;
-		_pStack = &_staticStack[0];
-	}
-
-	// set parser to start
+	_stack.clear();
+	_parseBuffer.clear();
 	push(MODE_DONE);
-
-	// set up the parse buffer
-	_pParseBuffer = &_staticParseBuffer[0];
-	_pParseBufferCapacity = COUNTOF(_staticParseBuffer);
-	clearBuffer();
-
-	// set up decimal point
 	_decimalPoint = *std::localeconv()->decimal_point;
+	clearBuffer();
 }
 
 
@@ -239,35 +205,22 @@ bool JSONParser::push(int mode)
 	_top += 1;
 	if (_depth < 0)
 	{
-		if (_top >= _stackCapacity)
-		{
-			size_t bytes_to_allocate;
-			_stackCapacity *= 2;
-			bytes_to_allocate = _stackCapacity * sizeof(_staticStack[0]);
-			if (_pStack == &_staticStack[0])
-			{
-				_pStack = (signed char*) std::malloc(bytes_to_allocate);
-				std::memcpy(_pStack, _staticStack, sizeof(_staticStack));
-			}
-			else
-			{
-				_pStack = (signed char*) std::realloc(_pStack, bytes_to_allocate);
-			}
-		}
+		if (_top >= _stack.size())
+			_stack.resize(_stack.size() * 2, true);
 	}
 	else
 	{
 		if (_top >= _depth) return false;
 	}
 
-	_pStack[_top] = mode;
+	_stack[_top] = mode;
 	return true;
 }
 
 
 bool JSONParser::pop(int mode)
 {
-	if (_top < 0 || _pStack[_top] != mode)
+	if (_top < 0 || _stack[_top] != mode)
 		return false;
 
 	_top -= 1;
@@ -277,7 +230,7 @@ bool JSONParser::pop(int mode)
 void JSONParser::clearBuffer()
 {
 	_parseBufferCount = 0;
-	_pParseBuffer[0] = 0;
+	_parseBuffer[0] = 0;
 }
 
 
@@ -285,38 +238,23 @@ void JSONParser::parseBufferPopBackChar()
 {
 	poco_assert(_parseBufferCount >= 1);
 	--_parseBufferCount;
-	_pParseBuffer[_parseBufferCount] = 0;
+	_parseBuffer[_parseBufferCount] = 0;
 }
 
 
 void JSONParser::parseBufferPushBackChar(char c)
 {
-	if (_parseBufferCount + 1 >= _pParseBufferCapacity)
+	if (_parseBufferCount + 1 >= _parseBuffer.size())
 		growBuffer();
-	_pParseBuffer[_parseBufferCount++] = c;
-	_pParseBuffer[_parseBufferCount]   = 0;
+	_parseBuffer[_parseBufferCount++] = c;
+	_parseBuffer[_parseBufferCount]   = 0;
 }
 
 
-void JSONParser::growBuffer()
-{
-	size_t bytes_to_allocate;
-	_pParseBufferCapacity *= 2;
-	bytes_to_allocate = _pParseBufferCapacity * sizeof(_pParseBuffer[0]);
-	if (_pParseBuffer == &_staticParseBuffer[0])
-	{
-		_pParseBuffer = (char*) std::malloc(bytes_to_allocate);
-		std::memcpy(_pParseBuffer, _staticParseBuffer, _parseBufferCount);
-	} else {
-		_pParseBuffer = (char*)realloc(_pParseBuffer, bytes_to_allocate);
-	}
-}
-
-
-int JSONParser::addEscapedCharToParseBuffer(int nextChar)
+void JSONParser::addEscapedCharToParseBuffer(int nextChar)
 {
 	_escaped = 0;
-	/* remove the backslash */
+	// remove the backslash
 	parseBufferPopBackChar();
 	switch(nextChar)
 	{
@@ -349,42 +287,40 @@ int JSONParser::addEscapedCharToParseBuffer(int nextChar)
 		parseBufferPushBackChar('u');
 		break;
 	default:
-		return 0;
+		break;
 	}
-
-	return 1;
 }
 
 
-int JSONParser::addCharToParseBuffer(int nextChar, int nextClass)
+void JSONParser::addCharToParseBuffer(int nextChar, int nextClass)
 {
 	if (_escaped)
 	{
-		return addEscapedCharToParseBuffer(nextChar);
+		addEscapedCharToParseBuffer(nextChar);
+		return;
 	}
 	else if (!_comment)
 	{
-		if ((_type != JSONEntity::JSON_T_NONE) || !((nextClass == C_SPACE) || (nextClass == C_WHITE)) /* non-white-space */)
+		if ((_type != JSONEntity::JSON_T_NONE) ||
+			!((nextClass == C_SPACE) || (nextClass == C_WHITE)))
 		{
 			parseBufferPushBackChar((char) nextChar);
 		}
 	}
-
-	return 1;
 }
 
 
-int JSONParser::parseChar(int nextChar)
+bool JSONParser::parseChar(int nextChar)
 {
 	int nextClass, nextState;
 
 	// Determine the character's class.
-	if (nextChar < 0) return 0;
+	if (nextChar < 0) return false;
 	if (nextChar >= 128) nextClass = C_ETC;
 	else
 	{
 		nextClass = _asciiClass[nextChar];
-		if (nextClass <= xx) return 0; 
+		if (nextClass <= xx) return false; 
 	}
 
 	addCharToParseBuffer(nextChar, nextClass);
@@ -402,7 +338,7 @@ int JSONParser::parseChar(int nextChar)
 		{
 		// Unicode character 
 		case UC:
-			if(!decodeUnicodeChar()) return 0;
+			if(!decodeUnicodeChar()) return false;
 			// check if we need to read a second UTF-16 char
 			if (_utf16HighSurrogate) _state = D1;
 			else _state = ST;
@@ -433,13 +369,13 @@ int JSONParser::parseChar(int nextChar)
 			_type = JSONEntity::JSON_T_FLOAT;
 			_state = E1;
 			break;
-		// floating point number detected by fraction */
+		// floating point number detected by fraction
 		case DF:
 			assertNotStringNullBool();
 			_type = JSONEntity::JSON_T_FLOAT;
 			_state = FX;
 			break;
-		// string begin " */
+		// string begin "
 		case SB:
 			clearBuffer();
 			poco_assert(_type == JSONEntity::JSON_T_NONE);
@@ -466,7 +402,7 @@ int JSONParser::parseChar(int nextChar)
 			_state = T1;
 			break;
 
-		// closing _comment
+		// closing comment
 		case CE:
 			_comment = 0;
 			poco_assert(_parseBufferCount == 0);
@@ -474,14 +410,14 @@ int JSONParser::parseChar(int nextChar)
 			_state = _beforeCommentState;
 			break;
 
-			// opening _comment
+		// opening comment
 		case CB:
-			if (!_config.allowComments()) return 0;
+			if (!_config.allowComments()) return false;
 			parseBufferPopBackChar();
 			parseBuffer();
 			poco_assert(_parseBufferCount == 0);
 			poco_assert(_type != JSONEntity::JSON_T_STRING);
-			switch (_pStack[_top])
+			switch (_stack[_top])
 			{
 			case MODE_ARRAY:
 				case MODE_OBJECT:
@@ -504,14 +440,14 @@ int JSONParser::parseChar(int nextChar)
 				_state = C1;
 				_comment = 1;
 				break;
-			// empty } */
+			// empty }
 			case -9:
 			{
 				clearBuffer();
 				JSONEntity jv(JSONEntity::JSON_T_OBJECT_END);
 				if (_pHandler) _pHandler->handle(jv);
 
-				if (!pop(MODE_KEY)) return 0;
+				if (!pop(MODE_KEY)) return false;
 				_state = OK;
 				break;
 			}
@@ -522,7 +458,7 @@ int JSONParser::parseChar(int nextChar)
 				parseBuffer();
 				JSONEntity jv(JSONEntity::JSON_T_OBJECT_END);
 				if (_pHandler) _pHandler->handle(jv);
-				if (!pop(MODE_OBJECT)) return 0;
+				if (!pop(MODE_OBJECT)) return false;
 				_type = JSONEntity::JSON_T_NONE;
 				_state = OK;
 				break;
@@ -534,7 +470,7 @@ int JSONParser::parseChar(int nextChar)
 				parseBuffer();
 				JSONEntity jv(JSONEntity::JSON_T_ARRAY_END);
 				if (_pHandler) _pHandler->handle(jv);
-				if (!pop(MODE_ARRAY)) return 0;
+				if (!pop(MODE_ARRAY)) return false;
 				_type = JSONEntity::JSON_T_NONE;
 				_state = OK;
 				break;
@@ -545,7 +481,7 @@ int JSONParser::parseChar(int nextChar)
 				parseBufferPopBackChar();
 				JSONEntity jv(JSONEntity::JSON_T_OBJECT_BEGIN);
 				if (_pHandler) _pHandler->handle(jv);
-				if (!push(MODE_KEY)) return 0;
+				if (!push(MODE_KEY)) return false;
 				poco_assert(_type == JSONEntity::JSON_T_NONE);
 				_state = OB;
 				break;
@@ -556,7 +492,7 @@ int JSONParser::parseChar(int nextChar)
 				parseBufferPopBackChar();
 				JSONEntity jv(JSONEntity::JSON_T_ARRAY_BEGIN);
 				if (_pHandler) _pHandler->handle(jv);
-				if (!push(MODE_ARRAY)) return 0;
+				if (!push(MODE_ARRAY)) return false;
 				poco_assert(_type == JSONEntity::JSON_T_NONE);
 				_state = AR;
 				break;
@@ -564,7 +500,8 @@ int JSONParser::parseChar(int nextChar)
 			// string end "
 			case -4:
 				parseBufferPopBackChar();
-				switch (_pStack[_top]) {
+				switch (_stack[_top])
+				{
 				case MODE_KEY:
 					{
 					poco_assert(_type == JSONEntity::JSON_T_STRING);
@@ -573,7 +510,7 @@ int JSONParser::parseChar(int nextChar)
 
 					if (_pHandler) 
 					{
-						std::string value(_pParseBuffer, _parseBufferCount);
+						std::string value(_parseBuffer.begin(), _parseBufferCount);
 						JSONEntity val(JSONEntity::JSON_T_KEY, value);
 						_pHandler->handle(val);
 					}
@@ -588,18 +525,22 @@ int JSONParser::parseChar(int nextChar)
 					_state = OK;
 					break;
 				default:
-					return 0;
+					return false;
 				}
 				break;
 
 			// ,
 			case -3:
+				{
 				parseBufferPopBackChar();
+				JSONEntity jv(JSONEntity::JSON_T_VALUE_SEPARATOR);
 				parseBuffer();
-				switch (_pStack[_top]) {
+				if (_pHandler) _pHandler->handle(jv);
+				switch (_stack[_top])
+				{
 				case MODE_OBJECT:
 					//A comma causes a flip from object mode to key mode.
-					if (!pop(MODE_OBJECT) || !push(MODE_KEY)) return 0;
+					if (!pop(MODE_OBJECT) || !push(MODE_KEY)) return false;
 					poco_assert(_type != JSONEntity::JSON_T_STRING);
 					_type = JSONEntity::JSON_T_NONE;
 					_state = KE;
@@ -610,24 +551,24 @@ int JSONParser::parseChar(int nextChar)
 					_state = VA;
 					break;
 				default:
-					return 0;
+					return false;
 				}
 				break;
-
+				}
 			// :
 			case -2:
 				// A colon causes a flip from key mode to object mode.
 				parseBufferPopBackChar();
-				if (!pop(MODE_KEY) || !push(MODE_OBJECT)) return 0;
+				if (!pop(MODE_KEY) || !push(MODE_OBJECT)) return false;
 				poco_assert(_type == JSONEntity::JSON_T_NONE);
 				_state = VA;
 				break;
 			//Bad action.
 			default:
-				return 0;
+				return false;
 		}
 	}
-	return 1;
+	return true;
 }
 
 
@@ -640,7 +581,7 @@ int JSONParser::decodeUnicodeChar()
 
 	poco_assert(_parseBufferCount >= 6);
 
-	p = &_pParseBuffer[_parseBufferCount - 4];
+	p = &_parseBuffer[_parseBufferCount - 4];
 
 	for (i = 12; i >= 0; i -= 4, ++p) {
 		unsigned x = *p;
@@ -660,7 +601,7 @@ int JSONParser::decodeUnicodeChar()
 
 	// clear UTF-16 char from buffer
 	_parseBufferCount -= 6;
-	_pParseBuffer[_parseBufferCount] = 0;
+	_parseBuffer[_parseBufferCount] = 0;
 
 	// attempt decoding 
 	if (_utf16HighSurrogate) {
@@ -689,13 +630,13 @@ int JSONParser::decodeUnicodeChar()
 		}
 	}
 
-	_pParseBuffer[_parseBufferCount++] = (char) ((uc >> (trail_bytes * 6)) | utf8_lead_bits[trail_bytes]);
+	_parseBuffer[_parseBufferCount++] = (char) ((uc >> (trail_bytes * 6)) | utf8_lead_bits[trail_bytes]);
 
 	for (i = trail_bytes * 6 - 6; i >= 0; i -= 6) {
-		_pParseBuffer[_parseBufferCount++] = (char) (((uc >> i) & 0x3F) | 0x80);
+		_parseBuffer[_parseBufferCount++] = (char) (((uc >> i) & 0x3F) | 0x80);
 	}
 
-	_pParseBuffer[_parseBufferCount] = 0;
+	_parseBuffer[_parseBufferCount] = 0;
 
 	return 1;
 }
@@ -715,19 +656,19 @@ void JSONParser::parseBuffer()
 			{
 				case JSONEntity::JSON_T_FLOAT:
 				{ 
-					JSONEntity::Float float_value = NumberParser::parseFloat(_pParseBuffer);
+					JSONEntity::Float float_value = NumberParser::parseFloat(_parseBuffer.begin());
 					val = float_value;
 					break;
 				}
 				case JSONEntity::JSON_T_INTEGER:
 				{
-					JSONEntity::Integer integerValue = NumberParser::parse64(_pParseBuffer);
+					JSONEntity::Integer integerValue = NumberParser::parse64(_parseBuffer.begin());
 					val = integerValue;
 					break;
 				}
 				case JSONEntity::JSON_T_STRING:
 				{
-					std::string str(_pParseBuffer, _parseBufferCount);
+					std::string str(_parseBuffer.begin(), _parseBufferCount);
 					val = str;
 					break;
 				}

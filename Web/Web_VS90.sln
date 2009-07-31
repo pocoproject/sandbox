@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Web", "Web_VS90.vcproj", "{D65D874E-4A48-4AE2-BD57-62FE49F2A907}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSuite", "testsuite\TestSuite_VS90.vcproj", "{005FDB40-03AD-4B87-9099-1CCD64A2F64E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D65D874E-4A48-4AE2-BD57-62FE49F2A907} = {D65D874E-4A48-4AE2-BD57-62FE49F2A907}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

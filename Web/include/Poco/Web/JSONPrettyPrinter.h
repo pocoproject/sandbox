@@ -1,13 +1,13 @@
 //
-// JSONPrinter.h
+// JSONPrettyPrinter.h
 //
-// $Id: //poco/Main/Web/include/Poco/Web/JSONPrinter.h#2 $
+// $Id: //poco/Main/Web/include/Poco/Web/JSONPrettyPrinter.h#2 $
 //
 // Library: Web
 // Package: Configuration
-// Module:  JSONPrinter
+// Module:  JSONPrettyPrinter
 //
-// Definition of the JSONPrinter class.
+// Definition of the JSONPrettyPrinter class.
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -36,8 +36,8 @@
 //
 
 
-#ifndef Web_JSONPrinter_INCLUDED
-#define Web_JSONPrinter_INCLUDED
+#ifndef Web_JSONPrettyPrinter_INCLUDED
+#define Web_JSONPrettyPrinter_INCLUDED
 
 
 #include "Poco/Web/Web.h"
@@ -50,16 +50,24 @@ namespace Poco {
 namespace Web {
 
 
-class Web_API JSONPrinter: public JSONHandler
+class Web_API JSONPrettyPrinter: public JSONHandler
 	/// Class that prints out he structure and values of a
 	/// JSON string.
 {
 public:
-	JSONPrinter(std::ostream& out, const std::string& indent = "\t");
-		/// Creates JSONPrinter.
+	enum Format
+	{
+		JSON_FORMAT_RFC4627,
+		JSON_FORMAT_READABLE
+	};
 
-	~JSONPrinter();
-		/// Destroys JSONPrinter.
+	JSONPrettyPrinter(std::ostream& out,
+		Format format = JSON_FORMAT_RFC4627,
+		const std::string& indent = "\t");
+		/// Creates JSONPrettyPrinter.
+
+	~JSONPrettyPrinter();
+		/// Destroys JSONPrettyPrinter.
 
 	virtual void handleArrayBegin();
 		/// Handles the array begin event.
@@ -72,6 +80,9 @@ public:
 
 	virtual void handleObjectEnd();
 		/// Handles the object end event.
+
+	virtual void handleValueSeparator();
+		/// Handles the value separator event.
 
 	virtual void handleInteger(const JSONEntity& val);
 		/// Handles the integer value event.
@@ -98,6 +109,7 @@ private:
 	void indent();
 
 	std::ostream& _out;
+	Format        _format;
 	std::string   _indent;
 };
 
@@ -105,84 +117,85 @@ private:
 //
 // inlines
 //
-inline void JSONPrinter::handleArrayBegin()
+inline void JSONPrettyPrinter::handleArrayBegin()
 {
-	if (!isKey()) indent();
+	_out << std::endl;
+	indent();
 	_out << '[' << std::endl;
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleArrayEnd()
+inline void JSONPrettyPrinter::handleArrayEnd()
 {
+	_out << std::endl;
 	indent();
-	_out << ']' << std::endl;
+	_out << ']';
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleObjectBegin()
+inline void JSONPrettyPrinter::handleObjectBegin()
 {
-	if (!isKey()) indent();
+	_out << std::endl;
+	indent();
 	_out << '{' << std::endl;
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleObjectEnd()
+inline void JSONPrettyPrinter::handleObjectEnd()
 {
+	_out << std::endl;
 	indent();
-	_out << '}' << std::endl;
+	_out << '}';
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleInteger(const JSONEntity& val)
+inline void JSONPrettyPrinter::handleValueSeparator()
 {
-	if (!isKey()) indent();
-	_out << "integer: " << val.toInteger() << std::endl;
+	_out << ',' << std::endl;
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleFloat(const JSONEntity& val)
+inline void JSONPrettyPrinter::handleInteger(const JSONEntity& val)
 {
-	if (!isKey()) indent();
-	_out << "float: " << val.toFloat() << std::endl;
+	_out << val.toInteger();
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleNull()
+inline void JSONPrettyPrinter::handleFloat(const JSONEntity& val)
 {
-	if (!isKey()) indent();
-	_out << "null" << std::endl;
+	_out << val.toFloat();
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleTrue()
+inline void JSONPrettyPrinter::handleNull()
 {
-	if (!isKey()) indent();
-	_out << "true" << std::endl;
+	_out << "null";
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleFalse()
+inline void JSONPrettyPrinter::handleTrue()
 {
-	if (!isKey()) indent();
-	_out << "false" << std::endl;
+	_out << "true";
+	setKey(false);
 }
 
 
-inline void JSONPrinter::handleKey(const JSONEntity& val)
+inline void JSONPrettyPrinter::handleFalse()
 {
-	setKey(true);
-	_out << "key = '" << val.toString() << "', value = ";
-}
-
-
-inline void JSONPrinter::handleString(const JSONEntity& val)
-{
-	if (!isKey()) indent();
-	_out << "string: '" << val.toString() << '\'' << std::endl;
+	_out << "false";
+	setKey(false);
 }
 
 
 } } // namespace Poco::Web
 
 
-#endif // Web_JSONPrinter_INCLUDED
+#endif // Web_JSONPrettyPrinter_INCLUDED

@@ -253,7 +253,7 @@
 				Name="Source Files"
 				>
 				<File
-					RelativePath=".\src\JSONTest.h"
+					RelativePath=".\src\JSONTest.cpp"
 					>
 				</File>
 			</Filter>
@@ -261,7 +261,7 @@
 				Name="Header Files"
 				>
 				<File
-					RelativePath=".\src\JSONTest.cpp"
+					RelativePath=".\src\JSONTest.h"
 					>
 				</File>
 			</Filter>

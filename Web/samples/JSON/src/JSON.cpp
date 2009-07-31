@@ -1,7 +1,9 @@
 //
-// JSONTest.cpp
+// JSON.cpp
 //
-// $Id: //poco/Main/Util/testsuite/src/JSONTest.cpp#6 $
+// $Id: //poco/svn/Web/samples/JSON/src/JSON.cpp#1 $
+//
+// This sample demonstrates the JSON parser.
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -30,14 +32,10 @@
 //
 
 
-#include "JSONTest.h"
-#include "CppUnit/TestCaller.h"
-#include "CppUnit/TestSuite.h"
 #include "Poco/Web/JSONParser.h"
 #include "Poco/Web/JSONPrinter.h"
 #include "Poco/Web/JSONPrettyPrinter.h"
 #include "Poco/Web/JSONcondenser.h"
-#include <sstream>
 
 
 using Poco::Web::JSONParser;
@@ -46,17 +44,7 @@ using Poco::Web::JSONPrettyPrinter;
 using Poco::Web::JSONCondenser;
 
 
-JSONTest::JSONTest(const std::string& name): CppUnit::TestCase(name)
-{
-}
-
-
-JSONTest::~JSONTest()
-{
-}
-
-
-void JSONTest::testPrinter()
+int main()
 {
 	const std::string str("{"
 		"\"firstName\": \"John\","
@@ -76,51 +64,26 @@ void JSONTest::testPrinter()
 		"}"
 	"}");
 
-	std::ostringstream os;
-	JSONParser jp(new JSONPrinter(os));
+	std::cout << "JSON structure:" << std::endl;
+	std::cout << "===============" << std::endl;
+	JSONParser jp(new JSONPrinter(std::cout));
 	jp.parse(str);
 
-	std::string s1 = os.str();
+	std::cout << std::endl;
 
-	std::ostringstream ros;
-	ros << "{" << std::endl;
-	ros << "key = 'firstName', value = string: 'John'" << std::endl;
-	ros << "key = 'lastName', value = string: 'Smith'" << std::endl;
-	ros << "key = 'address', value = {" << std::endl;
-	ros << "key = 'streetAddress', value = string: '21 2nd Street'" << std::endl;
-	ros << "key = 'city', value = string: 'New York'" << std::endl;
-	ros << "key = 'state', value = string: 'NY'" << std::endl;
-	ros << "key = 'postalCode', value = integer: 10021" << std::endl;
-	ros << "\t}" << std::endl;
-	ros << "key = 'phoneNumbers', value = [" << std::endl;
-	ros << "\t\tstring: '212 555-1234'" << std::endl;
-	ros << "\t\tstring: '646 555-4567'" << std::endl;
-	ros << "\t]" << std::endl;
-	ros << "key = 'weight', value = {" << std::endl;
-	ros << "key = 'value', value = float: 123.456" << std::endl;
-	ros << "key = 'units', value = string: 'lbs'" << std::endl;
-	ros << "\t}" << std::endl;
-	ros << "}" << std::endl;
+	std::cout << std::endl << "Condensed JSON:" << std::endl;
+	std::cout << "===============" << std::endl;
+	JSONParser jp2(new JSONCondenser(std::cout));
+	jp2.parse(str);
 
-	assert (ros.str() == os.str());
-}
+	std::cout << std::endl;
 
+	std::cout << std::endl << "Readable JSON:" << std::endl;
+	std::cout << "==============" << std::endl;
+	JSONParser jp3(new JSONPrettyPrinter(std::cout, JSONPrettyPrinter::JSON_FORMAT_READABLE));
+	jp3.parse(str);
 
-void JSONTest::setUp()
-{
-}
+	std::cout << std::endl;
 
-
-void JSONTest::tearDown()
-{
-}
-
-
-CppUnit::Test* JSONTest::suite()
-{
-	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("JSONTest");
-
-	CppUnit_addTest(pSuite, JSONTest, testPrinter);
-
-	return pSuite;
+	return 0;
 }

@@ -76,6 +76,10 @@ public:
 		/// Does nothing. Should be implemented in inheriting class 
 		/// to handle the object end event.
 
+	virtual void handleValueSeparator();
+		/// Does nothing. Should be implemented in inheriting class 
+		/// to handle the value separator (",").
+
 	virtual void handleInteger(const JSONEntity&);
 		/// Does nothing. Should be implemented in inheriting class 
 		/// to handle the integer event.
@@ -141,6 +145,11 @@ inline void JSONHandler::handleObjectBegin()
 
 
 inline void JSONHandler::handleObjectEnd()
+{
+}
+
+
+inline void JSONHandler::handleValueSeparator()
 {
 }
 

@@ -68,6 +68,7 @@ SOFTWARE.
 #include "Poco/Web/Web.h"
 #include "Poco/Web/JSONConfiguration.h"
 #include "Poco/Web/JSONHandler.h"
+#include "Poco/Buffer.h"
 
 
 namespace Poco {
@@ -208,6 +209,8 @@ public:
 	void parse(const std::string& json);
 
 private:
+	typedef Poco::Buffer<char> BufType;
+
 	void init();
 		/// Initializes the parser.
 
@@ -215,24 +218,24 @@ private:
 		/// Push a mode onto the _pStack. Return false if there is overflow.
 
 	bool pop(int mode);
-		/// Pops the _pStack, assuring that the current mode matches the expectation.
+		/// Pops the stack, assuring that the current mode matches the expectation.
 		/// Returns false if there is underflow or if the modes mismatch.
 
 	void growBuffer();
 	void clearBuffer();
 	void parseBufferPushBackChar(char c);
 	void parseBufferPopBackChar();
-	int addCharToParseBuffer(int nextChar, int nextClass);
-	int addEscapedCharToParseBuffer(int nextChar);
+	void addCharToParseBuffer(int nextChar, int nextClass);
+	void addEscapedCharToParseBuffer(int nextChar);
 	int decodeUnicodeChar();
 	void assertNotStringNullBool();
 	void assertNonContainer();
 
 	void parseBuffer();
-	int parseChar(int nextChar);
+	bool parseChar(int nextChar);
 		/// Called for each character (or partial character) in JSON string.
-		/// It accepts UTF-8, UTF-16, or UTF-32. It returns 1 if things are looking ok so far.
-		/// If it rejects the character, it returns 0.
+		/// It accepts UTF-8, UTF-16, or UTF-32. If it the character is accpeted,
+		/// it returns true, otherwise false.
 
 	bool done();
 
@@ -254,15 +257,11 @@ private:
 	unsigned short   _utf16HighSurrogate;
 	long             _depth;
 	long             _top;
-	signed char*     _pStack;
-	long             _stackCapacity;
-	char*            _pParseBuffer;
-	size_t           _pParseBufferCapacity;
+	BufType          _stack;
+	BufType          _parseBuffer;
 	size_t           _parseBufferCount;
 	size_t           _commentBeginOffset;
 	char             _decimalPoint;
-	signed char      _staticStack[PARSER_STACK_SIZE];
-	char             _staticParseBuffer[PARSE_BUFFER_SIZE];
 };
 
 
@@ -293,6 +292,12 @@ inline void JSONParser::assertNonContainer()
 		_type == JSONEntity::JSON_T_FLOAT ||
 		_type == JSONEntity::JSON_T_INTEGER ||
 		_type == JSONEntity::JSON_T_STRING);
+}
+
+
+inline void JSONParser::growBuffer()
+{
+	_parseBuffer.resize(_parseBuffer.size() * 2, true);
 }
 
 

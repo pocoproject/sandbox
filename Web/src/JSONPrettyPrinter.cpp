@@ -1,11 +1,11 @@
 //
-// JSONHandler.cpp
+// JSONPrettyPrinter.cpp
 //
-// $Id: //poco/Main/Web/src/JSONHandler.cpp#7 $
+// $Id: //poco/Main/Web/src/JSONPrettyPrinter.cpp#7 $
 //
 // Library: Web
 // Package: Configuration
-// Module:  JSONHandler
+// Module:  JSONPrettyPrinter
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -34,99 +34,71 @@
 //
 
 
-#include "Poco/Web/JSONHandler.h"
-#include "Poco/Web/JSONParser.h"
-#include "Poco/Web/JSONEntity.h"
+#include "Poco/Web/JSONPrettyPrinter.h"
 
 
 namespace Poco {
 namespace Web {
 
 
-JSONHandler::JSONHandler(): _level(0), _isKey(false)
+JSONPrettyPrinter::JSONPrettyPrinter(std::ostream& out,
+	Format format,
+	const std::string& indent):
+	_out(out),
+	_format(format),
+	_indent(indent)
 {
 }
 
 
-JSONHandler::~JSONHandler()
+JSONPrettyPrinter::~JSONPrettyPrinter()
 {
 }
 
 
-void JSONHandler::handle(const JSONEntity& value)
+void JSONPrettyPrinter::handleKey(const JSONEntity& val)
 {
-	switch(value.type())
-	{
-	case JSONEntity::JSON_T_ARRAY_BEGIN:    
-		handleArrayBegin();
-		setKey(false);
-		incrementLevel();
-		break;
+	indent();
+	if (_format == JSON_FORMAT_RFC4627)
+		_out << "\"";
 
-	case JSONEntity::JSON_T_ARRAY_END:
-		poco_assert(!isKey());
-		if (level() > 0)
-			decrementLevel();
-		handleArrayEnd();
-		break;
+	_out << val.toString();
+	
+	if (_format == JSON_FORMAT_RFC4627)
+		_out << '\'';
 
-	case JSONEntity::JSON_T_OBJECT_BEGIN:
-		handleObjectBegin();
-		setKey(false);
-		incrementLevel();
-		break;
+	_out << ": ";
 
-	case JSONEntity::JSON_T_OBJECT_END:
-		poco_assert(!isKey());
-		if (level() > 0)
-			decrementLevel();
-		handleObjectEnd();
-		break;
+	setKey(true);
+}
 
-	case JSONEntity::JSON_T_VALUE_SEPARATOR:
-		handleValueSeparator();
-		setKey(false);
-		break;
 
-	case JSONEntity::JSON_T_INTEGER:
-		handleInteger(value);
-		setKey(false);
-		break;
+void JSONPrettyPrinter::handleString(const JSONEntity& val)
+{
+	if (!isKey()) indent();
+	if (_format == JSON_FORMAT_RFC4627)
+		_out << "\"";
+	else
+		_out << "'";
 
-	case JSONEntity::JSON_T_FLOAT:
-		handleFloat(value);
-		setKey(false);
-		break;
+	_out << val.toString();
 
-	case JSONEntity::JSON_T_NULL:
-		handleNull();
-		setKey(false);
-		break;
+	if (_format == JSON_FORMAT_RFC4627)
+		_out << "\"";
+	else
+		_out << "'";
 
-	case JSONEntity::JSON_T_TRUE:
-		handleTrue();
-		setKey(false);
-		break;
+	setKey(false);
+}
 
-	case JSONEntity::JSON_T_FALSE:
-		handleFalse();
-		setKey(false);
-		break;
 
-	case JSONEntity::JSON_T_KEY:
-		setKey(true);
-		handleKey(value);
-		break;   
+void JSONPrettyPrinter::indent()
+{
+	std::size_t i;
+	std::size_t lev = level();
 
-	case JSONEntity::JSON_T_STRING:
-		handleString(value);
-		setKey(false);
-		break;
-
-	default:
-		poco_assert (false);
-		break;
-	}
+	for (i = 0; i < lev; ++i)
+		_out << _indent;
 }
 
 
