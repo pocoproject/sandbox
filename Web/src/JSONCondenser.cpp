@@ -41,7 +41,7 @@ namespace Poco {
 namespace Web {
 
 
-JSONCondenser::JSONCondenser(std::ostream& out): _out(out)
+JSONCondenser::JSONCondenser(std::ostream& out): JSONHandler(out)
 {
 }
 

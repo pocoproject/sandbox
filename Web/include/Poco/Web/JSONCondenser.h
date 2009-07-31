@@ -72,9 +72,6 @@ public:
 	virtual void handleObjectEnd();
 		/// Handles the object end event.
 
-	virtual void handleValueSeparator();
-		/// Handles the value separator event.
-
 	virtual void handleInteger(const JSONEntity& val);
 		/// Handles the integer value event.
 
@@ -95,9 +92,6 @@ public:
 
 	virtual void handleString(const JSONEntity& val);
 		/// Handles the string value event.
-
-private:
-	std::ostream& _out;
 };
 
 
@@ -106,73 +100,68 @@ private:
 //
 inline void JSONCondenser::handleArrayBegin()
 {
-	_out << '[';
+	stream() << '[';
 }
 
 
 inline void JSONCondenser::handleArrayEnd()
 {
-	_out << ']';
+	stream() << ']';
 }
 
 
 inline void JSONCondenser::handleObjectBegin()
 {
-	_out << '{';
+	stream() << '{';
 }
 
 
 inline void JSONCondenser::handleObjectEnd()
 {
-	_out << '}';
+	stream() << '}';
 }
 
-
-inline void JSONCondenser::handleValueSeparator()
-{
-	_out << ',';
-}
 
 
 inline void JSONCondenser::handleInteger(const JSONEntity& val)
 {
-	_out << val.toInteger();
+	stream() << val.toInteger();
 }
 
 
 inline void JSONCondenser::handleFloat(const JSONEntity& val)
 {
-	_out << val.toFloat();
+	stream() << val.toFloat();
 }
 
 
 inline void JSONCondenser::handleNull()
 {
-	_out << "null";
+	stream() << "null";
 }
 
 
 inline void JSONCondenser::handleTrue()
 {
-	_out << "true";
+	stream() << "true";
 }
 
 
 inline void JSONCondenser::handleFalse()
 {
-	_out << "false\n";
+	stream() << "false\n";
 }
 
 
 inline void JSONCondenser::handleKey(const JSONEntity& val)
 {
-	_out << '"' << val.toString() << "\":";
+	stream() << '"' << val.toString() << "\":";
 }
 
 
 inline void JSONCondenser::handleString(const JSONEntity& val)
 {
-	_out << '"' << val.toString() << '"';
+	stream() << '"' << val.toString() << '"';
 }
 
 

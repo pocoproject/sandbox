@@ -108,7 +108,6 @@ public:
 private:
 	void indent();
 
-	std::ostream& _out;
 	Format        _format;
 	std::string   _indent;
 };
@@ -119,78 +118,78 @@ private:
 //
 inline void JSONPrettyPrinter::handleArrayBegin()
 {
-	_out << std::endl;
+	stream() << std::endl;
 	indent();
-	_out << '[' << std::endl;
+	stream() << '[' << std::endl;
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleArrayEnd()
 {
-	_out << std::endl;
+	stream() << std::endl;
 	indent();
-	_out << ']';
+	stream() << ']';
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleObjectBegin()
 {
-	_out << std::endl;
+	stream() << std::endl;
 	indent();
-	_out << '{' << std::endl;
+	stream() << '{' << std::endl;
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleObjectEnd()
 {
-	_out << std::endl;
+	stream() << std::endl;
 	indent();
-	_out << '}';
+	stream() << '}';
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleValueSeparator()
 {
-	_out << ',' << std::endl;
+	stream() << ',' << std::endl;
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleInteger(const JSONEntity& val)
 {
-	_out << val.toInteger();
+	stream() << val.toInteger();
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleFloat(const JSONEntity& val)
 {
-	_out << val.toFloat();
+	stream() << val.toFloat();
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleNull()
 {
-	_out << "null";
+	stream() << "null";
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleTrue()
 {
-	_out << "true";
+	stream() << "true";
 	setKey(false);
 }
 
 
 inline void JSONPrettyPrinter::handleFalse()
 {
-	_out << "false";
+	stream() << "false";
 	setKey(false);
 }
 

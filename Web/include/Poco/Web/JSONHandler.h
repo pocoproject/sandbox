@@ -57,6 +57,9 @@ public:
 	JSONHandler();
 		/// Creates JSONHandler.
 
+	JSONHandler(std::ostream& out);
+		/// Creates JSONHandler.
+
 	virtual ~JSONHandler();
 		/// Destroys JSONHandler.
 
@@ -112,6 +115,9 @@ public:
 		/// Dispatcher. Calls apropriate handler for the entity.
 
 protected:
+	std::ostream& stream();
+		/// Returns the stream.
+
 	bool isKey() const;
 	void setKey(bool key);
 
@@ -121,8 +127,9 @@ protected:
 
 private:
 
-	std::size_t _level;
-	bool        _isKey;
+	std::size_t   _level;
+	bool          _isKey;
+	std::ostream* _pOut;
 };
 
 
@@ -186,6 +193,13 @@ inline void JSONHandler::handleKey(const JSONEntity&)
 
 inline void JSONHandler::handleString(const JSONEntity&)
 {
+}
+
+
+inline std::ostream& JSONHandler::stream()
+{
+	poco_check_ptr (_pOut);
+	return *_pOut;
 }
 
 

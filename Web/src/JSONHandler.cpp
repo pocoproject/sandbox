@@ -43,7 +43,12 @@ namespace Poco {
 namespace Web {
 
 
-JSONHandler::JSONHandler(): _level(0), _isKey(false)
+JSONHandler::JSONHandler(): _level(0), _isKey(false), _pOut(0)
+{
+}
+
+
+JSONHandler::JSONHandler(std::ostream& out): _level(0), _isKey(false), _pOut(&out)
 {
 }
 

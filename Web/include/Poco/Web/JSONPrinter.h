@@ -97,7 +97,6 @@ public:
 private:
 	void indent();
 
-	std::ostream& _out;
 	std::string   _indent;
 };
 
@@ -108,77 +107,77 @@ private:
 inline void JSONPrinter::handleArrayBegin()
 {
 	if (!isKey()) indent();
-	_out << '[' << std::endl;
+	stream() << '[' << std::endl;
 }
 
 
 inline void JSONPrinter::handleArrayEnd()
 {
 	indent();
-	_out << ']' << std::endl;
+	stream() << ']' << std::endl;
 }
 
 
 inline void JSONPrinter::handleObjectBegin()
 {
 	if (!isKey()) indent();
-	_out << '{' << std::endl;
+	stream() << '{' << std::endl;
 }
 
 
 inline void JSONPrinter::handleObjectEnd()
 {
 	indent();
-	_out << '}' << std::endl;
+	stream() << '}' << std::endl;
 }
 
 
 inline void JSONPrinter::handleInteger(const JSONEntity& val)
 {
 	if (!isKey()) indent();
-	_out << "integer: " << val.toInteger() << std::endl;
+	stream() << "integer: " << val.toInteger() << std::endl;
 }
 
 
 inline void JSONPrinter::handleFloat(const JSONEntity& val)
 {
 	if (!isKey()) indent();
-	_out << "float: " << val.toFloat() << std::endl;
+	stream() << "float: " << val.toFloat() << std::endl;
 }
 
 
 inline void JSONPrinter::handleNull()
 {
 	if (!isKey()) indent();
-	_out << "null" << std::endl;
+	stream() << "null" << std::endl;
 }
 
 
 inline void JSONPrinter::handleTrue()
 {
 	if (!isKey()) indent();
-	_out << "true" << std::endl;
+	stream() << "true" << std::endl;
 }
 
 
 inline void JSONPrinter::handleFalse()
 {
 	if (!isKey()) indent();
-	_out << "false" << std::endl;
+	stream() << "false" << std::endl;
 }
 
 
 inline void JSONPrinter::handleKey(const JSONEntity& val)
 {
 	setKey(true);
-	_out << "key = '" << val.toString() << "', value = ";
+	stream() << "key = '" << val.toString() << "', value = ";
 }
 
 
 inline void JSONPrinter::handleString(const JSONEntity& val)
 {
 	if (!isKey()) indent();
-	_out << "string: '" << val.toString() << '\'' << std::endl;
+	stream() << "string: '" << val.toString() << '\'' << std::endl;
 }
 
 

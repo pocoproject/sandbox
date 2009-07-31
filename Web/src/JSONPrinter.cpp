@@ -41,7 +41,9 @@ namespace Poco {
 namespace Web {
 
 
-JSONPrinter::JSONPrinter(std::ostream& out, const std::string& indent): _out(out), _indent(indent)
+JSONPrinter::JSONPrinter(std::ostream& out, const std::string& indent):
+	JSONHandler(out),
+	_indent(indent)
 {
 }
 
@@ -57,7 +59,7 @@ void JSONPrinter::indent()
 	std::size_t lev = level();
 
 	for (i = 0; i < lev; ++i)
-		_out << _indent;
+		stream() << _indent;
 }
 
 

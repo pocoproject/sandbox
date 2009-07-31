@@ -44,7 +44,7 @@ namespace Web {
 JSONPrettyPrinter::JSONPrettyPrinter(std::ostream& out,
 	Format format,
 	const std::string& indent):
-	_out(out),
+	JSONHandler(out),
 	_format(format),
 	_indent(indent)
 {
@@ -60,14 +60,14 @@ void JSONPrettyPrinter::handleKey(const JSONEntity& val)
 {
 	indent();
 	if (_format == JSON_FORMAT_RFC4627)
-		_out << "\"";
+		stream() << "\"";
 
-	_out << val.toString();
+	stream() << val.toString();
 	
 	if (_format == JSON_FORMAT_RFC4627)
-		_out << '\'';
+		stream() << '\'';
 
-	_out << ": ";
+	stream() << ": ";
 
 	setKey(true);
 }
@@ -77,16 +77,16 @@ void JSONPrettyPrinter::handleString(const JSONEntity& val)
 {
 	if (!isKey()) indent();
 	if (_format == JSON_FORMAT_RFC4627)
-		_out << "\"";
+		stream() << "\"";
 	else
-		_out << "'";
+		stream() << "'";
 
-	_out << val.toString();
+	stream() << val.toString();
 
 	if (_format == JSON_FORMAT_RFC4627)
-		_out << "\"";
+		stream() << "\"";
 	else
-		_out << "'";
+		stream() << "'";
 
 	setKey(false);
 }
@@ -98,7 +98,7 @@ void JSONPrettyPrinter::indent()
 	std::size_t lev = level();
 
 	for (i = 0; i < lev; ++i)
-		_out << _indent;
+		stream() << _indent;
 }
 
 
