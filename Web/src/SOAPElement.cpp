@@ -40,7 +40,7 @@
 #include "Poco/DOM/Node.h"
 #include "Poco/DOM/Element.h"
 #include "Poco/DOM/Text.h"
-#include "Poco/Web/SoapHeader.h"
+#include "Poco/Web/SOAPHeader.h"
 #include "Poco/RefCountedObject.h"
 #include "Poco/Exception.h"
 

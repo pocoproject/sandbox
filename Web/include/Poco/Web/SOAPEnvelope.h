@@ -42,8 +42,8 @@
 
 #include "Poco/Web/Web.h"
 #include "Poco/Web/SOAPElement.h"
-#include "Poco/Web/SoapHeader.h"
-#include "Poco/Web/SoapBody.h"
+#include "Poco/Web/SOAPHeader.h"
+#include "Poco/Web/SOAPBody.h"
 #include "Poco/DOM/Document.h"
 #include "Poco/DOM/Element.h"
 #include "Poco/DOM/NodeList.h"

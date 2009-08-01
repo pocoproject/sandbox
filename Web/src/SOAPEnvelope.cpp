@@ -36,7 +36,7 @@
 
 #include "Poco/Web/SOAPEnvelope.h"
 #include "Poco/Web/SOAPMessage.h"
-#include "Poco/Web/SoapHeader.h"
+#include "Poco/Web/SOAPHeader.h"
 #include "Poco/DOM/Document.h"
 #include "Poco/DOM/Node.h"
 #include "Poco/DOM/Element.h"

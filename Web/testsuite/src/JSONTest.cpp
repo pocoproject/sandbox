@@ -36,7 +36,7 @@
 #include "Poco/Web/JSONParser.h"
 #include "Poco/Web/JSONPrinter.h"
 #include "Poco/Web/JSONPrettyPrinter.h"
-#include "Poco/Web/JSONcondenser.h"
+#include "Poco/Web/JSONCondenser.h"
 #include <sstream>
 
 
