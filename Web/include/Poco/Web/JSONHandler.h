@@ -63,6 +63,10 @@ public:
 	virtual ~JSONHandler();
 		/// Destroys JSONHandler.
 
+	virtual void handleBegin();
+		/// Does nothing. Should be implemented in inheriting class 
+		/// to handle the begin event.
+
 	virtual void handleArrayBegin();
 		/// Does nothing. Should be implemented in inheriting class 
 		/// to handle the array begin event.
@@ -111,6 +115,10 @@ public:
 		/// Does nothing. Should be implemented in inheriting class 
 		/// to handle the string event.
 
+	virtual void handleEnd();
+		/// Does nothing. Should be implemented in inheriting class 
+		/// to handle the end event.
+
 	void handle(const JSONEntity& entity);
 		/// Dispatcher. Calls apropriate handler for the entity.
 
@@ -136,6 +144,11 @@ private:
 //
 // inlines
 //
+inline void JSONHandler::handleBegin()
+{
+}
+
+
 inline void JSONHandler::handleArrayBegin()
 {
 }
@@ -192,6 +205,11 @@ inline void JSONHandler::handleKey(const JSONEntity&)
 
 
 inline void JSONHandler::handleString(const JSONEntity&)
+{
+}
+
+
+inline void JSONHandler::handleEnd()
 {
 }
 

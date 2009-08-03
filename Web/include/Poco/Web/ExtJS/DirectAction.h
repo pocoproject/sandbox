@@ -1,9 +1,13 @@
 //
-// JSONTest.h
+// DirectAction.h
 //
-// $Id: //poco/Main/Util/testsuite/src/JSONTest.h#5 $
+// $Id: //poco/Main/Web/include/Poco/Web/DirectAction.h#2 $
 //
-// Definition of the JSONTest class.
+// Library: Web
+// Package: Configuration
+// Module:  DirectAction
+//
+// Definition of the DirectAction class.
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,31 +36,60 @@
 //
 
 
-#ifndef JSONTest_INCLUDED
-#define JSONTest_INCLUDED
+#ifndef Web_DirectAction_INCLUDED
+#define Web_DirectAction_INCLUDED
 
 
 #include "Poco/Web/Web.h"
-#include "CppUnit/TestCase.h"
+#include "Poco/Web/ExtJS/DirectHandler.h"
+#include <iostream>
 
 
-class JSONTest: public CppUnit::TestCase
+namespace Poco {
+namespace Web {
+namespace ExtJS {
+
+
+class Web_API DirectAction
+	/// Ext.Direct RPC direct action wrapper.
+	/// DirectAction is passed to DirectHandler as a parameter 
+	/// at construction. Direct handler then assembles the list 
+	/// of parameters during parsing and automatically calls the 
+	/// DirectAction::invoke() member on parsing end event.
+	/// 
+	/// See http://extjs.com/products/extjs/direct.php for 
+	/// Ext.Direct documentation.
 {
 public:
-	JSONTest(const std::string& name);
-	~JSONTest();
+	DirectAction(std::ostream& out);
+		/// Creates DirectAction.
 
-	void testPrinter();
-	void testCondenser();
-	void testExtJSDirectHandler();
-	
-	void setUp();
-	void tearDown();
+	virtual ~DirectAction();
+		/// Destroys DirectAction.
 
-	static CppUnit::Test* suite();
+	virtual void invoke(const std::string& method,
+		const DirectHandler::ArrayType* pArgs = 0) = 0;
+		/// Invokes the method.
+
+	std::ostream& stream();
+		/// Returns reference to the output stream.
 
 private:
+	DirectAction();
+
+	std::ostream& _out;
 };
 
+//
+// inlines
+//
+inline std::ostream& DirectAction::stream()
+{
+	return _out;
+}
 
-#endif // JSONTest_INCLUDED
+
+} } } // namespace Poco::Web::ExtJS
+
+
+#endif // Web_DirectAction_INCLUDED

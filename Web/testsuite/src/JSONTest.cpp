@@ -38,6 +38,7 @@
 #include "Poco/Web/JSONPrinter.h"
 #include "Poco/Web/JSONCondenser.h"
 #include "Poco/Web/ExtJS/DirectHandler.h"
+#include "Poco/Web/ExtJS/DirectAction.h"
 #include "Poco/Dynamic/Var.h"
 #include "Poco/SharedPtr.h"
 #include <sstream>
@@ -48,59 +49,35 @@ using Poco::Web::JSONParser;
 using Poco::Web::JSONPrinter;
 using Poco::Web::JSONCondenser;
 using Poco::Web::ExtJS::DirectHandler;
+using Poco::Web::ExtJS::DirectAction;
 using Poco::Dynamic::Var;
 using Poco::SharedPtr;
 
 
-class TestDirectHandler: public DirectHandler
+class TestAction: public DirectAction
 {
 public:
-	TestDirectHandler(std::ostream& out): DirectHandler(out)
+	TestAction(std::ostream& out): DirectAction(out)
 	{
 	}
 
-	~TestDirectHandler()
+	void invoke(const std::string& method, const DirectHandler::ArrayType* pArgs)
 	{
-	}
+		stream() << method << '(';
 
-	void handleData(const JSONEntity& val)
-	{
-		if (isArray())
+		DirectHandler::ArrayType::const_iterator it = pArgs->begin();
+		DirectHandler::ArrayType::const_iterator end = pArgs->end();
+		for (; it != end;)
 		{
-			switch(val.type())
-			{
-			case JSONEntity::JSON_T_STRING:
-				_data.push_back(val.toString());
-				break;
-			case JSONEntity::JSON_T_INTEGER:
-				_data.push_back(val.toInteger());
-				break;
-			case JSONEntity::JSON_T_FLOAT:
-				_data.push_back(val.toFloat());
-				break;
-			case JSONEntity::JSON_T_TRUE:
-				_data.push_back(true);
-				break;
-			case JSONEntity::JSON_T_FALSE:
-				_data.push_back(false);
-				break;
-			case JSONEntity::JSON_T_NULL:
-				_data.push_back(Var());
-				break;
-			default:
-				throw Poco::InvalidArgumentException("Unknown type.");
-			}
+			if (it->isEmpty())
+				stream() << "null";
+			else
+				stream() << it->convert<std::string>();
+
+			if (++it != end) stream() << ',';
+			else stream() << ')';
 		}
 	}
-
-	Var& get(int index)
-	{
-		poco_assert (index < _data.size());
-		return _data[index];
-	}
-
-private:
-	std::vector<Var> _data;
 };
 
 
@@ -204,24 +181,27 @@ void JSONTest::testCondenser()
 }
 
 
-void JSONTest::testExtJSDirect()
+void JSONTest::testExtJSDirectHandler()
 {
-	std::string str = "{\"action\":\"AlbumList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
+	std::string str = "{\"action\":\"DataList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
 	std::ostringstream os;
-	SharedPtr<TestDirectHandler> pTDH = new TestDirectHandler(os);
-	JSONParser jp(pTDH);
+	TestAction ta(os);
+	SharedPtr<DirectHandler> pDH = new DirectHandler(ta);
+	JSONParser jp(pDH);
 	jp.parse(str);
 
-	assert (pTDH->action() == "AlbumList");
-	assert (pTDH->method() == "getAll");
-	assert (pTDH->type() == DirectHandler::DIRECT_TYPE_RPC);
-	assert (pTDH->tid() == 123);
-	assert (pTDH->get(0) == "abc");
-	assert (pTDH->get(1) == 456);
-	assert (pTDH->get(2) == 1.5);
-	assert (pTDH->get(3).isEmpty());
-	assert (pTDH->get(4));
-	assert (!pTDH->get(5));
+	assert (pDH->action() == "DataList");
+	assert (pDH->method() == "getAll");
+	assert (pDH->type() == DirectHandler::DIRECT_TYPE_RPC);
+	assert (pDH->tid() == 123);
+	assert (pDH->get(0) == "abc");
+	assert (pDH->get(1) == 456);
+	assert (pDH->get(2) == 1.5);
+	assert (pDH->get(3).isEmpty());
+	assert (pDH->get(4));
+	assert (!pDH->get(5));
+	
+	assert (os.str() == "getAll(abc,456,1.5,null,true,false)");
 }
 
 
@@ -241,7 +221,7 @@ CppUnit::Test* JSONTest::suite()
 
 	CppUnit_addTest(pSuite, JSONTest, testPrinter);
 	CppUnit_addTest(pSuite, JSONTest, testCondenser);
-	CppUnit_addTest(pSuite, JSONTest, testExtJSDirect);
+	CppUnit_addTest(pSuite, JSONTest, testExtJSDirectHandler);
 
 	return pSuite;
 }

@@ -347,6 +347,10 @@
 				Name="Header Files"
 				>
 				<File
+					RelativePath=".\include\Poco\Web\ExtJS\DirectAction.h"
+					>
+				</File>
+				<File
 					RelativePath=".\include\Poco\Web\ExtJS\DirectHandler.h"
 					>
 				</File>
@@ -354,6 +358,10 @@
 			<Filter
 				Name="Source Files"
 				>
+				<File
+					RelativePath=".\src\DirectAction.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\src\DirectHandler.cpp"
 					>

@@ -34,11 +34,7 @@
 //
 
 
-#include "Poco/Web/ExtJS/DirectHandler.h"
 #include "Poco/Web/ExtJS/DirectAction.h"
-
-
-using Poco::Dynamic::Var;
 
 
 namespace Poco {
@@ -46,80 +42,13 @@ namespace Web {
 namespace ExtJS {
 
 
-DirectHandler::DirectHandler(DirectAction& directAction):
-	JSONHandler(directAction.stream()),
-	_isArray(false),
-	_type(DIRECT_TYPE_NONE),
-	_tid(0),
-	_directAction(directAction)
+DirectAction::DirectAction(std::ostream& out): _out(out)
 {
 }
 
 
-DirectHandler::~DirectHandler()
+DirectAction::~DirectAction()
 {
-}
-
-
-void DirectHandler::handleValue(const JSONEntity& val)
-{
-	if (0 == icompare(_key, "action"))
-	{
-		handleAction(val.toString());
-	}
-	else if (0 == icompare(_key, "method"))
-	{
-		handleMethod(val.toString());
-	}
-	else if (0 == icompare(_key, "data"))
-	{
-		handleData(val);
-	}
-	else if (0 == icompare(_key, "type"))
-	{
-		handleType(val.toString());
-	}
-	else if (0 == icompare(_key, "tid"))
-	{
-		handleTID(val.toInteger());
-	}
-}
-
-
-void DirectHandler::handleData(const JSONEntity& val)
-{
-	if (isArray())
-	{
-		switch(val.type())
-		{
-		case JSONEntity::JSON_T_STRING:
-			_data.push_back(val.toString());
-			break;
-		case JSONEntity::JSON_T_INTEGER:
-			_data.push_back(val.toInteger());
-			break;
-		case JSONEntity::JSON_T_FLOAT:
-			_data.push_back(val.toFloat());
-			break;
-		case JSONEntity::JSON_T_TRUE:
-			_data.push_back(true);
-			break;
-		case JSONEntity::JSON_T_FALSE:
-			_data.push_back(false);
-			break;
-		case JSONEntity::JSON_T_NULL:
-			_data.push_back(Var());
-			break;
-		default:
-			throw Poco::InvalidArgumentException("Unknown type.");
-		}
-	}
-}
-
-
-void DirectHandler::handleEnd()
-{
-	_directAction.invoke(_method, &_data);
 }
 
 

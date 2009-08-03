@@ -193,10 +193,15 @@ void JSONParser::parse(const std::string& json)
 	{
 		if (0 == parseChar((int) *it))
 			throw SyntaxException("JSON syntax error");
+
+		if (it == json.begin())
+			_pHandler->handleBegin();
 	}
 
 	if (!done())
 		throw SyntaxException("JSON syntax error");
+
+	_pHandler->handleEnd();
 }
 
 

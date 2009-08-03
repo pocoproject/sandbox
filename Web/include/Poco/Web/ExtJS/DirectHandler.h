@@ -42,6 +42,7 @@
 
 #include "Poco/Web/Web.h"
 #include "Poco/Web/JSONHandler.h"
+#include "Poco/Dynamic/Var.h"
 #include <iostream>
 
 
@@ -50,16 +51,29 @@ namespace Web {
 namespace ExtJS {
 
 
+class DirectAction;
+
+
 class Web_API DirectHandler: public JSONHandler
+	/// Ext.Direct Remoting server-side handler.
+	/// Handler takes DirectAction parameter at construction
+	/// assembles the list of parameters during parsing 
+	/// and automatically calls the DirectAction::invoke() 
+	/// member on parsing end event.
+	/// 
+	/// See http://extjs.com/products/extjs/direct.php for 
+	/// Ext.Direct documentation.
 {
 public:
+	typedef std::vector<Poco::Dynamic::Var> ArrayType;
+
 	enum Type
 	{
 		DIRECT_TYPE_NONE,
 		DIRECT_TYPE_RPC
 	};
 
-	DirectHandler(std::ostream& out);
+	DirectHandler(DirectAction& directAction);
 		/// Creates DirectHandler.
 
 	~DirectHandler();
@@ -98,24 +112,39 @@ public:
 	virtual void handleString(const JSONEntity& val);
 		/// Handles the string value event.
 
+	virtual void handleEnd();
+		/// Handles the array end event.
+
 	virtual void handleAction(const std::string& val);
+		/// Handles the action.
 
 	virtual void handleMethod(const std::string& val);
+		/// Handles the method.
 
-	virtual void handleData(const JSONEntity& val) = 0;
+	virtual void handleData(const JSONEntity& val);
+		/// Handles data (currently, only arrays are supported).
 
 	virtual void handleType(const std::string& val);
+		/// Memorizes type (currenlty always "rpc").
 
 	virtual void handleTID(Poco::Int64 val);
+		/// Memorizes the transaction ID.
 
 	Type type() const;
+		/// Returns the type.
 
 	const std::string& action() const;
+		/// Returns the action.
 
 	const std::string& method() const;
+		/// Returns the method.
 
 	typedef Poco::Web::JSONEntity::Integer Integer;
 	Integer tid() const;
+		/// Returns the transaction ID.
+
+	Poco::Dynamic::Var& get(int pos);
+		/// Returns the data value at position pos.
 
 protected:
 	bool isArray() const;
@@ -124,12 +153,14 @@ private:
 	void handleValue(const JSONEntity& val);
 		/// Handles a value event.
 
-	std::string _key;
-	bool        _isArray;
-	Type        _type;
-	std::string _action;
-	std::string _method;
-	Integer     _tid;
+	std::string   _key;
+	bool          _isArray;
+	Type          _type;
+	std::string   _action;
+	std::string   _method;
+	Integer       _tid;
+	ArrayType     _data;
+	DirectAction& _directAction;
 };
 
 //
@@ -142,40 +173,34 @@ inline void DirectHandler::handleArrayBegin()
 
 
 inline void DirectHandler::handleArrayEnd()
-	/// Handles the array end event.
 {
 	_isArray = false;
 }
 
 
 inline void DirectHandler::handleObjectBegin()
-	/// Handles the object begin event.
 {
 }
 
 
 inline void DirectHandler::handleObjectEnd()
-	/// Handles the object end event.
 {
 }
 
 
 inline void DirectHandler::handleInteger(const JSONEntity& val)
-	/// Handles the integer value event.
 {
 	handleValue(val);
 }
 
 
 inline void DirectHandler::handleFloat(const JSONEntity& val)
-	/// Handles the float value event.
 {
 	handleValue(val);
 }
 
 
 inline void DirectHandler::handleNull()
-	/// Handles the null value event.
 {
 	JSONEntity val(JSONEntity::JSON_T_NULL);
 	handleValue(val);
@@ -183,7 +208,6 @@ inline void DirectHandler::handleNull()
 
 
 inline void DirectHandler::handleTrue()
-	/// Handles the true value event.
 {
 	JSONEntity val(JSONEntity::JSON_T_TRUE);
 	handleValue(val);
@@ -191,7 +215,6 @@ inline void DirectHandler::handleTrue()
 
 
 inline void DirectHandler::handleFalse()
-	/// Handles the false value event.
 {
 	JSONEntity val(JSONEntity::JSON_T_FALSE);
 	handleValue(val);
@@ -199,14 +222,12 @@ inline void DirectHandler::handleFalse()
 
 
 inline void DirectHandler::handleKey(const JSONEntity& val)
-	/// Handles the key event.
 {
 	_key = val.toString();
 }
 
 
 inline void DirectHandler::handleString(const JSONEntity& val)
-	/// Handles the string value event.
 {
 	handleValue(val);
 }
@@ -266,6 +287,13 @@ inline DirectHandler::Integer DirectHandler::tid() const
 inline bool DirectHandler::isArray() const
 {
 	return _isArray;
+}
+
+
+inline Poco::Dynamic::Var& DirectHandler::get(int index)
+{
+	poco_assert (index < _data.size());
+	return _data[index];
 }
 
 
