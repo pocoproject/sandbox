@@ -33,17 +33,75 @@
 #include "JSONTest.h"
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
+#include "Poco/Web/JSONEntity.h"
 #include "Poco/Web/JSONParser.h"
 #include "Poco/Web/JSONPrinter.h"
-#include "Poco/Web/JSONPrettyPrinter.h"
 #include "Poco/Web/JSONCondenser.h"
+#include "Poco/Web/ExtJS/DirectHandler.h"
+#include "Poco/Dynamic/Var.h"
+#include "Poco/SharedPtr.h"
 #include <sstream>
 
 
+using Poco::Web::JSONEntity;
 using Poco::Web::JSONParser;
 using Poco::Web::JSONPrinter;
-using Poco::Web::JSONPrettyPrinter;
 using Poco::Web::JSONCondenser;
+using Poco::Web::ExtJS::DirectHandler;
+using Poco::Dynamic::Var;
+using Poco::SharedPtr;
+
+
+class TestDirectHandler: public DirectHandler
+{
+public:
+	TestDirectHandler(std::ostream& out): DirectHandler(out)
+	{
+	}
+
+	~TestDirectHandler()
+	{
+	}
+
+	void handleData(const JSONEntity& val)
+	{
+		if (isArray())
+		{
+			switch(val.type())
+			{
+			case JSONEntity::JSON_T_STRING:
+				_data.push_back(val.toString());
+				break;
+			case JSONEntity::JSON_T_INTEGER:
+				_data.push_back(val.toInteger());
+				break;
+			case JSONEntity::JSON_T_FLOAT:
+				_data.push_back(val.toFloat());
+				break;
+			case JSONEntity::JSON_T_TRUE:
+				_data.push_back(true);
+				break;
+			case JSONEntity::JSON_T_FALSE:
+				_data.push_back(false);
+				break;
+			case JSONEntity::JSON_T_NULL:
+				_data.push_back(Var());
+				break;
+			default:
+				throw Poco::InvalidArgumentException("Unknown type.");
+			}
+		}
+	}
+
+	Var& get(int index)
+	{
+		poco_assert (index < _data.size());
+		return _data[index];
+	}
+
+private:
+	std::vector<Var> _data;
+};
 
 
 JSONTest::JSONTest(const std::string& name): CppUnit::TestCase(name)
@@ -106,6 +164,67 @@ void JSONTest::testPrinter()
 }
 
 
+void JSONTest::testCondenser()
+{
+	const std::string str("{"
+		"\"firstName\": \"John\","
+		"\"lastName\":  \"Smith\","
+		"\"address\": {"
+			"\"streetAddress\": \"21 2nd Street\","
+			"\"city\":          \"New York\","
+			"\"state\":         \"NY\","
+			"\"postalCode\":     10021"
+		"},"
+	"\"phoneNumbers\": ["
+		"\"212 555-1234\","
+		"\"646 555-4567\""
+	"],"
+	"\"weight\": {"
+		"\"value\": 123.456, \"units\": \"lbs\""
+		"}"
+	"}");
+
+	std::ostringstream os;
+	JSONParser jp(new JSONCondenser(os));
+	jp.parse(str);
+
+	std::string s1 = os.str();
+
+	std::ostringstream ros;
+	ros << "{\"firstName\":\"John\",\"lastName\":\"Smith\","
+		"\"address\":{"
+			"\"streetAddress\":\"21 2nd Street\","
+			"\"city\":\"New York\","
+			"\"state\":\"NY\","
+			"\"postalCode\":10021},"
+	"\"phoneNumbers\":[\"212 555-1234\",\"646 555-4567\"],"
+	"\"weight\":{\"value\":123.456,\"units\":\"lbs\"}}";
+
+	assert (ros.str() == os.str());
+}
+
+
+void JSONTest::testExtJSDirect()
+{
+	std::string str = "{\"action\":\"AlbumList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
+	std::ostringstream os;
+	SharedPtr<TestDirectHandler> pTDH = new TestDirectHandler(os);
+	JSONParser jp(pTDH);
+	jp.parse(str);
+
+	assert (pTDH->action() == "AlbumList");
+	assert (pTDH->method() == "getAll");
+	assert (pTDH->type() == DirectHandler::DIRECT_TYPE_RPC);
+	assert (pTDH->tid() == 123);
+	assert (pTDH->get(0) == "abc");
+	assert (pTDH->get(1) == 456);
+	assert (pTDH->get(2) == 1.5);
+	assert (pTDH->get(3).isEmpty());
+	assert (pTDH->get(4));
+	assert (!pTDH->get(5));
+}
+
+
 void JSONTest::setUp()
 {
 }
@@ -121,6 +240,8 @@ CppUnit::Test* JSONTest::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("JSONTest");
 
 	CppUnit_addTest(pSuite, JSONTest, testPrinter);
+	CppUnit_addTest(pSuite, JSONTest, testCondenser);
+	CppUnit_addTest(pSuite, JSONTest, testExtJSDirect);
 
 	return pSuite;
 }

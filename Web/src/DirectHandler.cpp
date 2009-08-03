@@ -1,9 +1,11 @@
 //
-// JSONTest.h
+// JSONHandler.cpp
 //
-// $Id: //poco/Main/Util/testsuite/src/JSONTest.h#5 $
+// $Id: //poco/Main/Web/src/JSONHandler.cpp#7 $
 //
-// Definition of the JSONTest class.
+// Library: Web
+// Package: Configuration
+// Module:  JSONHandler
 //
 // Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
 // and Contributors.
@@ -32,31 +34,51 @@
 //
 
 
-#ifndef JSONTest_INCLUDED
-#define JSONTest_INCLUDED
+#include "Poco/Web/ExtJS/DirectHandler.h"
 
 
-#include "Poco/Web/Web.h"
-#include "CppUnit/TestCase.h"
+namespace Poco {
+namespace Web {
+namespace ExtJS {
 
 
-class JSONTest: public CppUnit::TestCase
+DirectHandler::DirectHandler(std::ostream& out):
+	JSONHandler(out),
+	_isArray(false),
+	_type(DIRECT_TYPE_NONE),
+	_tid(0)
 {
-public:
-	JSONTest(const std::string& name);
-	~JSONTest();
-
-	void testPrinter();
-	void testCondenser();
-	void testExtJSDirect();
-	
-	void setUp();
-	void tearDown();
-
-	static CppUnit::Test* suite();
-
-private:
-};
+}
 
 
-#endif // JSONTest_INCLUDED
+DirectHandler::~DirectHandler()
+{
+}
+
+
+void DirectHandler::handleValue(const JSONEntity& val)
+{
+	if (0 == icompare(_key, "action"))
+	{
+		handleAction(val.toString());
+	}
+	else if (0 == icompare(_key, "method"))
+	{
+		handleMethod(val.toString());
+	}
+	else if (0 == icompare(_key, "data"))
+	{
+		handleData(val);
+	}
+	else if (0 == icompare(_key, "type"))
+	{
+		handleType(val.toString());
+	}
+	else if (0 == icompare(_key, "tid"))
+	{
+		handleTID(val.toInteger());
+	}
+}
+
+
+} } } // namespace Poco::Web

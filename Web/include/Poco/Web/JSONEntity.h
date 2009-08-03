@@ -73,7 +73,7 @@ public:
 #else
 	typedef Poco::Int32 Integer;
 #endif
-	typedef long double Float;
+	typedef double Float;
 	typedef std::string String;
 	
 	typedef std::size_t Length;

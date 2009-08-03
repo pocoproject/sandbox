@@ -340,6 +340,26 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="ExtJS"
+			>
+			<Filter
+				Name="Header Files"
+				>
+				<File
+					RelativePath=".\include\Poco\Web\ExtJS\DirectHandler.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Source Files"
+				>
+				<File
+					RelativePath=".\src\DirectHandler.cpp"
+					>
+				</File>
+			</Filter>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

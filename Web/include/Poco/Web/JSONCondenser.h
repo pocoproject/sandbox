@@ -72,6 +72,9 @@ public:
 	virtual void handleObjectEnd();
 		/// Handles the object end event.
 
+	virtual void handleValueSeparator();
+		/// Handles the value separator (",") event.
+
 	virtual void handleInteger(const JSONEntity& val);
 		/// Handles the integer value event.
 
@@ -121,6 +124,11 @@ inline void JSONCondenser::handleObjectEnd()
 	stream() << '}';
 }
 
+
+inline void JSONCondenser::handleValueSeparator()
+{
+	stream() << ',';
+}
 
 
 inline void JSONCondenser::handleInteger(const JSONEntity& val)
