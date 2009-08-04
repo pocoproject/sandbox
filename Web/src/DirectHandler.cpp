@@ -47,7 +47,7 @@ namespace ExtJS {
 
 
 DirectHandler::DirectHandler(DirectAction::Ptr pDirectAction):
-	JSONHandler(pDirectAction->stream()),
+	JSONHandler(pDirectAction->response().stream()),
 	_isArray(false),
 	_type(DIRECT_TYPE_NONE),
 	_tid(0),
@@ -119,6 +119,11 @@ void DirectHandler::handleData(const JSONEntity& val)
 
 void DirectHandler::handleEnd()
 {
+	_pDirectAction->response().setType(_type == DIRECT_TYPE_RPC ? "rpc" : "");
+	_pDirectAction->response().setTID(_tid);
+	_pDirectAction->response().setAction(_action);
+	_pDirectAction->response().setMethod(_method);
+	
 	_pDirectAction->invoke(_method, &_data);
 }
 

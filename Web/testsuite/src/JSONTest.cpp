@@ -39,6 +39,7 @@
 #include "Poco/Web/JSONCondenser.h"
 #include "Poco/Web/ExtJS/DirectHandler.h"
 #include "Poco/Web/ExtJS/DirectAction.h"
+#include "Poco/Web/ExtJS/DirectResponse.h"
 #include "Poco/Dynamic/Var.h"
 #include "Poco/SharedPtr.h"
 #include <sstream>
@@ -50,33 +51,50 @@ using Poco::Web::JSONPrinter;
 using Poco::Web::JSONCondenser;
 using Poco::Web::ExtJS::DirectHandler;
 using Poco::Web::ExtJS::DirectAction;
+using Poco::Web::ExtJS::DirectResponse;
 using Poco::Dynamic::Var;
 using Poco::SharedPtr;
+
+
+class TestResponse: public DirectResponse
+{
+public:
+	TestResponse(std::ostream& out,
+		const std::string& action = "",
+		const std::string& method = "",
+		Integer tid = -1,
+		const std::string& type = "rpc"): DirectResponse(out, action, method, tid, type)
+	{
+	}
+};
 
 
 class TestAction: public DirectAction
 {
 public:
-	TestAction(std::ostream& out): DirectAction(out)
+	TestAction(DirectResponse::Ptr pResponse): DirectAction(pResponse)
 	{
 	}
 
 	void invoke(const std::string& method, const DirectHandler::ArrayType* pArgs)
 	{
-		stream() << method << '(';
+		std::ostringstream os;
+		os << method << '(';
 
 		DirectHandler::ArrayType::const_iterator it = pArgs->begin();
 		DirectHandler::ArrayType::const_iterator end = pArgs->end();
 		for (; it != end;)
 		{
 			if (it->isEmpty())
-				stream() << "null";
+				os << "null";
 			else
-				stream() << it->convert<std::string>();
+				os << it->convert<std::string>();
 
-			if (++it != end) stream() << ',';
-			else stream() << ')';
+			if (++it != end) os << ',';
+			else os << ')';
 		}
+
+		response().write(os.str());
 	}
 };
 
@@ -185,7 +203,9 @@ void JSONTest::testExtJSDirectHandler()
 {
 	std::string str = "{\"action\":\"DataList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
 	std::ostringstream os;
-	SharedPtr<DirectHandler> pDH = new DirectHandler(new TestAction(os));
+	SharedPtr<TestResponse> pTR = new TestResponse(os);
+	SharedPtr<TestAction> pTA = new TestAction(pTR);
+	SharedPtr<DirectHandler> pDH = new DirectHandler(pTA);
 	JSONParser jp(pDH);
 	jp.parse(str);
 
@@ -200,7 +220,16 @@ void JSONTest::testExtJSDirectHandler()
 	assert (pDH->get(4) == true);
 	assert (pDH->get(5) == false);
 	
-	assert (os.str() == "getAll(abc,456,1.5,null,true,false)");
+	assert (pTR->getAction() == "DataList");
+	assert (pTR->getMethod() == "getAll");
+	assert (pTR->getType() == "rpc");
+	assert (pTR->getTID() == 123);
+
+	assert (os.str() == "{\"type\":\"rpc\","
+		"\"tid\":123,"
+		"\"action\":\"DataList\","
+		"\"method\":\"getAll\","
+		"\"result\":getAll(abc,456,1.5,null,true,false)}");
 }
 
 

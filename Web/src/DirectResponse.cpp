@@ -34,7 +34,7 @@
 //
 
 
-#include "Poco/Web/ExtJS/DirectAction.h"
+#include "Poco/Web/ExtJS/DirectResponse.h"
 
 
 namespace Poco {
@@ -42,13 +42,20 @@ namespace Web {
 namespace ExtJS {
 
 
-DirectAction::DirectAction(DirectResponse::Ptr pResponse):
-	_pResponse(pResponse)
+DirectResponse::DirectResponse(std::ostream& out,
+	const std::string& action,
+	const std::string& method,
+	Integer tid,
+	const std::string& type): _out(out),
+	_action(action),
+	_method(method),
+	_tid(tid),
+	_type(type)
 {
 }
 
 
-DirectAction::~DirectAction()
+DirectResponse::~DirectResponse()
 {
 }
 

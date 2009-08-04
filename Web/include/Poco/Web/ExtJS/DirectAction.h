@@ -41,6 +41,7 @@
 
 
 #include "Poco/Web/Web.h"
+#include "Poco/Web/ExtJS/DirectResponse.h"
 #include "Poco/Dynamic/Var.h"
 #include "Poco/SharedPtr.h"
 #include <iostream>
@@ -66,7 +67,7 @@ public:
 	typedef Poco::SharedPtr<DirectAction>   Ptr;
 	typedef std::vector<Poco::Dynamic::Var> ArrayType;
 
-	DirectAction(std::ostream& out);
+	DirectAction(DirectResponse::Ptr pResponse);
 		/// Creates DirectAction.
 
 	virtual ~DirectAction();
@@ -76,21 +77,20 @@ public:
 		const ArrayType* pArgs = 0) = 0;
 		/// Invokes the method.
 
-	std::ostream& stream();
-		/// Returns reference to the output stream.
+	DirectResponse& response();
 
 private:
 	DirectAction();
 
-	std::ostream& _out;
+	DirectResponse::Ptr _pResponse;
 };
 
 //
 // inlines
 //
-inline std::ostream& DirectAction::stream()
+inline DirectResponse& DirectAction::response()
 {
-	return _out;
+	return *_pResponse;
 }
 
 

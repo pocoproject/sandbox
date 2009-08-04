@@ -43,6 +43,7 @@
 #include "Poco/Web/Web.h"
 #include "Poco/Web/JSONHandler.h"
 #include "Poco/Web/ExtJS/DirectAction.h"
+#include "Poco/Web/ExtJS/DirectResponse.h"
 #include "Poco/Dynamic/Var.h"
 #include <iostream>
 
@@ -148,7 +149,8 @@ protected:
 	bool isArray() const;
 
 private:
-	typedef DirectAction::Ptr ActionPtr;
+	typedef DirectAction::Ptr   ActionPtr;
+	typedef DirectResponse::Ptr ResponsePtr;
 
 	void handleValue(const JSONEntity& val);
 		/// Handles a value event.

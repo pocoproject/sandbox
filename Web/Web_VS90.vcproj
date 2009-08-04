@@ -354,6 +354,10 @@
 					RelativePath=".\include\Poco\Web\ExtJS\DirectHandler.h"
 					>
 				</File>
+				<File
+					RelativePath=".\include\Poco\Web\ExtJS\DirectResponse.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
@@ -364,6 +368,10 @@
 				</File>
 				<File
 					RelativePath=".\src\DirectHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\DirectResponse.cpp"
 					>
 				</File>
 			</Filter>
