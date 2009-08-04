@@ -46,11 +46,13 @@ DirectResponse::DirectResponse(std::ostream& out,
 	const std::string& action,
 	const std::string& method,
 	Integer tid,
-	const std::string& type): _out(out),
+	const std::string& type,
+	bool formUpload): _out(out),
 	_action(action),
 	_method(method),
 	_tid(tid),
-	_type(type)
+	_type(type),
+	_formUpload(formUpload)
 {
 }
 

@@ -71,7 +71,8 @@ public:
 		const std::string& action = "",
 		const std::string& method = "",
 		Integer tid = -1,
-		const std::string& type = "rpc");
+		const std::string& type = "rpc",
+		bool formUpload = false);
 		/// Creates DirectResponse.
 
 	virtual ~DirectResponse();
@@ -107,14 +108,21 @@ public:
 	const std::string& getMethod();
 		/// Returns the method.
 
+	void setFormUpload(bool formUpload);
+		/// Sets the method.
+
+	bool getFormUpload();
+		/// Returns the method.
+
 private:
 	DirectResponse();
 
-	std::string   _type;
-	Integer       _tid;
+	std::ostream& _out;
 	std::string   _action;
 	std::string   _method;
-	std::ostream& _out;
+	Integer       _tid;
+	std::string   _type;
+	bool          _formUpload;
 };
 
 //
@@ -128,6 +136,8 @@ inline std::ostream& DirectResponse::stream()
 
 inline void DirectResponse::write(const std::string& result)
 {
+	if (_formUpload) stream() << "<html><body><textarea>";
+
 	stream() <<
 		format("{\"type\":\"%s\",\"tid\":%Ld,\"action\":\"%s\",\"method\":\"%s\",\"result\":%s}",
 			_type,
@@ -135,6 +145,8 @@ inline void DirectResponse::write(const std::string& result)
 			_action,
 			_method,
 			result);
+
+	if (_formUpload) stream() << "</textarea></body></html>";
 }
 
 
@@ -184,6 +196,18 @@ inline void DirectResponse::setMethod(const std::string& method)
 inline const std::string& DirectResponse::getMethod()
 {
 	return _method;
+}
+
+
+inline void DirectResponse::setFormUpload(bool formUpload)
+{
+	_formUpload = formUpload;
+}
+
+
+inline bool DirectResponse::getFormUpload()
+{
+	return _formUpload;
 }
 
 
