@@ -8,8 +8,7 @@
 
 include $(POCO_BASE)/build/rules/global
 
-objects = WebTestSuite Driver \
-	<SourceFilesHere>
+objects = Driver JSONTest SOAPTest WebTestSuite
 
 target         = testrunner
 target_version = 1
