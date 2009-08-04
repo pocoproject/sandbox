@@ -42,6 +42,7 @@
 
 #include "Poco/Web/Web.h"
 #include "Poco/Web/JSONHandler.h"
+#include "Poco/Web/ExtJS/DirectAction.h"
 #include "Poco/Dynamic/Var.h"
 #include <iostream>
 
@@ -49,9 +50,6 @@
 namespace Poco {
 namespace Web {
 namespace ExtJS {
-
-
-class DirectAction;
 
 
 class Web_API DirectHandler: public JSONHandler
@@ -65,7 +63,7 @@ class Web_API DirectHandler: public JSONHandler
 	/// Ext.Direct documentation.
 {
 public:
-	typedef std::vector<Poco::Dynamic::Var> ArrayType;
+	typedef DirectAction::ArrayType ArrayType;
 
 	enum Type
 	{
@@ -73,7 +71,7 @@ public:
 		DIRECT_TYPE_RPC
 	};
 
-	DirectHandler(DirectAction& directAction);
+	DirectHandler(DirectAction::Ptr pDirectAction);
 		/// Creates DirectHandler.
 
 	~DirectHandler();
@@ -150,17 +148,19 @@ protected:
 	bool isArray() const;
 
 private:
+	typedef DirectAction::Ptr ActionPtr;
+
 	void handleValue(const JSONEntity& val);
 		/// Handles a value event.
 
-	std::string   _key;
-	bool          _isArray;
-	Type          _type;
-	std::string   _action;
-	std::string   _method;
-	Integer       _tid;
-	ArrayType     _data;
-	DirectAction& _directAction;
+	std::string _key;
+	bool        _isArray;
+	Type        _type;
+	std::string _action;
+	std::string _method;
+	Integer     _tid;
+	ArrayType   _data;
+	ActionPtr   _pDirectAction;
 };
 
 //

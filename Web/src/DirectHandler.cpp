@@ -46,12 +46,12 @@ namespace Web {
 namespace ExtJS {
 
 
-DirectHandler::DirectHandler(DirectAction& directAction):
-	JSONHandler(directAction.stream()),
+DirectHandler::DirectHandler(DirectAction::Ptr pDirectAction):
+	JSONHandler(pDirectAction->stream()),
 	_isArray(false),
 	_type(DIRECT_TYPE_NONE),
 	_tid(0),
-	_directAction(directAction)
+	_pDirectAction(pDirectAction)
 {
 }
 
@@ -119,7 +119,7 @@ void DirectHandler::handleData(const JSONEntity& val)
 
 void DirectHandler::handleEnd()
 {
-	_directAction.invoke(_method, &_data);
+	_pDirectAction->invoke(_method, &_data);
 }
 
 

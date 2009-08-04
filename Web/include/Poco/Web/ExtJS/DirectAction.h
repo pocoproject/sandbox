@@ -41,8 +41,10 @@
 
 
 #include "Poco/Web/Web.h"
-#include "Poco/Web/ExtJS/DirectHandler.h"
+#include "Poco/Dynamic/Var.h"
+#include "Poco/SharedPtr.h"
 #include <iostream>
+#include <vector>
 
 
 namespace Poco {
@@ -61,6 +63,9 @@ class Web_API DirectAction
 	/// Ext.Direct documentation.
 {
 public:
+	typedef Poco::SharedPtr<DirectAction>   Ptr;
+	typedef std::vector<Poco::Dynamic::Var> ArrayType;
+
 	DirectAction(std::ostream& out);
 		/// Creates DirectAction.
 
@@ -68,7 +73,7 @@ public:
 		/// Destroys DirectAction.
 
 	virtual void invoke(const std::string& method,
-		const DirectHandler::ArrayType* pArgs = 0) = 0;
+		const ArrayType* pArgs = 0) = 0;
 		/// Invokes the method.
 
 	std::ostream& stream();

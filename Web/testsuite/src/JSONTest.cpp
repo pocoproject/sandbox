@@ -185,8 +185,7 @@ void JSONTest::testExtJSDirectHandler()
 {
 	std::string str = "{\"action\":\"DataList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
 	std::ostringstream os;
-	TestAction ta(os);
-	SharedPtr<DirectHandler> pDH = new DirectHandler(ta);
+	SharedPtr<DirectHandler> pDH = new DirectHandler(new TestAction(os));
 	JSONParser jp(pDH);
 	jp.parse(str);
 
@@ -198,8 +197,8 @@ void JSONTest::testExtJSDirectHandler()
 	assert (pDH->get(1) == 456);
 	assert (pDH->get(2) == 1.5);
 	assert (pDH->get(3).isEmpty());
-	assert (pDH->get(4));
-	assert (!pDH->get(5));
+	assert (pDH->get(4) == true);
+	assert (pDH->get(5) == false);
 	
 	assert (os.str() == "getAll(abc,456,1.5,null,true,false)");
 }
