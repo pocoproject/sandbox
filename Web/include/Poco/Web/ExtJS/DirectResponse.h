@@ -44,7 +44,7 @@
 #include "Poco/Web/JSONEntity.h"
 #include "Poco/Dynamic/Var.h"
 #include "Poco/SharedPtr.h"
-#include <iostream>
+#include <sstream>
 #include <vector>
 
 
@@ -65,7 +65,12 @@ class Web_API DirectResponse
 {
 public:
 	typedef Poco::SharedPtr<DirectResponse>   Ptr;
+	
 	typedef JSONEntity::Integer Integer;
+	typedef JSONEntity::Float   Float;
+	typedef JSONEntity::String  String;
+
+	typedef std::vector<Poco::Dynamic::Var> ArrayType;
 
 	DirectResponse(std::ostream& out,
 		const std::string& action = "",
@@ -81,8 +86,21 @@ public:
 	std::ostream& stream();
 		/// Returns reference to the output stream.
 
-	virtual void write(const std::string& result);
-		/// Writes the response to the output stream.
+	virtual void write(const String& result);
+		/// Writes the string response to the output stream.
+		/// Handles single values only.
+
+	virtual void write(Integer result);
+		/// Writes the string response to the output stream.
+		/// Handles single values only.
+
+	virtual void write(Float result);
+		/// Writes the string response to the output stream.
+		/// Handles single values only.
+
+	virtual void writeArray(const ArrayType& result);
+		/// Writes the string response to the output stream.
+		/// Handles string arrays.
 
 	void setType(const std::string& type);
 		/// Sets the type.
@@ -117,6 +135,19 @@ public:
 private:
 	DirectResponse();
 
+	template <typename T>
+	void writeImpl(const T& result, const std::string fmt)
+	{
+		if (_formUpload) stream() << "<html><body><textarea>";
+
+		std::ostringstream os;
+		os << "{\"type\":\"%s\",\"tid\":%Ld,\"action\":\"%s\",\"method\":\"%s\",\"result\":" 
+			<< fmt << "}";
+		stream() << format(os.str(), _type, _tid, _action, _method, result);
+
+		if (_formUpload) stream() << "</textarea></body></html>";
+	}
+
 	std::ostream& _out;
 	std::string   _action;
 	std::string   _method;
@@ -134,19 +165,45 @@ inline std::ostream& DirectResponse::stream()
 }
 
 
-inline void DirectResponse::write(const std::string& result)
+inline void DirectResponse::write(const String& result)
 {
-	if (_formUpload) stream() << "<html><body><textarea>";
+	if (result == "null" || result == "true" || result == "false")
+		writeImpl(result, "%s");
+	else
+		writeImpl(result, "\"%s\"");
+}
 
-	stream() <<
-		format("{\"type\":\"%s\",\"tid\":%Ld,\"action\":\"%s\",\"method\":\"%s\",\"result\":%s}",
-			_type,
-			_tid,
-			_action,
-			_method,
-			result);
 
-	if (_formUpload) stream() << "</textarea></body></html>";
+inline void DirectResponse::write(Integer result)
+{
+	writeImpl(result, "%Ld");
+}
+
+
+inline void DirectResponse::write(Float result)
+{
+	writeImpl(result, "%f");
+}
+
+
+inline void DirectResponse::writeArray(const ArrayType& result)
+{
+	std::ostringstream os; os << '[';
+	ArrayType::const_iterator it = result.begin();
+	ArrayType::const_iterator end = result.end();
+	for (; it != end;)
+	{
+		if (it->isString()) os << '"';
+		if (!it->isEmpty())
+			os << it->convert<JSONEntity::String>();
+		else
+			os << "null";
+		if (it->isString()) os << '"';
+		if (++it != end) os << ',';
+	}
+	os << ']';
+
+	writeImpl(os.str(), "%s");
 }
 
 

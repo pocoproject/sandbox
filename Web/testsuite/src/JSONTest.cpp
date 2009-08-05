@@ -56,19 +56,6 @@ using Poco::Dynamic::Var;
 using Poco::SharedPtr;
 
 
-class TestResponse: public DirectResponse
-{
-public:
-	TestResponse(std::ostream& out,
-		const std::string& action = "",
-		const std::string& method = "",
-		Integer tid = -1,
-		const std::string& type = "rpc"): DirectResponse(out, action, method, tid, type)
-	{
-	}
-};
-
-
 class TestAction: public DirectAction
 {
 public:
@@ -95,6 +82,20 @@ public:
 		}
 
 		response().write(os.str());
+	}
+};
+
+
+class TestArrayAction: public DirectAction
+{
+public:
+	TestArrayAction(DirectResponse::Ptr pResponse): DirectAction(pResponse)
+	{
+	}
+
+	void invoke(const std::string& method, const DirectHandler::ArrayType* pArgs)
+	{
+		response().writeArray(*pArgs);
 	}
 };
 
@@ -203,8 +204,8 @@ void JSONTest::testExtJSDirectHandler()
 {
 	std::string str = "{\"action\":\"DataList\",\"method\":\"getAll\",\"data\":[\"abc\",456,1.5,null,true,false],\"type\":\"rpc\",\"tid\":123}";
 	std::ostringstream os;
-	SharedPtr<TestResponse> pTR = new TestResponse(os);
-	SharedPtr<TestAction> pTA = new TestAction(pTR);
+	SharedPtr<DirectResponse> pTR = new DirectResponse(os);
+	SharedPtr<TestArrayAction> pTA = new TestArrayAction(pTR);
 	SharedPtr<DirectHandler> pDH = new DirectHandler(pTA);
 	JSONParser jp(pDH);
 	jp.parse(str);
@@ -229,7 +230,20 @@ void JSONTest::testExtJSDirectHandler()
 		"\"tid\":123,"
 		"\"action\":\"DataList\","
 		"\"method\":\"getAll\","
-		"\"result\":getAll(abc,456,1.5,null,true,false)}");
+		"\"result\":[\"abc\",456,1.5,null,true,false]}");
+
+	os.str("");
+	SharedPtr<DirectResponse> pTR2 = new DirectResponse(os);
+	SharedPtr<TestAction> pTA2 = new TestAction(pTR2);
+	SharedPtr<DirectHandler> pDH2 = new DirectHandler(pTA2);
+	JSONParser jp2(pDH2);
+	jp2.parse(str);
+
+	assert (os.str() == "{\"type\":\"rpc\","
+		"\"tid\":123,"
+		"\"action\":\"DataList\","
+		"\"method\":\"getAll\","
+		"\"result\":\"getAll(abc,456,1.5,null,true,false)\"}");
 }
 
 

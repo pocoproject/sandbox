@@ -42,7 +42,6 @@
 
 #include "Poco/Web/Web.h"
 #include "Poco/Web/ExtJS/DirectResponse.h"
-#include "Poco/Dynamic/Var.h"
 #include "Poco/SharedPtr.h"
 #include <iostream>
 #include <vector>
@@ -65,7 +64,7 @@ class Web_API DirectAction
 {
 public:
 	typedef Poco::SharedPtr<DirectAction>   Ptr;
-	typedef std::vector<Poco::Dynamic::Var> ArrayType;
+	typedef DirectResponse::ArrayType ArrayType;
 
 	DirectAction(DirectResponse::Ptr pResponse);
 		/// Creates DirectAction.
