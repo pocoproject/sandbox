@@ -96,6 +96,8 @@ public:
 	Float   toFloat() const;
 	String  toString() const;
 
+	static std::string encode(const String& str);
+
 private:
 	void swap(JSONEntity& other);
 
@@ -131,7 +133,7 @@ inline JSONEntity::String JSONEntity::toString() const
 	if (JSON_T_STRING != _type && JSON_T_KEY != _type)
 		throw InvalidAccessException("Not a string or key.");
 
-	return _value.extract<String>();
+	return encode(_value.extract<String>());
 }
 
 

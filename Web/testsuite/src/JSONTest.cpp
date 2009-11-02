@@ -110,6 +110,30 @@ JSONTest::~JSONTest()
 }
 
 
+void JSONTest::testEncoding()
+{
+	// TODO: Unicode
+	std::vector<char> vc;
+	vc.push_back('"');
+	vc.push_back('\b');
+	vc.push_back('\f');
+	vc.push_back('\n');
+	vc.push_back('\r');
+	vc.push_back('\t');
+	vc.push_back('/');
+	vc.push_back('\\');
+
+	JSONEntity::String str;
+	std::vector<char>::iterator it = vc.begin();
+	std::vector<char>::iterator end = vc.end();
+	for (; it != end; ++it) str += *it;
+
+	JSONEntity entity(JSONEntity::JSON_T_STRING, str);
+	JSONEntity::String encStr = entity.toString();
+	assert (encStr == "\\\"\\b\\f\\n\\r\\t\\/\\");
+}
+
+
 void JSONTest::testPrinter()
 {
 	const std::string str("{"
@@ -261,6 +285,7 @@ CppUnit::Test* JSONTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("JSONTest");
 
+	CppUnit_addTest(pSuite, JSONTest, testEncoding);
 	CppUnit_addTest(pSuite, JSONTest, testPrinter);
 	CppUnit_addTest(pSuite, JSONTest, testCondenser);
 	CppUnit_addTest(pSuite, JSONTest, testExtJSDirectHandler);

@@ -35,11 +35,12 @@
 
 
 #include "Poco/Web/JSONEntity.h"
-//#include "Poco/Web/JSON_parser.h"
 #include "Poco/Exception.h"
+#include "Poco/String.h"
 
 
 using Poco::Dynamic::Var;
+using Poco::replaceInPlace;
 using Poco::InvalidArgumentException;
 
 
@@ -51,39 +52,16 @@ JSONEntity::JSONEntity(): _type(JSON_T_NONE)
 {
 }
 
-/*
-JSONEntity::JSONEntity(Type type, JSON_value* pValue): _type(type)
-{
-	switch (type)
-	{
-		case JSON_T_INTEGER:
-			poco_check_ptr (pValue);
-			_value = pValue->vu.integer_value;	break;
-		case JSON_T_FLOAT:
-			poco_check_ptr (pValue);
-			_value = pValue->vu.float_value; break;
-		case JSON_T_STRING:
-		case JSON_T_KEY:
-			poco_check_ptr (pValue);
-			_value = pValue->vu.str.value;
-			break;
-		default:
-			break;
-	}
-}
-*/
 
 JSONEntity::JSONEntity(Type type, const Var& value): _type(type)
 {
 	switch (type)
 	{
 		case JSON_T_INTEGER:
-			//_value = value->vu.integer_value;	break;
 		case JSON_T_FLOAT:
-			//_value = value->vu.float_value; break;
 		case JSON_T_STRING:
 		case JSON_T_KEY:
-			_value = value;//->vu.str.value;
+			_value = value;
 			break;
 		default:
 			poco_assert (value.isEmpty());
@@ -94,6 +72,48 @@ JSONEntity::JSONEntity(Type type, const Var& value): _type(type)
 
 JSONEntity::~JSONEntity()
 {
+}
+
+
+std::string JSONEntity::encode(const String& str) 
+{ 
+	std::string result;
+	std::string::const_iterator it = str.begin();
+	std::string::const_iterator end = str.end();
+	for (; it != end; ++it)
+	{
+		switch (*it)
+		{
+			case '"':
+				result.append("\\\"");
+				break;
+			case '\\':
+				result.append("\\");
+				break;
+			case '/':
+				result.append("\\/");
+				break;
+			case '\b':
+				result.append("\\b");
+				break;
+			case '\f':
+				result.append("\\f");
+				break;
+			case '\n':
+				result.append("\\n");
+				break;
+			case '\r':
+				result.append("\\r");
+				break;
+			case '\t':
+				result.append("\\t");
+				break;
+			//TODO: Unicode
+			default:
+				result.append(1, *it);
+		}
+	}
+    return result;
 }
 
 

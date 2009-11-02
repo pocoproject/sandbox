@@ -46,6 +46,7 @@ public:
 	JSONTest(const std::string& name);
 	~JSONTest();
 
+	void testEncoding();
 	void testPrinter();
 	void testCondenser();
 	void testExtJSDirectHandler();
