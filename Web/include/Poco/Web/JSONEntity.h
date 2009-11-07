@@ -106,6 +106,8 @@ private:
 };
 
 
+Web_API std::ostream& operator << (std::ostream &os, const JSONEntity& ent);
+
 //
 // inlines
 //

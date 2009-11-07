@@ -48,6 +48,41 @@ namespace Poco {
 namespace Web {
 
 
+std::ostream& operator << (std::ostream &os, const JSONEntity& ent)
+{
+	switch (ent.type())
+	{
+	case JSONEntity::JSON_T_INTEGER:
+		os << ent.toInteger(); break;
+	case JSONEntity::JSON_T_FLOAT: 
+		os << ent.toFloat(); break;
+	case JSONEntity::JSON_T_STRING: 
+	case JSONEntity::JSON_T_KEY:
+		os << ent.toString(); break;
+	case JSONEntity::JSON_T_TRUE:
+		os << "true"; break;
+	case JSONEntity::JSON_T_FALSE:
+		os << "false"; break;
+	case JSONEntity::JSON_T_NULL:
+		os << "null"; break;
+	case JSONEntity::JSON_T_ARRAY_BEGIN:
+		os << '['; break;
+	case JSONEntity::JSON_T_ARRAY_END:
+		os << ']'; break;
+	case JSONEntity::JSON_T_OBJECT_BEGIN:
+		os << '{'; break;
+	case JSONEntity::JSON_T_OBJECT_END:
+		os << '}'; break;
+	case JSONEntity::JSON_T_VALUE_SEPARATOR:
+		os << ','; break;
+	default:
+		throw InvalidArgumentException("Unknown value type.");
+	}
+
+	return os;
+}
+
+
 JSONEntity::JSONEntity(): _type(JSON_T_NONE)
 {
 }
