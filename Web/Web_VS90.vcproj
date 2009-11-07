@@ -69,7 +69,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundationd.lib PocoXMLd.lib PocoNetd.lib"
+				AdditionalDependencies="PocoFoundationd.lib PocoXMLd.lib"
 				OutputFile="..\bin\PocoWebd.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -162,7 +162,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="PocoFoundation.lib PocoXML.lib PocoNet.lib"
+				AdditionalDependencies="PocoFoundation.lib PocoXML.lib"
 				OutputFile="..\bin\PocoWeb.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

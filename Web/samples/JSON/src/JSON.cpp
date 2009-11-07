@@ -39,10 +39,49 @@
 #include <iostream>
 
 
+using Poco::Web::JSONHandler;
+using Poco::Web::JSONEntity;
 using Poco::Web::JSONParser;
 using Poco::Web::JSONPrinter;
 using Poco::Web::JSONPrettyPrinter;
 using Poco::Web::JSONCondenser;
+
+
+class PersonInfoHandler: public JSONHandler
+{
+public:
+	PersonInfoHandler(std::ostream& out): JSONHandler(out)
+	{
+	}
+
+	void handleKey(const JSONEntity& val)
+	{
+		_key = val;
+	}
+
+	void handleInteger(const JSONEntity& val)
+	{
+		if (_key.toString() == "postalCode")
+			stream() << ' '  << val.toInteger() << '.' << std::endl;
+	}
+
+	void handleString(const JSONEntity& val)
+	{
+		if (_key.toString() == "firstName")
+			stream() << val.toString();
+		else if (_key.toString() == "lastName")
+			stream() << ' ' << val.toString();
+		else if (_key.toString() == "streetAddress")
+			stream() << " lives at " << val.toString(); 
+		else if (_key.toString() == "city")
+			stream() << " in " << val.toString();
+		else if (_key.toString() == "state")
+			stream() << ", " << val.toString();
+	}
+
+private:
+	JSONEntity _key;
+};
 
 
 int main()
@@ -83,6 +122,13 @@ int main()
 	std::cout << "==============" << std::endl;
 	JSONParser jp3(new JSONPrettyPrinter(std::cout, JSONPrettyPrinter::JSON_FORMAT_READABLE));
 	jp3.parse(str);
+
+	std::cout << std::endl;
+
+	std::cout << std::endl << "Person Info:" << std::endl;
+	std::cout << "============" << std::endl;
+	JSONParser jp4(new PersonInfoHandler(std::cout));
+	jp4.parse(str);
 
 	std::cout << std::endl;
 

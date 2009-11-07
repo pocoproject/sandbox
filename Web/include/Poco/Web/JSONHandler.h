@@ -50,6 +50,9 @@ namespace Web {
 
 
 class Web_API JSONHandler
+	/// JSON event handler class. Serves as a base class for user-defined handlers.
+	/// The default event handling implementations do nothing. To do the desired work,
+	/// an implementation should override the events of interest.
 {
 public:
 	typedef Poco::SharedPtr<JSONHandler> Ptr;
