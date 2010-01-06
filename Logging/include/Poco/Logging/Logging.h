@@ -1,7 +1,7 @@
 //
 // Logging.h
 //
-// $Id: //poco/Main/Logging/include/Poco/Logging/Logging.h#2 $
+// $Id: //poco/1.3/Logging/include/Poco/Logging/Logging.h#2 $
 //
 // Library: Logging
 // Package: LoggingCore
@@ -11,8 +11,8 @@
 // This file must be the first file included by every other Logging
 // header file.
 //
-// Copyright (c) 2006-2008, Applied Informatics Software Engineering GmbH.
-// and Contributors.
+// Copyright (c) 2006-2009, Applied Informatics Software Engineering GmbH.
+// All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person or organization
 // obtaining a copy of the software and accompanying documentation covered by

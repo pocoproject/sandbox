@@ -1,14 +1,14 @@
 //
 // SourceFilter.cpp
 //
-// $Id: //poco/Main/Logging/src/SourceFilter.cpp#2 $
+// $Id: //poco/1.3/Logging/src/SourceFilter.cpp#2 $
 //
 // Library: Logging
 // Package: Filters
 // Module:  SourceFilter
 //
-// Copyright (c) 2006-2008, Applied Informatics Software Engineering GmbH.
-// and Contributors.
+// Copyright (c) 2006-2009, Applied Informatics Software Engineering GmbH.
+// All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person or organization
 // obtaining a copy of the software and accompanying documentation covered by

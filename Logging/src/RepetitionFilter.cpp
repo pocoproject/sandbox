@@ -1,7 +1,7 @@
 //
 // RepetitionFilter.cpp
 //
-// $Id: //poco/Main/Logging/src/RepetitionFilter.cpp#4 $
+// $Id: //poco/1.3/Logging/src/RepetitionFilter.cpp#3 $
 //
 // Library: Logging
 // Package: Filters
@@ -120,7 +120,7 @@ inline void MessageEntry::setTime(Poco::Timestamp time)
 }
 
 	
-Poco::UInt32 MessageEntry::hash() const
+std::size_t MessageEntry::hash() const
 {
 	Poco::UInt32 result = 0;
 	std::string::const_iterator it  = _source.begin();
@@ -136,12 +136,6 @@ Poco::UInt32 MessageEntry::hash() const
 		result = result * 0xf4243 ^ *it++;
 	}
 	return result;
-}
-
-
-Poco::UInt32 hash(const MessageEntry& entry)
-{
-	return entry.hash();
 }
 
 

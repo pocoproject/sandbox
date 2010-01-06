@@ -1,7 +1,7 @@
 //
 // RepetitionFilter.h
 //
-// $Id: //poco/Main/Logging/include/Poco/Logging/RepetitionFilter.h#4 $
+// $Id: //poco/1.3/Logging/include/Poco/Logging/RepetitionFilter.h#3 $
 //
 // Library: Logging
 // Package: Filters
@@ -79,7 +79,7 @@ public:
 	bool operator != (const MessageEntry& key);
 		/// Tests for inequality.
 		
-	Poco::UInt32 hash() const;
+	std::size_t hash() const;
 		/// Computes a hash value for the MessageEntry.
 	
 	Poco::Timestamp getTime() const;
@@ -98,7 +98,20 @@ private:
 };
 
 
-Poco::UInt32 Logging_API hash(const MessageEntry& key);
+} // namespace Loging
+
+
+template <>
+struct Hash<Poco::Logging::MessageEntry>
+{
+	std::size_t operator () (const Poco::Logging::MessageEntry& value) const
+	{
+		return value.hash();
+	}
+};
+
+
+namespace Logging {
 
 
 class Logging_API RepetitionFilter: public AbstractFilter

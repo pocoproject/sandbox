@@ -1,7 +1,7 @@
 //
 // AbstractFilter.cpp
 //
-// $Id: //poco/Main/Logging/src/AbstractFilter.cpp#2 $
+// $Id: //poco/1.3/Logging/src/AbstractFilter.cpp#2 $
 //
 // Library: Logging
 // Package: Filters
