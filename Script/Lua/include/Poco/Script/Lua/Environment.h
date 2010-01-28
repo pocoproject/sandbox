@@ -57,7 +57,7 @@
 #include "Poco/Script/Environment.h"
 #include "Poco/Script/Lua/Lua.h"
 #include "Poco/Script/Lua/lua/lua.hpp"
-#include "Poco/Any.h"
+#include "Poco/DynamicAny.h"
 #include <vector>
 
 
@@ -112,9 +112,9 @@ public:
 	void execute(const std::string& code);
 		/// Executes supplied chunk of code.
 
-	std::vector<Poco::Any>* execute(const std::string& code, 
-		const std::vector<Any>* pArguments, 
-		std::vector<Poco::Any>* pResults = 0);
+	std::vector<Poco::DynamicAny>* execute(const std::string& code, 
+		const std::vector<DynamicAny>* pArguments, 
+		std::vector<Poco::DynamicAny>* pResults = 0);
 		/// Executes supplied code with arguments and returns values in supplied vector
 		/// if pointer is different than 0. Uses error function stack index if different than 0.
 
@@ -147,9 +147,9 @@ private:
 		/// To signal the end of the chunk, the reader must return NULL. 
 		/// The reader function may return pieces of any size greater than zero.
 
-	void pushValues(const std::vector<Poco::Any>& values);
+	void pushValues(const std::vector<Poco::DynamicAny>& values);
 	
-	void popValues(std::vector<Poco::Any>& values);
+	void popValues(std::vector<Poco::DynamicAny>& values);
 	
 	void handleError();
 

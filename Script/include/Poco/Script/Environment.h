@@ -55,7 +55,7 @@
 
 #include "Poco/Script/Script.h"
 #include "Poco/Script/Persister.h"
-#include "Poco/Any.h"
+#include "Poco/DynamicAny.h"
 #include <vector>
 #include <iostream>
 
@@ -74,9 +74,9 @@ public:
 	virtual ~Environment();
 		/// Destroys Script environment.
 
-	virtual std::vector<Poco::Any>* execute(const std::string& code, 
-		const std::vector<Any>* pArguments = 0, 
-		std::vector<Poco::Any>* pResults = 0) = 0;
+	virtual std::vector<Poco::DynamicAny>* execute(const std::string& code, 
+		const std::vector<DynamicAny>* pArguments = 0, 
+		std::vector<Poco::DynamicAny>* pResults = 0) = 0;
 		/// Executes supplied code.
 		/// If arguments vector is supplied, arguments are passed to the
 		/// execution environment.

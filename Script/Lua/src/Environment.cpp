@@ -51,11 +51,11 @@
 
 #include "Poco/Script/Lua/Environment.h"
 #include "Poco/Script/ScriptException.h"
-#include "Poco/Any.h"
+#include "Poco/DynamicAny.h"
 
 
 using Poco::Script::ScriptException;
-using Poco::Any;
+using Poco::DynamicAny;
 using Poco::AnyCast;
 
 
@@ -136,9 +136,9 @@ void Environment::call(const std::string& code, int argc, int ret)
 }
 
 
-std::vector<Any>* Environment::execute(const std::string& code, 
-	const std::vector<Any>* pArguments, 
-	std::vector<Any>* pResults)
+std::vector<Poco::DynamicAny>* Environment::execute(const std::string& code, 
+  const std::vector<Poco::DynamicAny>* pArguments, 
+  std::vector<Poco::DynamicAny>* pResults)
 {
 	call(code);
 	
@@ -200,23 +200,23 @@ const char* Environment::reader(lua_State *L, void *ud, size_t *sz)
 }
 
 
-void Environment::pushValues(const std::vector<Poco::Any>& values)
+void Environment::pushValues(const std::vector<Poco::DynamicAny>& values)
 {
-	std::vector<Any>::const_iterator it = values.begin();
-	std::vector<Any>::const_iterator end = values.end();
+  std::vector<Poco::DynamicAny>::const_iterator it = values.begin();
+  std::vector<Poco::DynamicAny>::const_iterator end = values.end();
 	for(; it != end; ++it)
 	{
 		if (it->type() == typeid(String))
-			lua_pushstring(_pState, RefAnyCast<String>(*it).c_str());
+      lua_pushstring(_pState, it->extract<String>().c_str());
 		else if (it->type() == typeid(Integer))
-			lua_pushinteger(_pState, RefAnyCast<lua_Integer>(*it));
+			lua_pushinteger(_pState, it->extract<Integer>());
 		else if (it->type() == typeid(Number))
-			lua_pushnumber(_pState, RefAnyCast<lua_Number>(*it));
+			lua_pushnumber(_pState, it->extract<Number>());
 	}
 }
 
 
-void Environment::popValues(std::vector<Poco::Any>& values)
+void Environment::popValues(std::vector<Poco::DynamicAny>& values)
 {
 	int stackSize;
 	while ((stackSize = lua_gettop(_pState)))
