@@ -35,14 +35,13 @@
 #include "CppUnit/TestSuite.h"
 #include "Poco/Script/Environment.h"
 #include "Poco/Script/ScriptException.h"
-#include "Poco/Any.h"
+#include "Poco/DynamicAny.h"
 #include <iostream>
 
 
 using Poco::Script::Environment;
 using Poco::Script::ScriptException;
-using Poco::Any;
-using Poco::RefAnyCast;
+using Poco::DynamicAny;
 
 
 ScriptTest::ScriptTest(const std::string& name): 

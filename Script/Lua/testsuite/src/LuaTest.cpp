@@ -39,15 +39,14 @@
 #include "Poco/Script/Lua/lua/lualib.h"
 #include "Poco/Script/EnvironmentStream.h"
 #include "Poco/Script/ScriptException.h"
-#include "Poco/Any.h"
+#include "Poco/DynamicAny.h"
 #include <iostream>
 
 
 using Poco::Script::Lua::Environment;
 using Poco::Script::EnvironmentStream;
 using Poco::Script::ScriptException;
-using Poco::Any;
-using Poco::RefAnyCast;
+using Poco::DynamicAny;
 
 
 LuaTest::LuaTest(const std::string& name): 
@@ -67,7 +66,7 @@ void LuaTest::testExecute()
 	e.execute("print 'hello world'");
 	e.reset();
 
-	std::vector<Any> arguments;
+  std::vector<Poco::DynamicAny> arguments;
 	arguments.push_back(1);
 	arguments.push_back(2);
 	
@@ -77,14 +76,14 @@ void LuaTest::testExecute()
 		"return c;"
 		"end";
 
-	std::vector<Any> results;
+  std::vector<Poco::DynamicAny> results;
 	e.execute(code, &arguments, &results);
 	assert(1 == results.size());
 	
 	std::cout << "C++ says: Lua said " 
-		<< RefAnyCast<int>(arguments[0]) << " + " 
-		<< RefAnyCast<int>(arguments[1]) << " = " 
-		<< RefAnyCast<double>(results[0]) << std::endl;
+		<< arguments[0].convert<int>() << " + " 
+		<< arguments[1].convert<int>() << " = " 
+		<< results[0].convert<double>() << std::endl;
 	e.reset();
 
 	try
