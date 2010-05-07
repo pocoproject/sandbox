@@ -37,6 +37,7 @@
 #include "Poco/Web/JSONEntity.h"
 #include "Poco/Exception.h"
 #include "Poco/String.h"
+#include <ostream>
 
 
 using Poco::Dynamic::Var;

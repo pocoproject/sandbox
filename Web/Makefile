@@ -9,8 +9,9 @@
 include $(POCO_BASE)/build/rules/global
 
 objects = SOAPBody SOAPElement SOAPEnvelope SOAPHeader SOAPMessage \
-	JSONConfiguration JSONEntity JSONHandler JSONParser JSONPrinter \
-	JSONCondenser DirectHandler DirectAction
+	JSONCondenser JSONConfiguration JSONEntity JSONHandler \
+	JSONParser JSONPrettyPrinter JSONPrinter \
+	DirectAction DirectHandler DirectResponse
 
 target         = PocoWeb
 target_version = $(LIBVERSION)

@@ -142,9 +142,9 @@ JSONParser::JSONParser(const JSONConfiguration& config, JSONHandler::Ptr pHandle
 	_top(-1),
 	_stack(PARSER_STACK_SIZE),
 	_parseBuffer(PARSE_BUFFER_SIZE),
-	_decimalPoint(0),
 	_parseBufferCount(0),
-	_commentBeginOffset(0)
+	_commentBeginOffset(0),
+	_decimalPoint(0)
 {
 	init();
 }
@@ -161,9 +161,9 @@ JSONParser::JSONParser(JSONHandler::Ptr pHandler): _pHandler(pHandler),
 	_top(-1),
 	_stack(PARSER_STACK_SIZE),
 	_parseBuffer(PARSE_BUFFER_SIZE),
-	_decimalPoint(0),
 	_parseBufferCount(0),
-	_commentBeginOffset(0)
+	_commentBeginOffset(0),
+	_decimalPoint(0)
 {
 	init();
 }
@@ -653,11 +653,13 @@ void JSONParser::parseBuffer()
 	{
 		Var val;
 
-		if (_type != JSONEntity::JSON_T_NONE)
+		int type = _type; // just to silence g++
+
+		if (type != JSONEntity::JSON_T_NONE)
 		{
 			assertNonContainer();
 
-			switch(_type)
+			switch(type)
 			{
 				case JSONEntity::JSON_T_FLOAT:
 				{ 
