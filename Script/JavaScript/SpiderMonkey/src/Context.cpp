@@ -50,14 +50,14 @@
 
 #include <Poco/Logger.h>
 
+#include <iostream>
+
 #include "Poco/Script/ScriptException.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Context.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Object.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Binder.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Arguments.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Array.h"
-
-#include <sstream>
 
 JSClass globalClass =
 {
@@ -82,40 +82,19 @@ namespace Script {
 namespace JavaScript {
 namespace SpiderMonkey {
 
-Context::Context(SharedPtr<Runtime> runtime, int size) : _runtime(runtime)
-{
-	_context = JS_NewContext(*runtime, size);
-	if ( _context == NULL )
-	{
-		throw ScriptException("Can't create Context");
-	}
-
-  JS_SetErrorReporter(_context, &Context::errorReporter);
-
-	JS_BeginRequest(_context);
-	JS_SetOptions(_context, JSOPTION_XML);
-	JS_SetVersion(_context, JSVERSION_1_7);
-	JS_SetErrorReporter(_context, Context::errorReporter);
-
-    //if ( m_configuration->GetBranchLimit() > 0 )
-    //{
-    //  JS_SetBranchCallback(cx, Engine::BranchCallback);
-    //  JS_ToggleOptions(cx, JSOPTION_NATIVE_BRANCH_CALLBACK);
-    //}
-	JS_EndRequest(_context);
-}
+int Context::_counter = 0;
 
 
-Context::Context() : _context(NULL)
+Context::Context() : _context(NULL), _count(++_counter)
 {
 }
 
 
-Context::Context(JSContext* cx) : _context(cx)
+Context::Context(JSContext* cx) : _context(cx), _count(++_counter)
 {
 }
 
-Context::Context(const Context& context) : _context(context._context)
+Context::Context(const Context& context) : _context(context._context), _count(++_counter)
 {
 }
 
@@ -132,14 +111,6 @@ Context& Context::operator=(const Context& c)
 
 Context::~Context()
 {
-  if (      _context != NULL
-       && ! _runtime.isNull() )
-  {
-    JS_SetContextThread(_context);
-    clear();
-    JS_DestroyContext(_context);
-    _context = NULL;
-  }
 }
 
 
@@ -166,28 +137,6 @@ Object Context::getGlobalObject() const
 void Context::setGlobalObject(const Object& object) const
 {
 	JS_SetGlobalObject(_context, *object);
-}
-
-
-void Context::errorReporter(JSContext *cx, const char *message, JSErrorReport *report)
-{
-  std::stringstream msg;
-
-  if ( report->filename == NULL )
-  {
-    msg << message;
-  }
-  else
-  {
-    msg << report->filename;
-    msg << "(";
-    msg << report->lineno + 1;
-    msg << ") : ";
-    msg << message;
-  }
-
-  Poco::Logger& logger = Poco::Logger::get("js");
-  logger.error(msg.str());
 }
 
 

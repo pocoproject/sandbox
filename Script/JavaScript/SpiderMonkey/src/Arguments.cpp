@@ -61,7 +61,7 @@ Arguments::Arguments(int size) : _arguments(size)
 }
 
 
-DynamicAny& Arguments::operator[](int index)
+DynamicAny& Arguments::operator[](unsigned int index)
 {
   if ( index >= _arguments.size() )
   {

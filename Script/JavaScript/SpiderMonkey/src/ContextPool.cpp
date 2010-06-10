@@ -51,6 +51,7 @@
 #include "Poco/Script/ScriptException.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Context.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Runtime.h"
+#include "Poco/Script/JavaScript/SpiderMonkey/RuntimeContext.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/ContextPool.h"
 
 namespace Poco {
@@ -71,23 +72,24 @@ ContextPool::~ContextPool()
 }
 
 
-SharedPtr<Context> ContextPool::getContext()
+Context ContextPool::getContext()
 {
 	Poco::ScopedLock<Poco::Mutex> locker(_poolMutex);
 
-	for(std::vector<SharedPtr<Context> >::iterator it = _contexts.begin(); it != _contexts.end(); it++)
+	for(std::vector<SharedPtr<RuntimeContext> >::iterator it = _contexts.begin(); it != _contexts.end(); it++)
 	{
-		if ( (*it)->isFree() )
+		Context context = (*it)->getContext();
+		if ( context.isFree() )
 		{
-			return *it;
+			return context;
 		}
 	}
   
   if ( _contexts.size() < _size )
   {
-		SharedPtr<Context> context = Runtime::createContext(_rt, 8192);
+		SharedPtr<RuntimeContext> context = Runtime::createContext(_rt, 8192);
 		_contexts.push_back(context);
-		return context;
+		return context->getContext();
   }
   
   throw ScriptException("Can't create context");

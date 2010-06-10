@@ -46,23 +46,22 @@ namespace SpiderMonkey
 
 
 class SpiderMonkey_API Module
-  /// Class that manage an dynamic library that extends JavaScript
 {
 public:
   Module(const std::string& dllName);
-    /// Constructor. Loads the dynamic library.
+  
   
   virtual ~Module();
-    /// Destructor
+
   
   bool isLoaded() const;
-    /// Returns true when the library was loaded.
+
 
   Object init(Object& obj);
-    /// Calls the init method of the library
+
 
   std::string id() const;
-    /// Calls the id method of the library
+
 
 private:
   Poco::ClassLoader<ModuleInterface> _classLoader;

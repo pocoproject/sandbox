@@ -65,54 +65,43 @@ namespace JavaScript {
 namespace SpiderMonkey {
 
 class SpiderMonkey_API Array : public Object
-	/// Encapsulates Array class.
+	/// SpiderMonkey Object class. Encapsulates Array class.
 {
 public:
   Array(const Object& obj);
-    /// Creates an Array class from an Object
+
 
   Array(const Context& context, JSObject* obj);
-    /// Creates an Array class from a SpiderMonkey Object
 
 
   Array(const Poco::DynamicAny& any);
-    /// Creates an Array class from a value.
 
 
 	Array(const Array&);
-    /// Copy constructor
 
 
 	Array& operator = (const Array&);
-  
+
+
 	virtual ~Array();
-    /// Destructor
 
 
   void set(int index, const DynamicAny& Value);
-    /// Set the value at the given index
 
 
   DynamicAny get(int index = 0) const;
-    /// Return the value at the given index. An empty (void) value
-    /// will be returned when the index is out of bound.
 
 
   int size() const;
-    /// Returns the size of the array
-    
 
 
   virtual bool isValid() const;
-    /// Returns true when the object is a JavaScript Array object.
 
 
   DynamicAny operator[](int index) const;
-    /// Returns trhe value at the given index.
 
 
   static Array newArray(const Context& cx, int elementCount = 0);
-    /// Creates a new JavaScript Array object
 
 
 private:
@@ -277,6 +266,6 @@ private:
 };
 
 
-}; // namespace Poco
+} // namespace Poco
 
 #endif

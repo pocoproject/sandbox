@@ -149,4 +149,35 @@ Poco::DynamicAny& Function::operator[](int index)
 }
 
 
+std::string Function::name() const
+{
+  JSFunction* fun = (JSFunction*) getPrivate();
+  JSString* str = JS_GetFunctionId(fun);
+  std::string result;
+
+  if ( str != NULL )
+  {
+    jschar* jsstr = JS_GetStringChars(str);
+    size_t srclen = JS_GetStringLength(str);
+
+    if ( srclen > 0 )
+    {
+      size_t dstlen = 0;
+      if ( JS_EncodeCharacters(*context(), jsstr, srclen, NULL, &dstlen) )
+      {
+        char *dst = (char *) JS_malloc(*context(), dstlen);
+        if (dst != NULL)
+        {
+          JS_EncodeCharacters(*context(), jsstr, srclen, dst, &dstlen);
+          result.assign(dst, dstlen);
+          JS_free(*context(), dst);
+        }
+      }
+    }
+  }
+  return result;
+
+}
+
+
 } } } }

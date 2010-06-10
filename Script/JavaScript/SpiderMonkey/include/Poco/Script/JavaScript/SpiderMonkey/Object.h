@@ -76,15 +76,12 @@ class SpiderMonkey_API Object
 public:
 
   Object(const Poco::DynamicAny& any);
-    /// Constructor. Creates an Object class from a DynamicAny
 
 
   Object(const Context& context, JSObject* obj = JSVAL_NULL);
-    /// Constructor
 
 
   Object(const Object&);
-    /// Copy Constructor
 
 
   Object& operator = (const Object&);
@@ -94,81 +91,79 @@ public:
 
 
   virtual ~Object();
-    /// Destructor
 
 
   void attachData(void* p, int slot = 0);
-    /// Attaches data to the object (calls JS_SetReservedSlot)
 
 
   void* getAttachedData(int slot = 0);
-    /// Returns the data that was attached to the given slot
+
 
   virtual bool isValid() const;
-    /// Returns true when the object is valid
+
 
   bool isFunction() const;
-    /// Returns true when the object is a function
+
 
   bool isArray() const;
-    /// Returns true when the object is an Array
+
 
   bool isDate() const;
-    /// Returns true when the object is a Date
+
 
   void setProperty(const Poco::DynamicAny& property, const Poco::DynamicAny& value) const;
-    /// Set the value of the property.
+
 
   void defineProperty(const std::string& property, const Poco::DynamicAny& value, bool readonly = false) const;
-    /// Defines a property on the object
+
 
   void deleteProperty(const std::string& property) const;
-    /// Deletes a property
+
 
   DynamicAny getProperty(const Poco::DynamicAny& property) const;
-    /// Returns the value of a property.
+
 
   Poco::DynamicAny lookupProperty(const std::string& name) const;
-    /// Lookup a property
+
 
   bool hasProperty(const Poco::DynamicAny& property) const;
-    /// Returns true when the object has a property with the given name or index.
+
 
   DynamicAny call(Function& fn) const;
-    /// Calls the function on this object
+
 
   void setParent(const Object& parent) const;
-    /// Sets the parent of the object
+
 
   Object getParent() const;
-    /// Returns the parent of the object
+
 
   void setPrivate(void* p) const;
-    /// Sets the private data of the object
+
 
   void* getPrivate() const;
-    /// Returns the private data
+
 
   Object getPrototype() const;
-    /// Returns the prototype of the object
+
 
   void setPrototype(const Object& proto) const;
-    /// Sets the prototype
+
 
   JSClass* getClass() const;
-    /// Returns the JSClass structure of the class of this object
+
 
   Object getConstructor() const;
-    /// Returns the constructor function of the object
+
 
   bool hasPrototype(const std::string& className) const;
-    /// Returns true when the object has a prototype of the given classname
+
 
   void enumerateProperties(std::map<Poco::DynamicAny, Poco::DynamicAny>& properties) const;
-    /// Enumerate all properties of the class
+
 
   bool execute(const std::string& source, const std::string& filename) const;
-    /// Executes a script with this object as scope
+
 
   void setObject(JSObject* obj);
 
@@ -189,27 +184,26 @@ public:
 
 
   void root();
-    /// Protect the object against garbage collection
+
 
   void unroot();
-    /// Remove the protection of the object
+
 
   static Object newSimpleObject(const Context& context, const Object& parent = Object::nullObject);
-    /// Create a JavaScript 'Object'
+
 
   static Object newObject(const Context& context, const std::string& className, void* priv = NULL);
-    /// Create an object of the given class
+
 
   static Object newObject(const Context& context, const std::string& className, void* priv, Arguments &args);
-    /// Create an object of the given class and pass the arguments to the
-    /// constructor
+
 
   static Object newObject(const Context& context,
                           JSClass* clazz,
                           void* priv = NULL,
                           const Object& prototype = Object::nullObject,
                           const Object& parent = Object::nullObject);
-    /// Create an object of the given class
+
 
 protected:
 
@@ -450,6 +444,6 @@ private:
 };
 
 
-}; // namespace Poco
+} // namespace Poco
 
 #endif

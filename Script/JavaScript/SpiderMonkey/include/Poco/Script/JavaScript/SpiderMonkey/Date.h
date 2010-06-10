@@ -70,58 +70,45 @@ class SpiderMonkey_API Date : public Object
 {
 public:
   Date(const Object& obj);
-    /// Constructs a Date class from an Object
 
 
   Date(const Context& context, JSObject* obj);
-    /// Constructs a Date class from a SpiderMonkey object
 
 
   Date(const Poco::DynamicAny& any);
-    /// Constructs a Date class from DynamicAny
 
 
 	Date(const Date&);
-    /// Copy constructor
 
 
 	Date& operator = (const Date&);
 
 
 	virtual ~Date();
-    /// Destructor
 
 
   virtual bool isValid() const;
-    /// Returns true when this is a valid Date object
 
 
   static Date newDate(const Context& cx, const Poco::DateTime &date);
-    /// Creates a new Date object
 
   
   int getYear() const;
-    /// Returns the year
 
 
   int getMonth() const;
-    /// Returns the month
 
 
   int getDay() const;
-    /// Returns the day
 
 
   int getHours() const;
-    /// Returns the hours
 
 
   int getMinutes() const;
-    /// Returns the minutes
 
 
   int getSeconds() const;
-    /// Returns the seconds
 
 
 private:
@@ -334,6 +321,6 @@ private:
 };
 
 
-}; // namespace Poco
+} // namespace Poco
 
 #endif // SpiderMonkey_Date_INCLUDED

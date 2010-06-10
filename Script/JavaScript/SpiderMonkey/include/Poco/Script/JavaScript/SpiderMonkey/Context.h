@@ -53,7 +53,6 @@
 #define SpiderMonkey_Context_INCLUDED
 
 #include <Poco/Script/JavaScript/SpiderMonkey/SpiderMonkey.h>
-#include <Poco/Script/JavaScript/SpiderMonkey/Runtime.h>
 
 #include <Poco/URI.h>
 #include <Poco/SharedPtr.h>
@@ -75,12 +74,10 @@ class SpiderMonkey_API Context
 public:
 
 	Context(const Context&);
-    /// Copy constructor
 
 
   virtual ~Context();
 		/// Destroys SpiderMonkey Context.
-    
 
   JSContext* operator *() const;
 
@@ -89,71 +86,51 @@ public:
 
 
   bool isFree() const;
-    /// Returns true when the context is not associated with a thread
+   /// Returns true when the context is not associated with a thread
 
 
   bool isValid() const;
-    /// Returns true if this class points to a valid SpiderMonkey context
 
 
   void setGlobalObject(const Object& object) const;
-    /// Sets the global object of the context
 
 
   void reportError(const std::string& error) const;
-    /// Reports an error
 
 
   void reportException(const Poco::Exception& e) const;
-    /// Reports an Exception
 
 
   Object getGlobalObject() const;
-    /// Returns the global object. When no global object is associated with
-    /// this context, it will create a global object.
 
 
   void beginRequest() const;
-    /// Begins a request (i.e. the context is associated with the current
-    /// thread)
 
 
   void endRequest() const;
-    /// Ends a request (i.e. the thread is cleared)
 
 
   void clear() const;
-    /// Performs garbage collection
 
 
   Object getActiveScript() const;
-    /// Returns the active script (__script__ property on the scope object)
 
 
   Poco::URI resolveURI(const std::string& uri) const;
-    /// Resolves a relative URI against the path of the current script
 
 
   Poco::URI resolveURI(const Poco::URI& uri) const;
-    /// Resolves a relative URI against the path of the current script
 
 
   static Poco::URI createURI(const std::string& uri);
-    /// Helper function to create a valid URI
 
 
   void setPrivate(void* p) const;
-    /// Associates data to this context
 
 
   void* getPrivate() const;
-    /// Returns the associated data
 
 private:
-
-
-  Context(SharedPtr<Runtime> runtime, int size);
-		/// Creates and initializes a SpiderMonkey Context.
 
 
   Context(JSContext* cx);
@@ -165,21 +142,16 @@ private:
   void set(JSContext* cx);
 
 
-	SharedPtr<Runtime> _runtime;
-
-
 	JSContext* _context;
 
+	int _count;
+	static int _counter;
 
-  static void errorReporter(JSContext *cx, const char *message, JSErrorReport *report);
-
-
-  friend class Runtime;
   friend class Array;
   friend class Object;
   friend class Function;
-  friend class PooledContext;
   friend class ScriptContext;
+  friend class RuntimeContext;
 
   template<class T_Port,
            class T_Priv,

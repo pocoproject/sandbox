@@ -77,7 +77,7 @@ class ScriptContext;
 class System;
 
 class SpiderMonkey_API Environment: public Poco::Script::Environment
-	/// SpiderMonkey Environment class
+	/// SpiderMonkey environment class
 {
 public:
 	Environment(int rtSize = 1024 * 1024,
@@ -98,8 +98,7 @@ public:
 		/// if pointer is different than 0. Uses error function stack index if different than 0.
 
 
-  Poco::SharedPtr<Context> getContext();
-    /// Returns a context from the pool
+  Context getContext();
 
 
   int read(char* buf, int length)
@@ -118,7 +117,7 @@ public:
 
 
 private:
-  Environment(const Environment&) {}
+  Environment(const Environment&);
 
 
 	Environment& operator = (const Environment&);

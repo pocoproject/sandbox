@@ -47,7 +47,7 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-
+#include <iostream>
 
 #ifndef SpiderMonkey_NativeClass_INCLUDED
 #define SpiderMonkey_NativeClass_INCLUDED
@@ -631,7 +631,7 @@ private:
       JS_LookupProperty(cx, obj, propertyName.c_str(), &fun);
       if ( fun != JSVAL_VOID )
       {
-        return JS_TRUE;
+         return JS_TRUE;
       }
     }
 
@@ -658,15 +658,15 @@ private:
     Context context(cx);
     poco_assert_dbg(context.isValid());
 
+    Poco::DynamicAny property = Extractor(context, &id).any();
+    Poco::DynamicAny value = Extractor(context, vp).any();
+
     T_Port port(context, obj);
     T_Priv *p = port;
     if ( p == NULL )
     {
       return JS_TRUE;
     }
-
-    Poco::DynamicAny property = Extractor(context, &id).any();
-    Poco::DynamicAny value = Extractor(context, vp).any();
 
     JSAutoLocalRootScope localRootScope(cx);
     port.setNativeProperty(p, property, value);
@@ -689,6 +689,7 @@ private:
 
     T_Port port(context, *objp);
     Poco::DynamicAny property = Extractor(context, &id).any();
+
     if ( ! port.resolveNative(property) )
     {
       *objp = NULL;

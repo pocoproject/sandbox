@@ -40,22 +40,21 @@ namespace JavaScript
 namespace SpiderMonkey
 {
 
+// Interface that each module must implement so it can be loaded
+// by our class loader.
 class SpiderMonkey_API ModuleInterface
- /// Interface that each module must implement so it can be loaded
- /// by our class loader.
 {
 public:
   ModuleInterface();
-    /// Constructor
+
 
   virtual ~ModuleInterface();
-    /// Destructor
+
 
   virtual Object initialize(Object& obj) = 0;
-    /// Called to initialize the library.
+
 
   virtual std::string id() const = 0;
-    /// Called to get the id of the module
 };
 
 

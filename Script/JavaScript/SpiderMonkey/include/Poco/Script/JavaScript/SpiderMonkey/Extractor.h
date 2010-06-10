@@ -116,7 +116,6 @@ public:
 
 
   virtual Poco::DynamicAny any(int pos = 0);
-    /// Extracts a DynamicAny
     
     
 private:

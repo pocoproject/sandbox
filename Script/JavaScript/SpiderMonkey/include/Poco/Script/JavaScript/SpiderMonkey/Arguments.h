@@ -63,29 +63,23 @@ namespace JavaScript {
 namespace SpiderMonkey {
 
 class SpiderMonkey_API Arguments
-	/// Arguments class. Each function (JavaScript function or a native callback)
-  /// has a Arguments class.
+	/// Arguments class.
 {
 public:
   Arguments(int size = 0);
-    /// Creates a new argument list. Use size to reserve enough capacity
-    /// in the list in advance (this is not required).
 
 
-  DynamicAny& operator[](int index);
-    /// Returns a reference to the value at the given index
+  DynamicAny& operator[](unsigned int index);
 
 
   void add(const DynamicAny& value);
-    /// Add a new value to the list of arguments
 
 
-  int size() const { return _arguments.size(); }
-    /// Returns the number of values in the argument list
+  unsigned int size() const { return _arguments.size(); }
 
 
   void clear();
-    /// Removes all values from the argument list
+
 
 private:
 

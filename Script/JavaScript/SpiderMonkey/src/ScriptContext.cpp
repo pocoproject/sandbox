@@ -58,22 +58,22 @@ namespace Script {
 namespace JavaScript {
 namespace SpiderMonkey {
 
-ScriptContext::ScriptContext(SharedPtr<Context>& cx) : _context(cx)
+ScriptContext::ScriptContext(const Context& cx) : _context(cx)
 {
-  _context->beginRequest();
+  _context.beginRequest();
 }
 
 
 ScriptContext::~ScriptContext()
 {
-  _context->clear();
-  _context->endRequest();
+  _context.clear();
+  _context.endRequest();
 }
 
 
 Object ScriptContext::execute(const std::string& code, const std::string& filename)
 {
-  Object obj = Object::newSimpleObject(*_context, _context->getGlobalObject());
+  Object obj = Object::newSimpleObject(*_context, _context.getGlobalObject());
   if ( obj.execute(code, filename) )
   {
     return obj;
@@ -86,7 +86,7 @@ std::vector<DynamicAny>* ScriptContext::execute(const std::string& code,
 	const std::vector<DynamicAny>* pArguments, 
 	std::vector<DynamicAny>* pResults)
 {
-  Object obj = Object::newSimpleObject(*_context, _context->getGlobalObject());
+  Object obj = Object::newSimpleObject(*_context, _context.getGlobalObject());
 
   obj.execute(code, "");
 

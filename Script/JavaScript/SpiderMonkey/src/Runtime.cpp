@@ -51,7 +51,7 @@
 #include "Poco/Script/ScriptException.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Environment.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/Runtime.h"
-#include "Poco/Script/JavaScript/SpiderMonkey/Context.h"
+#include "Poco/Script/JavaScript/SpiderMonkey/RuntimeContext.h"
 #include "Poco/Script/JavaScript/SpiderMonkey/ScriptContext.h"
 
 namespace Poco {
@@ -83,9 +83,9 @@ Runtime::~Runtime()
 }
 
 
-SharedPtr<Context> Runtime::createContext(SharedPtr<Runtime> rt, int size)
+SharedPtr<RuntimeContext> Runtime::createContext(SharedPtr<Runtime> rt, int size)
 {
-	return new Context(rt, size);
+	return new RuntimeContext(rt, size);
 }
 
 

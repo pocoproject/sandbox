@@ -72,46 +72,46 @@ class Context;
 class Arguments;
 
 class SpiderMonkey_API Function : public Object
-  /// Function class. Represents a JavaScript function.
 {
 public:
   Function(const Object& obj);
-    /// Constructs a Function class from an Object
+
 
   Function(const Poco::DynamicAny& any);
-    /// Constructs a Function class from a DynamicAny
+
 
   Function(const Object& obj, const std::string &name);
-    /// Constructs a Function by retrieving the function with the given name
-    /// from the object
+
 
   Function(const Function&);
-    /// Copy constructor
 
 
   Function& operator = (const Function&);
 
+
   virtual ~Function();
-    /// Destructor
+
 
   virtual bool isValid() const;
-    /// Returns true when the class contains a valid JavaScript function
+
 
   void addArgument(const DynamicAny& arg);
-    /// Adds an argument
+
 
   Arguments& arguments();
-    /// Returns a reference to the list of arguments
+
 
   int getIndex();
-    /// Used internally by NativeObject to retrieve the function that needs
-    /// to be called for a JavaScript function callback
+
 
   Poco::DynamicAny& operator[](int arg);
-    /// Returns a reference to the argument at the given index
-    
+  
+  
   bool hasArguments() const;
-    /// Returns true when the function has arguments
+
+
+  std::string name() const;
+
 
 private:
 
@@ -209,10 +209,35 @@ public:
 		throw BadCastException();
 	}
 
-	void convert(std::string& val) const
+	void convert(std::string& s) const
 	{
-//    Poco::Script::JavaScript::SpiderMonkey::Value v(_val);
-//    val = v.toString();
+	    if ( *_val == JSVAL_NULL )
+	    {
+	      s.clear();
+	      return;
+	    }
+
+	    JSString *str = JS_ValueToString(*_val.context(), OBJECT_TO_JSVAL(*_val));
+	    if ( str != NULL )
+	    {
+	      jschar* jsstr = JS_GetStringChars(str);
+	      size_t srclen = JS_GetStringLength(str);
+
+	      if ( srclen > 0 )
+	      {
+	        size_t dstlen = 0;
+	        if ( JS_EncodeCharacters(*_val.context(), jsstr, srclen, NULL, &dstlen) )
+	        {
+	          char *dst = (char *) JS_malloc(*_val.context(), dstlen);
+	          if (dst != NULL)
+	          {
+	            JS_EncodeCharacters(*_val.context(), jsstr, srclen, dst, &dstlen);
+	            s.assign(dst, dstlen);
+	            JS_free(*_val.context(), dst);
+	          }
+	        }
+	      }
+	    }
 	}
 
 	void convert(DateTime& val) const
@@ -270,7 +295,7 @@ private:
 };
 
 
-}; // namespace Poco
+} // namespace Poco
 
 
 #endif

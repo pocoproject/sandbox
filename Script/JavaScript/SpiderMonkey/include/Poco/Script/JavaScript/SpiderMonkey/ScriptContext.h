@@ -67,11 +67,12 @@ namespace SpiderMonkey {
 class Context;
 
 class SpiderMonkey_API ScriptContext
-	/// A Script Context is a Context which is ready to execute a script in a thread.
-	/// When the context goes out of scope, the context is cleared.
+	/// An Script Context is a Context which is ready to execute a script in a thread.
+	/// When the context goes out of scope, the context is cleared and ready to execute
+	/// a new script in another thread.
 {
 public:
-	ScriptContext(SharedPtr<Context>& context);
+	ScriptContext(const Context& context);
 
   virtual ~ScriptContext();
 		/// Destroys ScriptContext.
@@ -90,7 +91,7 @@ private:
 	ScriptContext& operator = (const ScriptContext&);
 
 
-	SharedPtr<Context> _context;
+	Context _context;
 };
 
 

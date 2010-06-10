@@ -53,6 +53,7 @@
 #define SpiderMonkey_Runtime_INCLUDED
 
 #include "Poco/Script/JavaScript/SpiderMonkey/SpiderMonkey.h"
+#include "Poco/Script/JavaScript/SpiderMonkey/RuntimeContext.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Mutex.h"
 
@@ -66,6 +67,7 @@ namespace SpiderMonkey {
 class Context;
 class ScriptContext;
 class Environment;
+class RuntimeContext;
 
 class SpiderMonkey_API Runtime
 	/// SpiderMonkey Runtime class. Encapsulates pointer to JSRuntime.
@@ -78,7 +80,7 @@ public:
 		/// Destroys SpiderMonkey Runtime.
 
 
-	static SharedPtr<Context> createContext(SharedPtr<Runtime> rt, int size);
+	static SharedPtr<RuntimeContext> createContext(SharedPtr<Runtime> rt, int size);
 		/// Creates a context of the given size
 
 
@@ -101,7 +103,7 @@ private:
 	static Mutex _contextMutex;
 
 
-	friend class Context;
+	friend class RuntimeContext;
 	friend class Environment;
 };
 

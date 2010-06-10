@@ -114,11 +114,10 @@ public:
 
 
   virtual void bind(const std::vector<Poco::DynamicAny> array, int pos = 0);
-    /// Binds an array of dynamic values
+   /// Binds an array of dynamic values
 
 
   virtual void any(const Poco::DynamicAny& any, int pos = 0);
-    /// Binds a DynamicAny
 
 
 	virtual void bind(const Object& obj, int pos = 0);
@@ -126,15 +125,14 @@ public:
 
 
   virtual void bind(const Function& val, int pos);
-    /// Binds a Function
+
 
 
   virtual void bind(const Timestamp& stamp, int pos);
-    /// Binds a Timestamp
+
 
 
   void bind(const DateTime& date, int pos);
-    /// Binds a DateTime
 
 
 private:

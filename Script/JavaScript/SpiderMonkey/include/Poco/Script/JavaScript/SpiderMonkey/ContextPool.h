@@ -53,6 +53,8 @@
 #define SpiderMonkey_ContextPool_INCLUDED
 
 #include "Poco/Script/JavaScript/SpiderMonkey/SpiderMonkey.h"
+#include "Poco/Script/JavaScript/SpiderMonkey/Runtime.h"
+#include "Poco/Script/JavaScript/SpiderMonkey/RuntimeContext.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Mutex.h"
 
@@ -64,23 +66,19 @@ namespace JavaScript {
 namespace SpiderMonkey {
 
 class Runtime;
+class RuntimeContext;
 class Context;
 
 class ContextPool
-  /// Class that manages a pool of Context objects
 {
 public:
   ContextPool(SharedPtr<Runtime> rt, int size);
-    /// Constructor
   
   
   virtual ~ContextPool();
-    /// Destructor
  
   
-  SharedPtr<Context> getContext();
-    /// Returns a Context from the pool. When no free context is found, 
-    /// it will create a new Context and store it in the pool
+  Context getContext();
  
 
 private:
@@ -88,10 +86,10 @@ private:
   SharedPtr<Runtime> _rt;
   
   
-	int _size;
+  unsigned int _size;
 
 
-	std::vector<SharedPtr<Context> > _contexts;
+  std::vector<SharedPtr<RuntimeContext> > _contexts;
 
   
   static Mutex _poolMutex;

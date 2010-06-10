@@ -70,16 +70,16 @@ class SpiderMonkey_API System
 {
 public:
   static void registerModule(const std::string& name, Module* module);
-    /// Registers the module
+
 
   static Module* getModule(const std::string& name);
-    /// Returns a registered module
+
 
   System();
-    /// Constructor
+
 
   ~System();
-    /// Destructor. Will call JS_ShutDown and releases all registered modules.
+    /// Destructor. Will call JS_ShutDown
 
 private:
   void unregister();

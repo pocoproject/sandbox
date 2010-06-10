@@ -67,11 +67,11 @@ Environment::Environment(int rtSize,
                                        , _ctxSize(ctxSize)
                                        , _poolSize(poolSize)
 {
-	init();
+  init();
 }
 
 
-Environment::~ Environment()
+Environment::~Environment()
 {
 }
 
@@ -91,7 +91,7 @@ void Environment::execute(const std::string& code)
 	execute(code, NULL, &result);
 }
 
-Poco::SharedPtr<Context> Environment::getContext()
+Context Environment::getContext()
 {
   return _contextPool->getContext();
 }
@@ -100,7 +100,7 @@ std::vector<DynamicAny>* Environment::execute(const std::string& code,
 	const std::vector<DynamicAny>* pArguments,
 	std::vector<DynamicAny>* pResults)
 {
-	SharedPtr<Context> context = getContext();
+	Context context = getContext();
 
 	SharedPtr<ScriptContext> scriptContext = new ScriptContext(context);
 
