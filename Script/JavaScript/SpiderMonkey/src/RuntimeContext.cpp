@@ -67,7 +67,7 @@ RuntimeContext::RuntimeContext(SharedPtr<Runtime>& runtime, int size) : _runtime
 	{
 		JS_SetErrorReporter(_context, &RuntimeContext::errorReporter);
 		JS_BeginRequest(_context);
-		JS_SetOptions(_context, JSOPTION_XML | JSOPTION_VAROBJFIX);
+		JS_SetOptions(_context, JSOPTION_XML /* | JSOPTION_VAROBJFIX */);
 		JS_SetVersion(_context, JSVERSION_1_8);
 
 		//if ( m_configuration->GetBranchLimit() > 0 )
