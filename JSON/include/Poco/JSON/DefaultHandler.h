@@ -84,19 +84,41 @@ public:
 		/// A key is read
 
 
-	void value(const DynamicAny& value);
-		/// A value is read (a property of an object or an element of an array)
-
-
 	DynamicAny result() const;
 		/// Returns the result of the parser. Which is an object or an array.
 
 
+	virtual void value(int v);
+		/// An integer value is read
+
+
+	virtual void value(const std::string& s);
+		/// A string value is read.
+
+
+	virtual void value(double d);
+		/// A double value is read
+
+
+	virtual void value(bool b);
+		/// A boolean value is read
+
+
+	virtual void null();
+		/// A null value is read
+
+
 private:
+
+
+	void setValue(const Poco::DynamicAny& value);
+
 
 	std::stack<DynamicAny> _stack;
 
+
 	std::string _key;
+
 
 	DynamicAny _result;
 };
@@ -106,6 +128,38 @@ inline DynamicAny DefaultHandler::result() const
 {
 	return _result;
 }
+
+
+inline void DefaultHandler::value(int v)
+{
+	setValue(v);
+}
+
+
+inline void DefaultHandler::value(const std::string& s)
+{
+	setValue(s);
+}
+
+
+inline void DefaultHandler::value(double d)
+{
+	setValue(d);
+}
+
+
+inline void DefaultHandler::value(bool b)
+{
+	setValue(b);
+}
+
+
+inline void DefaultHandler::null()
+{
+	Poco::DynamicAny empty;
+	setValue(empty);
+}
+
 
 }} // Namespace Poco::JSON
 

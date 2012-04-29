@@ -128,7 +128,7 @@ void DefaultHandler::key(const std::string& k)
 }
 
 
-void DefaultHandler::value(const Poco::DynamicAny& value)
+void DefaultHandler::setValue(const Poco::DynamicAny& value)
 {
 	DynamicAny parent = _stack.top();
 
@@ -144,7 +144,7 @@ void DefaultHandler::value(const Poco::DynamicAny& value)
 		obj->set(_key, value);
 		_key.clear();
 	}
-
 }
+
 
 }} // Namespace Poco::JSON

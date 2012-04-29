@@ -72,9 +72,25 @@ public:
 		/// A key of an object is read
 
 
-	virtual void value(const DynamicAny& value) = 0;
-		/// A value is read (can be a property of an object or
-		/// an element of an array.
+	virtual void null() = 0;
+		/// A null value is read
+
+
+	virtual void value(int v) = 0;
+		/// An integer value is read
+
+
+	virtual void value(const std::string& value) = 0;
+		/// A string value is read.
+
+
+	virtual void value(double d) = 0;
+		/// A double value is read
+
+
+	virtual void value(bool b) = 0;
+		/// A boolean value is read
+
 
 protected:
 

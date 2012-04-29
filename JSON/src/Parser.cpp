@@ -573,10 +573,9 @@ void Parser::readValue(const Token* token)
 	{
 		if ( token->tokenString().compare("null") == 0 )
 		{
-			Poco::DynamicAny null;
 			if ( _handler != NULL )
 			{
-				_handler->value(null);
+				_handler->null();
 			}
 		}
 		else  if ( token->tokenString().compare("true") == 0 )
