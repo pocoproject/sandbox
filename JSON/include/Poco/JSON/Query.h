@@ -38,78 +38,81 @@
 #ifndef JSON_JSONQuery_INCLUDED
 #define JSON_JSONQuery_INCLUDED
 
+
 #include "Poco/JSON/JSON.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Array.h"
 
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class JSON_API Query
-    /// Class that can be used to search for a value in a JSON object or array.
+	/// Class that can be used to search for a value in a JSON object or array.
 {
 public:
-  Query(const DynamicAny& source);
-     /// Constructor. Pass the start object/array.
+	Query(const DynamicAny& source);
+		/// Constructor. Pass the start object/array.
 
 
-  virtual ~Query();
-     /// Destructor
+	virtual ~Query();
+		/// Destructor
 
 
-  Object::Ptr findObject(const std::string& path) const;
-     /// Search for an object. When the object can't be found, an empty
-     /// SharedPtr is returned.
+	Object::Ptr findObject(const std::string& path) const;
+		/// Search for an object. When the object can't be found, an empty
+		/// SharedPtr is returned.
 
 
-  Array::Ptr findArray(const std::string& path) const;
-     /// Search for an array. When the array can't be found, an empty
-     /// SharedPtr is returned.
+	Array::Ptr findArray(const std::string& path) const;
+		/// Search for an array. When the array can't be found, an empty
+		/// SharedPtr is returned.
 
 
-  DynamicAny find(const std::string& path) const;
-     /// Searches a value
-     /// For example: "person.children[0].name" will return the
-     /// the name of the first child. When the value can't be found
-     /// an empty value is returned.
+	DynamicAny find(const std::string& path) const;
+		/// Searches a value
+		/// For example: "person.children[0].name" will return the
+		/// the name of the first child. When the value can't be found
+		/// an empty value is returned.
 
 
-  template<typename T>
-  T findValue(const std::string& path, const T& def) const
-     /// Searches for a value will convert it to the given type.
-     /// When the value can't be found or has an invalid type
-     /// the default value will be returned.
-  {
-    T result = def;
-    DynamicAny value = find(path);
-    if ( ! value.isEmpty() )
-    {
-      try
-      {
-        result = value.convert<T>();
-      }
-      catch(...)
-      {
-      }
-    }
-    return result;
-  }
+	template<typename T>
+	T findValue(const std::string& path, const T& def) const
+		/// Searches for a value will convert it to the given type.
+		/// When the value can't be found or has an invalid type
+		/// the default value will be returned.
+	{
+		T result = def;
+		DynamicAny value = find(path);
+		if ( ! value.isEmpty() )
+		{
+			try
+			{
+				result = value.convert<T>();
+			}
+			catch(...)
+			{
+			}
+		}
+		return result;
+	}
 
-  std::string findValue(const char* path, const char* def) const
-     /// Searches for a value will convert it to the given type.
-     /// When the value can't be found or has an invalid type
-     /// the default value will be returned.
-  {
-    return findValue<std::string>(path, def);
-  }
+	std::string findValue(const char* path, const char* def) const
+		/// Searches for a value will convert it to the given type.
+		/// When the value can't be found or has an invalid type
+		/// the default value will be returned.
+	{
+		return findValue<std::string>(path, def);
+	}
 
 private:
 
-  DynamicAny _source;
+	DynamicAny _source;
 
 };
 
-} } // Namespace JSON
+}} // Namespace JSON
 
 #endif // JSON_JSONQuery_INCLUDED

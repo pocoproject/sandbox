@@ -38,60 +38,75 @@
 #ifndef JSON_DefaultHandler_INCLUDED
 #define JSON_DefaultHandler_INCLUDED
 
+
 #include "Poco/JSON/Handler.h"
 
 #include <stack>
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class JSON_API DefaultHandler : public Handler
+	/// Provides a default handler for the JSON parser.
+	/// This handler will build up an object or array based
+	/// on the handlers called by the parser.
 {
 public:
 
 
-  DefaultHandler();
+	DefaultHandler();
+		/// Default Constructor
 
 
-  virtual ~DefaultHandler();
+	virtual ~DefaultHandler();
+		/// Destructor
 
 
-  void startObject();
+	void startObject();
+		/// Handles a {, meaning a new object will be read
 
 
-  void endObject();
+	void endObject();
+		/// Handles a }, meaning the object is read
 
 
-  void startArray();
+	void startArray();
+		/// Handles a [, meaning a new array will be read
 
 
-  void endArray();
+	void endArray();
+		/// Handles a ], meaning the array is read
 
 
-  void key(const std::string& k);
+	void key(const std::string& k);
+		/// A key is read
 
 
-  void value(const DynamicAny& value);
+	void value(const DynamicAny& value);
+		/// A value is read (a property of an object or an element of an array)
 
 
-  DynamicAny result() const;
+	DynamicAny result() const;
+		/// Returns the result of the parser. Which is an object or an array.
 
 
 private:
 
-  std::stack<DynamicAny> _stack;
+	std::stack<DynamicAny> _stack;
 
-  std::string _key;
+	std::string _key;
 
-  DynamicAny _result;
+	DynamicAny _result;
 };
 
 
 inline DynamicAny DefaultHandler::result() const
 {
-  return _result;
+	return _result;
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
 #endif // JSON_DefaultHandler_INCLUDED

@@ -37,8 +37,10 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Stringifier.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 Array::Array()
 {
@@ -57,89 +59,89 @@ Array::~Array()
 
 DynamicAny Array::get(unsigned int index) const
 {
-  DynamicAny value;
-  try
-  {
-    value = _values.at(index);
-  }
-  catch(std::out_of_range)
-  {
-    //Ignore, we return an empty value
-  }
-  return value;
+	DynamicAny value;
+	try
+	{
+		value = _values.at(index);
+	}
+	catch(std::out_of_range)
+	{
+		//Ignore, we return an empty value
+	}
+	return value;
 }
 
 Array::Ptr Array::getArray(unsigned int index) const
 {
-  Array::Ptr result;
+	Array::Ptr result;
 
-  DynamicAny value = get(index);
-  if ( value.type() == typeid(Array::Ptr) )
-  {
-    result = value.extract<Array::Ptr>();
-  }
-  return result;
+	DynamicAny value = get(index);
+	if ( value.type() == typeid(Array::Ptr) )
+	{
+		result = value.extract<Array::Ptr>();
+	}
+	return result;
 }
 
 
 Object::Ptr Array::getObject(unsigned int index) const
 {
-  Object::Ptr result;
+	Object::Ptr result;
 
-  DynamicAny value = get(index);
-  if ( value.type() == typeid(Object::Ptr) )
-  {
-    result = value.extract<Object::Ptr>();
-  }
-  return result;
+	DynamicAny value = get(index);
+	if ( value.type() == typeid(Object::Ptr) )
+	{
+		result = value.extract<Object::Ptr>();
+	}
+	return result;
 }
 
 bool Array::isObject(unsigned int index) const
 {
-  DynamicAny value = get(index);
-  return value.type() == typeid(Object::Ptr);
+	DynamicAny value = get(index);
+	return value.type() == typeid(Object::Ptr);
 }
 
 
 void Array::stringify(std::ostream& out, unsigned int indent) const
 {
-  out << "[";
-  if ( indent > 0 )
-    out << std::endl;
+	out << "[";
+	if ( indent > 0 )
+		out << std::endl;
 
-  for(ValueVector::const_iterator it = _values.begin(); it != _values.end();)
-  {
-    for(int i = 0; i < indent; i++)
-    {
-      out << ' ';
-    }
+	for(ValueVector::const_iterator it = _values.begin(); it != _values.end();)
+	{
+		for(int i = 0; i < indent; i++)
+		{
+			out << ' ';
+		}
 
-    Stringifier::stringify(*it, out, indent);
+		Stringifier::stringify(*it, out, indent);
 
-    if ( ++it != _values.end() )
-    {
-      out << ",";
-      if ( indent > 0 )
-      {
-        out << std::endl;
-      }
-    }
-  }
+		if ( ++it != _values.end() )
+		{
+			out << ",";
+			if ( indent > 0 )
+			{
+				out << std::endl;
+			}
+		}
+	}
 
-  if ( indent > 0 )
-  {
-    out << std::endl;
-  }
+	if ( indent > 0 )
+	{
+		out << std::endl;
+	}
 
-  if ( indent > 0 )
-    indent -= 2;
+	if ( indent > 0 )
+		indent -= 2;
 
-  for(int i = 0; i < indent; i++)
-  {
-    out << ' ';
-  }
+	for(int i = 0; i < indent; i++)
+	{
+		out << ' ';
+	}
 
-  out << "]";
+	out << "]";
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON

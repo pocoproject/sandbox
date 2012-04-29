@@ -38,6 +38,7 @@
 #ifndef JSON_Array_INCLUDED
 #define JSON_Array_INCLUDED
 
+
 #include <vector>
 #include <sstream>
 
@@ -45,8 +46,10 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/DynamicAny.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class Object;
 
@@ -55,160 +58,161 @@ class JSON_API Array
 {
 public:
 
-  typedef std::vector<DynamicAny> ValueVector;
+	typedef std::vector<DynamicAny> ValueVector;
 
 
-  typedef SharedPtr<Array> Ptr;
+	typedef SharedPtr<Array> Ptr;
 
 
-  Array();
-    /// Default constructor
+	Array();
+		/// Default constructor
 
 
-  Array(const Array& copy);
-    /// Copy Constructor
+	Array(const Array& copy);
+		/// Copy Constructor
 
 
-  virtual ~Array();
-    /// Destructor
+	virtual ~Array();
+		/// Destructor
 
 
-  ValueVector::const_iterator begin() const;
-    /// Returns iterator
+	ValueVector::const_iterator begin() const;
+		/// Returns iterator
 
 
-  ValueVector::const_iterator end() const;
-    /// Returns iterator
+	ValueVector::const_iterator end() const;
+		/// Returns iterator
 
 
-  DynamicAny get(unsigned int index) const;
-    /// Retrieves an element. Will return an empty value
-    /// when the element doesn't exist.
+	DynamicAny get(unsigned int index) const;
+		/// Retrieves an element. Will return an empty value
+		/// when the element doesn't exist.
 
 
-  Array::Ptr getArray(unsigned int index) const;
-    /// Retrieves an array. When the element is not
-    /// an array or doesn't exist, an empty SharedPtr is returned.
+	Array::Ptr getArray(unsigned int index) const;
+		/// Retrieves an array. When the element is not
+		/// an array or doesn't exist, an empty SharedPtr is returned.
 
-  template<typename T>
-  T getElement(unsigned int index) const
-    /// Retrieves an element and tries to convert it to the
-    /// template type. The convert<T> method of
-    /// Dynamic is called which can also throw
-    /// exceptions for invalid values.
-    /// Note: This will not work for an array or an object.
-  {
-    DynamicAny value = get(index);
-    return value.convert<T>();
-  }
-
-
-  SharedPtr<Object> getObject(unsigned int index) const;
-    /// Retrieves an object. When the element is not
-    /// an object or doesn't exist, an empty SharedPtr is returned.
-
-  unsigned int size() const;
-    /// Returns the size of the array
+	template<typename T>
+	T getElement(unsigned int index) const
+		/// Retrieves an element and tries to convert it to the
+		/// template type. The convert<T> method of
+		/// Dynamic is called which can also throw
+		/// exceptions for invalid values.
+		/// Note: This will not work for an array or an object.
+	{
+		DynamicAny value = get(index);
+		return value.convert<T>();
+	}
 
 
-  bool isArray(unsigned int index) const;
-    /// Returns true when the element is an array
+	SharedPtr<Object> getObject(unsigned int index) const;
+		/// Retrieves an object. When the element is not
+		/// an object or doesn't exist, an empty SharedPtr is returned.
+
+	unsigned int size() const;
+		/// Returns the size of the array
 
 
-  bool isNull(unsigned int index) const;
-    /// Returns true when the element is null or
-    /// when the element doesn't exist.
+	bool isArray(unsigned int index) const;
+		/// Returns true when the element is an array
 
 
-  bool isObject(unsigned int index) const;
-    /// Returns true when the element is an object
+	bool isNull(unsigned int index) const;
+		/// Returns true when the element is null or
+		/// when the element doesn't exist.
 
 
-  template<typename T>
-  T optElement(unsigned int index, const T& def) const
-    /// Returns the element at the given index. When
-    /// the element is null, doesn't exist or can't
-    /// be converted to the given type, the default
-    /// value will be returned
-  {
-    T value = def;
-    if ( index < _values.size() )
-    {
-      try
-      {
-        value = _values[index].convert<T>();
-      }
-      catch(...)
-      {
-        // Default value is returned.
-      }
-    }
-    return value;
-  }
+	bool isObject(unsigned int index) const;
+		/// Returns true when the element is an object
 
 
-  void add(const DynamicAny& value)
-   /// Add the given value to the array
-  {
-    _values.push_back(value);
-  }
+	template<typename T>
+	T optElement(unsigned int index, const T& def) const
+		/// Returns the element at the given index. When
+		/// the element is null, doesn't exist or can't
+		/// be converted to the given type, the default
+		/// value will be returned
+	{
+		T value = def;
+		if ( index < _values.size() )
+		{
+			try
+			{
+				value = _values[index].convert<T>();
+			}
+			catch(...)
+			{
+				// Default value is returned.
+			}
+		}
+		return value;
+	}
 
 
-  void stringify(std::ostream& out, unsigned int indent) const;
-    /// Prints the array to out. When indent is 0, the array
-    /// will be printed on one line without indentation.
+	void add(const DynamicAny& value)
+		/// Add the given value to the array
+	{
+		_values.push_back(value);
+	}
 
 
-  void remove(unsigned int index);
-    /// Removes the element on the given index.
+	void stringify(std::ostream& out, unsigned int indent) const;
+		/// Prints the array to out. When indent is 0, the array
+		/// will be printed on one line without indentation.
+
+
+	void remove(unsigned int index);
+		/// Removes the element on the given index.
 
 private:
 
-  ValueVector _values;
+	ValueVector _values;
 };
 
 
 inline Array::ValueVector::const_iterator Array::begin() const
 {
-  return _values.begin();
+	return _values.begin();
 }
 
 inline Array::ValueVector::const_iterator Array::end() const
 
 {
-  return _values.end();
+	return _values.end();
 }
 
 inline unsigned int Array::size() const
 {
-  return _values.size();
+	return _values.size();
 }
 
 inline bool Array::isArray(unsigned int index) const
 {
-  DynamicAny value = get(index);
-  return value.type() == typeid(Array::Ptr);
+	DynamicAny value = get(index);
+	return value.type() == typeid(Array::Ptr);
 }
 
 inline bool Array::isNull(unsigned int index) const
 {
-  if ( index < _values.size() )
-  {
-    DynamicAny value = _values[index];
-    return value.isEmpty();
-  }
-  return true;
+	if ( index < _values.size() )
+	{
+		DynamicAny value = _values[index];
+		return value.isEmpty();
+	}
+	return true;
 }
 
 
 inline void Array::remove(unsigned int index)
 {
-  _values.erase(_values.begin() + index);
+	_values.erase(_values.begin() + index);
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
-namespace Poco {
+namespace Poco
+{
 
 template <>
 class DynamicAnyHolderImpl<JSON::Array::Ptr>: public DynamicAnyHolder
@@ -269,7 +273,7 @@ public:
 
 	void convert(bool& value) const
 	{
-    value = !_val.isNull() && _val->size() > 0;
+		value = !_val.isNull() && _val->size() > 0;
 	}
 
 	void convert(float&) const
@@ -289,24 +293,24 @@ public:
 
 	void convert(std::string& s) const
 	{
-    std::ostringstream oss;
-    _val->stringify(oss, 2);
-    s = oss.str();
+		std::ostringstream oss;
+		_val->stringify(oss, 2);
+		s = oss.str();
 	}
 
 	void convert(DateTime& val) const
 	{
-		//TODO: val = _val;
+		throw BadCastException();
 	}
 
 	void convert(LocalDateTime& ldt) const
 	{
-		//TODO: ldt = _val.timestamp();
+		throw BadCastException();
 	}
 
 	void convert(Timestamp& ts) const
 	{
-		//TODO: ts = _val.timestamp();
+		throw BadCastException();
 	}
 
 	DynamicAnyHolder* clone() const
@@ -349,5 +353,6 @@ private:
 };
 
 } // Namespace Poco
+
 
 #endif // JSON_Array_INCLUDED

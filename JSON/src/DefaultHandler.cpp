@@ -36,8 +36,10 @@
 #include "Poco/JSON/DefaultHandler.h"
 #include "Poco/JSON/Object.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 DefaultHandler::DefaultHandler() : Handler()
 {
@@ -50,99 +52,99 @@ DefaultHandler::~DefaultHandler()
 
 void DefaultHandler::startObject()
 {
-  Object::Ptr newObj = new Object();
+	Object::Ptr newObj = new Object();
 
-  if ( _stack.empty() ) // The first object
-  {
-    _result = newObj;
-  }
-  else
-  {
-    DynamicAny parent = _stack.top();
+	if ( _stack.empty() ) // The first object
+	{
+		_result = newObj;
+	}
+	else
+	{
+		DynamicAny parent = _stack.top();
 
-    if ( parent.type() == typeid(Array::Ptr) )
-    {
-      Array::Ptr arr = parent.extract<Array::Ptr>();
-      arr->add(newObj);
-    }
-    else if ( parent.type() == typeid(Object::Ptr) )
-    {
-      poco_assert_dbg(!_key.empty());
-      Object::Ptr obj = parent.extract<Object::Ptr>();
-      obj->set(_key, newObj);
-      _key.clear();
-    }
-  }
-  
-  _stack.push(newObj);
+		if ( parent.type() == typeid(Array::Ptr) )
+		{
+			Array::Ptr arr = parent.extract<Array::Ptr>();
+			arr->add(newObj);
+		}
+		else if ( parent.type() == typeid(Object::Ptr) )
+		{
+			poco_assert_dbg(!_key.empty());
+			Object::Ptr obj = parent.extract<Object::Ptr>();
+			obj->set(_key, newObj);
+			_key.clear();
+		}
+	}
+
+	_stack.push(newObj);
 }
 
 
 void DefaultHandler::endObject()
 {
-  _stack.pop();
+	_stack.pop();
 }
 
 
 void DefaultHandler::startArray()
 {
-  Array::Ptr newArr = new Array();
+	Array::Ptr newArr = new Array();
 
-  if ( _stack.empty() ) // The first array
-  {
-    _result = newArr;
-  }
-  else
-  {
-    DynamicAny parent = _stack.top();
+	if ( _stack.empty() ) // The first array
+	{
+		_result = newArr;
+	}
+	else
+	{
+		DynamicAny parent = _stack.top();
 
-    if ( parent.type() == typeid(Array::Ptr) )
-    {
-      Array::Ptr arr = parent.extract<Array::Ptr>();
-      arr->add(newArr);
-    }
-    else if ( parent.type() == typeid(Object::Ptr) )
-    {
-      poco_assert_dbg(!_key.empty());
-      Object::Ptr obj = parent.extract<Object::Ptr>();
-      obj->set(_key, newArr);
-      _key.clear();
-    }
-  }
-  
-  _stack.push(newArr);
+		if ( parent.type() == typeid(Array::Ptr) )
+		{
+			Array::Ptr arr = parent.extract<Array::Ptr>();
+			arr->add(newArr);
+		}
+		else if ( parent.type() == typeid(Object::Ptr) )
+		{
+			poco_assert_dbg(!_key.empty());
+			Object::Ptr obj = parent.extract<Object::Ptr>();
+			obj->set(_key, newArr);
+			_key.clear();
+		}
+	}
+
+	_stack.push(newArr);
 }
 
 
 void DefaultHandler::endArray()
 {
-  _stack.pop();
+	_stack.pop();
 }
 
 
 void DefaultHandler::key(const std::string& k)
 {
-  _key = k;
+	_key = k;
 }
 
 
 void DefaultHandler::value(const Poco::DynamicAny& value)
 {
-  DynamicAny parent = _stack.top();
+	DynamicAny parent = _stack.top();
 
-  if ( parent.type() == typeid(Array::Ptr) )
-  {
-    Array::Ptr arr = parent.extract<Array::Ptr>();
-    arr->add(value);
-  }
-  else if ( parent.type() == typeid(Object::Ptr) )
-  {
-    poco_assert_dbg(!_key.empty());
-    Object::Ptr obj = parent.extract<Object::Ptr>();
-    obj->set(_key, value);
-    _key.clear();
-  }
-  
+	if ( parent.type() == typeid(Array::Ptr) )
+	{
+		Array::Ptr arr = parent.extract<Array::Ptr>();
+		arr->add(value);
+	}
+	else if ( parent.type() == typeid(Object::Ptr) )
+	{
+		poco_assert_dbg(!_key.empty());
+		Object::Ptr obj = parent.extract<Object::Ptr>();
+		obj->set(_key, value);
+		_key.clear();
+	}
+
 }
 
 }} // Namespace Poco::JSON

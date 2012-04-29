@@ -34,8 +34,10 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
+
 #ifndef JSON_JSONParser_INCLUDED
 #define JSON_JSONParser_INCLUDED
+
 
 #include <istream>
 #include <sstream>
@@ -48,86 +50,91 @@
 #include "Poco/JSON/Array.h"
 #include "Poco/JSON/Handler.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class JSON_API Parser
-   /// A class for passing JSON strings or streams
+	/// A class for passing JSON strings or streams
 {
 public:
 
-  Parser();
-    /// Constructor
+	Parser();
+		/// Constructor
 
 
-  virtual ~Parser();
-    /// Destructor
+	virtual ~Parser();
+		/// Destructor
 
 
-  void parse(const std::string& source);
-    /// Parses a string
+	void parse(const std::string& source);
+		/// Parses a string
 
 
-  void parse(std::istream& in);
-    /// Parses a JSON from the input stream
+	void parse(std::istream& in);
+		/// Parses a JSON from the input stream
 
 
-  void setHandler(Handler* handler);
+	void setHandler(Handler* handler);
+		/// Set the handler
 
+	Handler* getHandler();
+		/// Returns the handler
 
-  Handler* getHandler();
 
 private:
 
 
-  const Token* nextToken();
+	const Token* nextToken();
+		/// Returns the next token
 
 
-  void readObject();
-    /// Starts reading an object
+	void readObject();
+		/// Starts reading an object
 
 
-  void readArray();
-    /// Starts reading an array
+	void readArray();
+		/// Starts reading an array
 
 
-  bool readRow(bool firstCall = false);
-    /// Reads a property value pair. Returns true when a next row is expected.
+	bool readRow(bool firstCall = false);
+		/// Reads a property value pair. Returns true when a next row is expected.
 
 
-  void readValue(const Token* token);
-    /// Read a value from the token
+	void readValue(const Token* token);
+		/// Read a value from the token
 
 
-  bool readElements(bool firstCall = false);
-    /// Read all elements of an array
+	bool readElements(bool firstCall = false);
+		/// Read all elements of an array
 
 
-  StreamTokenizer _tokenizer;
+	StreamTokenizer _tokenizer;
 
 
-  Handler* _handler;
+	Handler* _handler;
 };
 
 
 inline void Parser::parse(const std::string& source)
 {
-  std::istringstream is(source);
-  parse(is);
+	std::istringstream is(source);
+	parse(is);
 }
 
 
 inline void Parser::setHandler(Handler* handler)
 {
-  _handler = handler;
+	_handler = handler;
 }
 
 
 inline Handler* Parser::getHandler()
 {
-  return _handler;
+	return _handler;
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
 #endif // JSON_JSONParser_INCLUDED

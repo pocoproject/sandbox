@@ -38,6 +38,7 @@
 #ifndef JSON_Object_INCLUDED
 #define JSON_Object_INCLUDED
 
+
 #include <map>
 #include <vector>
 #include <iostream>
@@ -49,168 +50,171 @@
 #include "Poco/JSON/JSON.h"
 #include "Poco/JSON/Array.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 
 class JSON_API Object
-  /// Represents a JSON object
+	/// Represents a JSON object
 {
 public:
 
-  typedef SharedPtr<Object> Ptr;
+	typedef SharedPtr<Object> Ptr;
 
 
-  Object();
-    /// Default constructor
+	Object();
+		/// Default constructor
 
-  Object(const Object& copy);
-    // Copy constructor
-
-
-  virtual ~Object();
-    /// Destructor
-
-  DynamicAny get(const std::string& key) const;
-    /// Retrieves a property. An empty value is
-    /// returned when the property doesn't exist.
+	Object(const Object& copy);
+		/// Copy constructor
 
 
-  Array::Ptr getArray(const std::string& key) const;
-    /// Returns a SharedPtr to an array when the property
-    /// is an array. An empty SharedPtr is returned when
-    /// the element doesn't exist or is not an array.
+	virtual ~Object();
+		/// Destructor
+
+	DynamicAny get(const std::string& key) const;
+		/// Retrieves a property. An empty value is
+		/// returned when the property doesn't exist.
 
 
-  Object::Ptr getObject(const std::string& key) const;
-    /// Returns a SharedPtr to an object when the property
-    /// is an object. An empty SharedPtr is returned when
-    /// the property doesn't exist or is not an object
+	Array::Ptr getArray(const std::string& key) const;
+		/// Returns a SharedPtr to an array when the property
+		/// is an array. An empty SharedPtr is returned when
+		/// the element doesn't exist or is not an array.
 
 
-  template<typename T>
-  T getValue(const std::string& key) const
-    /// Retrieves the property with the given name and will
-    /// try to convert the value to the given template type.
-    /// The convert<T> method of Dynamic is called
-    /// which can also throw exceptions for invalid values.
-    /// Note: This will not work for an array or an object.
-  {
-    DynamicAny value = get(key);
-    return value.convert<T>();
-  }
-
-  void getNames(std::vector<std::string>& names) const;
-    /// Returns all property names
+	Object::Ptr getObject(const std::string& key) const;
+		/// Returns a SharedPtr to an object when the property
+		/// is an object. An empty SharedPtr is returned when
+		/// the property doesn't exist or is not an object
 
 
-  bool has(const std::string& key) const;
-    /// Returns true when the given property exists
+	template<typename T>
+	T getValue(const std::string& key) const
+		/// Retrieves the property with the given name and will
+		/// try to convert the value to the given template type.
+		/// The convert<T> method of Dynamic is called
+		/// which can also throw exceptions for invalid values.
+		/// Note: This will not work for an array or an object.
+	{
+		DynamicAny value = get(key);
+		return value.convert<T>();
+	}
+
+	void getNames(std::vector<std::string>& names) const;
+		/// Returns all property names
 
 
-  bool isArray(const std::string& key) const;
-    /// Returns true when the given property contains an array
+	bool has(const std::string& key) const;
+		/// Returns true when the given property exists
 
 
-  bool isNull(const std::string& key) const;
-    /// Returns true when the given property contains a null value
+	bool isArray(const std::string& key) const;
+		/// Returns true when the given property contains an array
 
 
-  bool isObject(const std::string& key) const;
-    /// Returns true when the given property contains an object
+	bool isNull(const std::string& key) const;
+		/// Returns true when the given property contains a null value
 
 
-  template<typename T>
-  T optValue(const std::string& key, const T& def) const
-    /// Returns the value of a property when the property exists
-    /// and can be converted to the given type. Otherwise
-    /// def will be returned.
-  {
-    T value = def;
-    ValueMap::const_iterator it = _values.find(key);
-    if (      it != _values.end()
-         && ! it->second.isEmpty() )
-    {
-      try
-      {
-        value = it->second.convert<T>();
-      }
-      catch(...)
-      {
-        // The default value will be returned
-      }
-    }
-    return value;
-  }
+	bool isObject(const std::string& key) const;
+		/// Returns true when the given property contains an object
 
 
-  unsigned int size() const;
-    /// Returns the number of properties
+	template<typename T>
+	T optValue(const std::string& key, const T& def) const
+		/// Returns the value of a property when the property exists
+		/// and can be converted to the given type. Otherwise
+		/// def will be returned.
+	{
+		T value = def;
+		ValueMap::const_iterator it = _values.find(key);
+		if (      it != _values.end()
+		          && ! it->second.isEmpty() )
+		{
+			try
+			{
+				value = it->second.convert<T>();
+			}
+			catch(...)
+			{
+				// The default value will be returned
+			}
+		}
+		return value;
+	}
 
 
-  void set(const std::string& key, const DynamicAny& value);
-    /// Sets a new value
+	unsigned int size() const;
+		/// Returns the number of properties
 
 
-  void stringify(std::ostream& out, unsigned int indent = 0) const;
-    /// Prints the object to out. When indent is 0, the object
-    /// will be printed on one line without indentation.
+	void set(const std::string& key, const DynamicAny& value);
+		/// Sets a new value
 
 
-  void remove(const std::string& key);
-    /// Removes the property with the given key
+	void stringify(std::ostream& out, unsigned int indent = 0) const;
+		/// Prints the object to out. When indent is 0, the object
+		/// will be printed on one line without indentation.
+
+
+	void remove(const std::string& key);
+		/// Removes the property with the given key
 
 
 private:
 
-  typedef std::map<std::string, DynamicAny> ValueMap;
-  ValueMap _values;
+	typedef std::map<std::string, DynamicAny> ValueMap;
+	ValueMap _values;
 };
 
 
 inline bool Object::has(const std::string& key) const
 {
-  ValueMap::const_iterator it = _values.find(key);
-  return it != _values.end();
+	ValueMap::const_iterator it = _values.find(key);
+	return it != _values.end();
 }
 
 inline bool Object::isArray(const std::string& key) const
 {
-  ValueMap::const_iterator it = _values.find(key);
-  return it != _values.end() || it->second.type() == typeid(Array::Ptr);
+	ValueMap::const_iterator it = _values.find(key);
+	return it != _values.end() || it->second.type() == typeid(Array::Ptr);
 }
 
 inline bool Object::isNull(const std::string& key) const
 {
-  ValueMap::const_iterator it = _values.find(key);
-  return it == _values.end() || it->second.isEmpty();
+	ValueMap::const_iterator it = _values.find(key);
+	return it == _values.end() || it->second.isEmpty();
 }
 
 inline bool Object::isObject(const std::string& key) const
 {
-  ValueMap::const_iterator it = _values.find(key);
-  return it != _values.end() || it->second.type() == typeid(Object::Ptr);
+	ValueMap::const_iterator it = _values.find(key);
+	return it != _values.end() || it->second.type() == typeid(Object::Ptr);
 }
 
 inline void Object::set(const std::string& key, const DynamicAny& value)
-  /// Sets a new value
 {
-  _values[key] = value;
+	_values[key] = value;
 }
 
 inline unsigned int Object::size() const
 {
-  return _values.size();
+	return _values.size();
 }
 
 inline void Object::remove(const std::string& key)
 {
-  _values.erase(key);
+	_values.erase(key);
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
-namespace Poco {
+
+namespace Poco
+{
 
 template <>
 class DynamicAnyHolderImpl<JSON::Object::Ptr>: public DynamicAnyHolder
@@ -271,7 +275,7 @@ public:
 
 	void convert(bool& value) const
 	{
-    value = !_val.isNull() && _val->size() > 0;
+		value = !_val.isNull() && _val->size() > 0;
 	}
 
 	void convert(float&) const
@@ -291,9 +295,9 @@ public:
 
 	void convert(std::string& s) const
 	{
-    std::ostringstream oss;
-    _val->stringify(oss, 2);
-    s = oss.str();
+		std::ostringstream oss;
+		_val->stringify(oss, 2);
+		s = oss.str();
 	}
 
 	void convert(DateTime& val) const

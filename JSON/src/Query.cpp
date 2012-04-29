@@ -41,8 +41,10 @@
 
 #include "Poco/JSON/Query.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 Query::Query(const DynamicAny& source) : _source(source)
 {
@@ -55,85 +57,85 @@ Query::~Query()
 
 Object::Ptr Query::findObject(const std::string& path) const
 {
-  Object::Ptr obj;
-  DynamicAny result = find(path);
-  if ( result.type() == typeid(Object::Ptr) )
-  {
-    obj = result.extract<Object::Ptr>();
-  }
-  return obj;
+	Object::Ptr obj;
+	DynamicAny result = find(path);
+	if ( result.type() == typeid(Object::Ptr) )
+	{
+		obj = result.extract<Object::Ptr>();
+	}
+	return obj;
 }
 
 Array::Ptr Query::findArray(const std::string& path) const
 {
-  Array::Ptr arr;
-  DynamicAny result = find(path);
-  if ( result.type() == typeid(Array::Ptr) )
-  {
-    arr = result.extract<Array::Ptr>();
-  }
-  return arr;
+	Array::Ptr arr;
+	DynamicAny result = find(path);
+	if ( result.type() == typeid(Array::Ptr) )
+	{
+		arr = result.extract<Array::Ptr>();
+	}
+	return arr;
 }
 
 
 DynamicAny Query::find(const std::string& path) const
 {
-  DynamicAny result = _source;
-  StringTokenizer tokenizer(path, ".");
-  for(StringTokenizer::Iterator token = tokenizer.begin(); token != tokenizer.end(); token++)
-  {
-    if ( !result.isEmpty() )
-    {
-      std::vector<int> indexes;
-      RegularExpression::MatchVec matches;
-      int firstOffset = -1;
-      int offset = 0;
-      RegularExpression regex("\\[([0-9]+)\\]");
-      while(regex.match(*token, offset, matches) > 0 )
-      {
-        if ( firstOffset == -1 )
-        {
-          firstOffset = matches[0].offset;
-        }
-        std::string num = token->substr(matches[1].offset, matches[1].length);
-        indexes.push_back(NumberParser::parse(num));
-        offset = matches[0].offset + matches[0].length;
-      }
+	DynamicAny result = _source;
+	StringTokenizer tokenizer(path, ".");
+	for(StringTokenizer::Iterator token = tokenizer.begin(); token != tokenizer.end(); token++)
+	{
+		if ( !result.isEmpty() )
+		{
+			std::vector<int> indexes;
+			RegularExpression::MatchVec matches;
+			int firstOffset = -1;
+			int offset = 0;
+			RegularExpression regex("\\[([0-9]+)\\]");
+			while(regex.match(*token, offset, matches) > 0 )
+			{
+				if ( firstOffset == -1 )
+				{
+					firstOffset = matches[0].offset;
+				}
+				std::string num = token->substr(matches[1].offset, matches[1].length);
+				indexes.push_back(NumberParser::parse(num));
+				offset = matches[0].offset + matches[0].length;
+			}
 
-      std::string name(*token);
-      if ( firstOffset != -1 )
-      {
-        name = name.substr(0, firstOffset);
-      }
+			std::string name(*token);
+			if ( firstOffset != -1 )
+			{
+				name = name.substr(0, firstOffset);
+			}
 
-      if ( name.length() > 0 )
-      {
-        if ( result.type() == typeid(Object::Ptr) )
-        {
-          Object::Ptr o = result.extract<Object::Ptr>();
-          result = o->get(name);
-        }
-      }
+			if ( name.length() > 0 )
+			{
+				if ( result.type() == typeid(Object::Ptr) )
+				{
+					Object::Ptr o = result.extract<Object::Ptr>();
+					result = o->get(name);
+				}
+			}
 
-      if (    !result.isEmpty()
-           && !indexes.empty() )
-      {
-        for(std::vector<int>::iterator it = indexes.begin(); it != indexes.end(); ++it )
-        {
-          if ( result.type() == typeid(Array::Ptr) )
-          {
-            Array::Ptr array = result.extract<Array::Ptr>();
-            result = array->get(*it);
-            if ( result.isEmpty() )
-            {
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
-  return result;
+			if (    !result.isEmpty()
+			        && !indexes.empty() )
+			{
+				for(std::vector<int>::iterator it = indexes.begin(); it != indexes.end(); ++it )
+				{
+					if ( result.type() == typeid(Array::Ptr) )
+					{
+						Array::Ptr array = result.extract<Array::Ptr>();
+						result = array->get(*it);
+						if ( result.isEmpty() )
+						{
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON

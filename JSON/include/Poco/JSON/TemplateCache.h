@@ -38,6 +38,7 @@
 #ifndef JSON_JSONTemplateCache_INCLUDED
 #define JSON_JSONTemplateCache_INCLUDED
 
+
 #include <vector>
 #include <map>
 
@@ -47,89 +48,92 @@
 
 #include "Poco/JSON/Template.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class JSON_API TemplateCache
-  /// Use to cache parsed templates. Templates are
-  /// stored in a map with the full path as key.
-  /// When a template file has changed, the cache
-  /// will remove the old template from the cache
-  /// and load a new one.
+	/// Use to cache parsed templates. Templates are
+	/// stored in a map with the full path as key.
+	/// When a template file has changed, the cache
+	/// will remove the old template from the cache
+	/// and load a new one.
 {
 public:
 
-  TemplateCache();
-    /// Constructor. The cache must be created
-    /// and not destroyed as long as it is used.
+	TemplateCache();
+		/// Constructor. The cache must be created
+		/// and not destroyed as long as it is used.
 
 
-  virtual ~TemplateCache();
-    /// Destructor
+	virtual ~TemplateCache();
+		/// Destructor
 
 
-  void addPath(const Path& path);
-    /// Add a path for resolving template paths.
-    /// The order of check is FIFO.
+	void addPath(const Path& path);
+		/// Add a path for resolving template paths.
+		/// The order of check is FIFO.
 
 
-  Template::Ptr getTemplate(const Path& path);
-    /// Returns a template from the cache.
-    /// When the template file is not yet loaded
-    /// or when the file has changed, the template
-    /// will be (re)loaded and parsed. A shared pointer
-    /// is returned, so it is safe to use this template
-    /// even when the template isn't stored anymore in
-    /// the cache.
+	Template::Ptr getTemplate(const Path& path);
+		/// Returns a template from the cache.
+		/// When the template file is not yet loaded
+		/// or when the file has changed, the template
+		/// will be (re)loaded and parsed. A shared pointer
+		/// is returned, so it is safe to use this template
+		/// even when the template isn't stored anymore in
+		/// the cache.
 
 
-  static TemplateCache* instance();
-    /// Returns the only instance of this cache
+	static TemplateCache* instance();
+		/// Returns the only instance of this cache
 
 
-  void setLogger(Logger& logger);
-    /// Sets the logger for the cache.
+	void setLogger(Logger& logger);
+		/// Sets the logger for the cache.
+
 
 private:
 
-  static TemplateCache* _instance;
+	static TemplateCache* _instance;
 
 
-  std::vector<Path> _includePaths;
+	std::vector<Path> _includePaths;
 
 
-  std::map<std::string, Template::Ptr> _cache;
+	std::map<std::string, Template::Ptr> _cache;
 
 
-  Logger* _logger;
+	Logger* _logger;
 
 
-  void setup();
+	void setup();
 
 
-  Path resolvePath(const Path& path) const;
+	Path resolvePath(const Path& path) const;
 };
 
 
 inline void TemplateCache::addPath(const Path& path)
 {
-  _includePaths.push_back(path);
+	_includePaths.push_back(path);
 }
 
 
 inline TemplateCache* TemplateCache::instance()
 {
-  return _instance;
+	return _instance;
 }
 
 
 inline void TemplateCache::setLogger(Logger& logger)
 {
-  _logger = &logger;
+	_logger = &logger;
 }
 
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
 
 #endif // JSON_JSONTemplateCache_INCLUDED

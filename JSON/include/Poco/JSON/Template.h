@@ -38,6 +38,7 @@
 #ifndef JSON_JSONTemplate_INCLUDED
 #define JSON_JSONTemplate_INCLUDED
 
+
 #include <sstream>
 #include <stack>
 
@@ -48,132 +49,134 @@
 #include "Poco/Timestamp.h"
 
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 class MultiPart;
 
 POCO_DECLARE_EXCEPTION(JSON_API, JSONTemplateException, Poco::Exception)
 
 class JSON_API Template
-  /// Template is a template engine which uses JSON as input
-  /// for generating output. There are commands for
-  /// looping over JSON arrays, include other templates,
-  /// conditional output, ...
-  ///
-  /// All text is send to the outputstream. A command is placed
-  /// between <? and ?>.
-  ///
-  /// These are the available commands:
-  ///  <? echo query ?>
-  ///     The result of the query is send to the output stream
-  ///     This command can also be written as <?= query ?>
-  ///  <? if query ?> <? else ?> <? endif ?>
-  ///     When the result of query is true, all the text between
-  ///     if and else (or endif when there is no else) is send to the
-  ///     output stream. When the result of query is false, all the text
-  ///     between else and endif is send to the output stream. An empty
-  ///     object, an empty array or a null value is considered as a false value.
-  ///     For numbers a zero is false. An empty String is also false.
-  ///  <? ifexist query ?> <? else ?> <? endif ?>
-  ///     This can be used to check the existance of the value.
-  ///     Use this for example when a zero value is ok (which returns false for <? if ?>.
-  ///  <? for variable query ?> <? endfor ?>
-  ///     The result of the query must be an array. For each element
-  ///     in the array the text between for and endfor is send to the
-  ///     output stream. The active element is stored in the variable.
-  ///  <? include "filename" ?>
-  ///     Includes a template. When the filename is relative it will try
-  ///     to resolve the filename against the active template. When this
-  ///     file doesn't exist, it can still be found when the JSONTemplateCache
-  ///     is used.
-  ///
-  ///  A query is passed to JSONQuery to get the value.
+	/// Template is a template engine which uses JSON as input
+	/// for generating output. There are commands for
+	/// looping over JSON arrays, include other templates,
+	/// conditional output, ...
+	///
+	/// All text is send to the outputstream. A command is placed
+	/// between <? and ?>.
+	///
+	/// These are the available commands:
+	///  <? echo query ?>
+	///     The result of the query is send to the output stream
+	///     This command can also be written as <?= query ?>
+	///  <? if query ?> <? else ?> <? endif ?>
+	///     When the result of query is true, all the text between
+	///     if and else (or endif when there is no else) is send to the
+	///     output stream. When the result of query is false, all the text
+	///     between else and endif is send to the output stream. An empty
+	///     object, an empty array or a null value is considered as a false value.
+	///     For numbers a zero is false. An empty String is also false.
+	///  <? ifexist query ?> <? else ?> <? endif ?>
+	///     This can be used to check the existance of the value.
+	///     Use this for example when a zero value is ok (which returns false for <? if ?>.
+	///  <? for variable query ?> <? endfor ?>
+	///     The result of the query must be an array. For each element
+	///     in the array the text between for and endfor is send to the
+	///     output stream. The active element is stored in the variable.
+	///  <? include "filename" ?>
+	///     Includes a template. When the filename is relative it will try
+	///     to resolve the filename against the active template. When this
+	///     file doesn't exist, it can still be found when the JSONTemplateCache
+	///     is used.
+	///
+	///  A query is passed to Poco::JSON::Query to get the value.
 {
 public:
-  Template();
-    /// Constructor
+	typedef SharedPtr<Template> Ptr;
 
 
-  Template(const Path& templatePath);
-    /// Constructor. Creates a template from a file.
+	Template();
+		/// Constructor
 
 
-  typedef SharedPtr<Template> Ptr;
+	Template(const Path& templatePath);
+		/// Constructor. Creates a template from a file.
 
 
-  virtual ~Template();
-    /// Destructor
+	virtual ~Template();
+		/// Destructor
 
 
-  void parse();
-    /// Parse a template from a file
+	void parse();
+		/// Parse a template from a file
 
 
-  void parse(const std::string& source);
-    /// Parse a template from a String
+	void parse(const std::string& source);
+		/// Parse a template from a String
 
 
-  void parse(std::istream& in);
-    /// Parse a template from a input stream
+	void parse(std::istream& in);
+		/// Parse a template from a input stream
 
 
-  Timestamp parseTime() const;
-    /// Returns the time when the template was parsed
+	Timestamp parseTime() const;
+		/// Returns the time when the template was parsed
 
 
-  void render(const DynamicAny& data, std::ostream& out) const;
-    /// Renders the template and send the output to the stream
+	void render(const DynamicAny& data, std::ostream& out) const;
+		/// Renders the template and send the output to the stream
 
 
 private:
 
 
-  std::string readText(std::istream& in);
+	std::string readText(std::istream& in);
 
 
-  std::string readWord(std::istream& in);
+	std::string readWord(std::istream& in);
 
 
-  std::string readQuery(std::istream& in);
+	std::string readQuery(std::istream& in);
 
 
-  std::string readTemplateCommand(std::istream& in);
+	std::string readTemplateCommand(std::istream& in);
 
 
-  std::string readString(std::istream& in);
+	std::string readString(std::istream& in);
 
 
-  void readWhiteSpace(std::istream& in);
+	void readWhiteSpace(std::istream& in);
 
 
-  MultiPart* _parts;
+	MultiPart* _parts;
 
 
-  std::stack<MultiPart*> _partStack;
+	std::stack<MultiPart*> _partStack;
 
 
-  MultiPart* _currentPart;
+	MultiPart* _currentPart;
 
 
-  Path _templatePath;
+	Path _templatePath;
 
 
-  Timestamp _parseTime;
+	Timestamp _parseTime;
 };
 
 inline void Template::parse(const std::string& source)
 {
-  std::istringstream is(source);
-  parse(is);
+	std::istringstream is(source);
+	parse(is);
 }
 
 
 inline Timestamp Template::parseTime() const
 {
-  return _parseTime;
+	return _parseTime;
 }
 
-} } // Namespace Poco::JSON
+}} // Namespace Poco::JSON
 
 #endif // JSON_JSONTemplate_INCLUDED

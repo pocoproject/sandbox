@@ -39,60 +39,76 @@
 #include "Poco/JSON/Array.h"
 #include "Poco/JSON/Object.h"
 
-namespace Poco {
-namespace JSON {
+namespace Poco
+{
+namespace JSON
+{
 
 void Stringifier::stringify(const DynamicAny& any, std::ostream& out, unsigned int indent)
 {
-  if ( any.type() == typeid(Object::Ptr) )
-  {
-    const Object::Ptr& o = any.extract<Object::Ptr>();
-    o->stringify(out, indent == 0 ? 0 : indent + 2);
-  }
-  else if ( any.type() == typeid(Array::Ptr) )
-  {
-    const Array::Ptr& a = any.extract<Array::Ptr>();
-    a->stringify(out, indent == 0 ? 0 : indent + 2);
-  }
-  else if ( any.isEmpty() )
-  {
-    out << "null";
-  }
-  else if ( any.isString() )
-  {
-    out << '"';
-    std::string value = any.convert<std::string>();
-    for(std::string::const_iterator it = value.begin(); it != value.end(); ++it)
-    {
-      switch (*it)
-      {
-        case '"': out << "\\\""; break;
-        case '\\': out << "\\\\"; break;
-        case '\b': out << "\\b"; break;
-        case '\f': out << "\\f"; break;
-        case '\n': out << "\\n"; break;
-        case '\r': out << "\\r"; break;
-        case '\t': out << "\\t"; break;
-        default:
-        {
-          if ( *it > 0 && *it <= 0x1F )
-          {
-            out << "\\u" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << static_cast<int>(*it);
-          }
-          else
-          {
-            out << *it;
-          }
-          break;
-        }
-      }
-    }
-    out << '"';
-  }
-  else
-  {
-    out << any.convert<std::string>();
-  }
+	if ( any.type() == typeid(Object::Ptr) )
+	{
+		const Object::Ptr& o = any.extract<Object::Ptr>();
+		o->stringify(out, indent == 0 ? 0 : indent + 2);
+	}
+	else if ( any.type() == typeid(Array::Ptr) )
+	{
+		const Array::Ptr& a = any.extract<Array::Ptr>();
+		a->stringify(out, indent == 0 ? 0 : indent + 2);
+	}
+	else if ( any.isEmpty() )
+	{
+		out << "null";
+	}
+	else if ( any.isString() )
+	{
+		out << '"';
+		std::string value = any.convert<std::string>();
+		for(std::string::const_iterator it = value.begin(); it != value.end(); ++it)
+		{
+			switch (*it)
+			{
+			case '"':
+				out << "\\\"";
+				break;
+			case '\\':
+				out << "\\\\";
+				break;
+			case '\b':
+				out << "\\b";
+				break;
+			case '\f':
+				out << "\\f";
+				break;
+			case '\n':
+				out << "\\n";
+				break;
+			case '\r':
+				out << "\\r";
+				break;
+			case '\t':
+				out << "\\t";
+				break;
+			default:
+			{
+				if ( *it > 0 && *it <= 0x1F )
+				{
+					out << "\\u" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << static_cast<int>(*it);
+				}
+				else
+				{
+					out << *it;
+				}
+				break;
+			}
+			}
+		}
+		out << '"';
+	}
+	else
+	{
+		out << any.convert<std::string>();
+	}
 }
 
-} }  // Namespace Poco::JSON
+}}  // Namespace Poco::JSON
