@@ -46,6 +46,7 @@
 #include "Poco/SharedPtr.h"
 #include "Poco/Timestamp.h"
 #include "Poco/RegularExpression.h"
+#include "Poco/Nullable.h"
 
 #include "Poco/MongoDB/MongoDB.h"
 #include "Poco/MongoDB/BSONReader.h"
@@ -197,14 +198,7 @@ inline void BSONWriter::write<Timestamp>(Timestamp& from)
 	_writer << (from.epochMicroseconds() / 1000);
 }
 
-class NullValue
-{
-public:
-	static NullValue& value() { static NullValue empty; return empty; }
-	virtual ~NullValue() {}
-private:
-	NullValue() {}
-};
+typedef Nullable<unsigned char> NullValue;
 
 // BSON Null Value
 // spec:
@@ -212,10 +206,6 @@ template<>
 struct ElementTraits<NullValue>
 {
 	enum { TypeId = 0x0A };
-
-	static void read(BinaryReader& reader, NullValue& to)
-	{
-	}
 };
 
 template<>

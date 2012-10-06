@@ -100,7 +100,7 @@ void Document::read(BinaryReader& reader)
 			element = new ConcreteElement<Poco::Timestamp>(name, Poco::Timestamp());
 			break;
 		case ElementTraits<NullValue>::TypeId:
-			element = new ConcreteElement<NullValue>(name, NullValue::value());
+			element = new ConcreteElement<NullValue>(name, NullValue(0));
 			break;
 		case ElementTraits<RegularExpression::Ptr>::TypeId:
 			element = new ConcreteElement<RegularExpression::Ptr>(name, new RegularExpression());

@@ -130,6 +130,19 @@ public:
 	}
 
 
+	template<typename T>
+	bool isType(const std::string& name)
+	{
+		Element::Ptr element = get(name);
+		if ( element.isNull() )
+		{
+			return false;
+		}
+
+		return ElementTraits<T>::TypeId == element->type();
+	}
+
+
 	void addElement(Element::Ptr element);
 
 

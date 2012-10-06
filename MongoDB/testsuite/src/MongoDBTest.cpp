@@ -103,6 +103,8 @@ void MongoDBTest::testInsertRequest()
 	std::cout << now.day() << " " << now.hour() << ":" << now.minute() << ":" << now.second() << std::endl;
 	player->add("lastupdated", now.timestamp());
 
+	player->add("unknown", NullValue());
+
 	Poco::MongoDB::InsertRequest request("team.players");
 	request.documents().push_back(player);
 	_mongo.sendRequest(request);
@@ -127,7 +129,7 @@ void MongoDBTest::testQueryRequest()
 	if ( response.documents().size() > 0 )
 	{
 		Poco::MongoDB::Document::Ptr doc = response.documents()[0];
-		std::cout << doc->toString() << std::endl;
+
 		try
 		{
 			std::string lastname = doc->get<std::string>("lastname");
@@ -136,10 +138,9 @@ void MongoDBTest::testQueryRequest()
 			assert(firstname.compare("Franky") == 0);
 			Poco::Timestamp birthDateTimestamp = doc->get<Poco::Timestamp>("birthdate");
 			Poco::DateTime birthDate(birthDateTimestamp);
-			//assert(birthDate.year() == 1969 && birthDate.month() == 3 && birthDate.day() == 9);
+			assert(birthDate.year() == 1969 && birthDate.month() == 3 && birthDate.day() == 9);
 			Poco::Timestamp lastupdatedTimestamp = doc->get<Poco::Timestamp>("lastupdated");
-			Poco::DateTime lastupdate(lastupdatedTimestamp);
-			std::cout << lastupdate.day() << " " << lastupdate.hour() << ":" << lastupdate.minute() << ":" << lastupdate.second() << "." << lastupdate.millisecond() << std::endl;
+			assert(doc->isType<NullValue>("unknown"));
 		}
 		catch(Poco::NotFoundException& nfe)
 		{
