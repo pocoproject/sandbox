@@ -38,8 +38,13 @@
 #ifndef _MongoDB_Binary_included
 #define _MongoDB_Binary_included
 
-#include "Poco/MongoDB/MongoDB.h"
+#include "Poco/Base64Encoder.h"
 #include "Poco/Buffer.h"
+#include "Poco/StreamCopier.h"
+#include "Poco/MemoryStream.h"
+#include <sstream>
+
+#include "Poco/MongoDB/MongoDB.h"
 #include "Poco/MongoDB/Element.h"
 
 namespace Poco
@@ -65,6 +70,9 @@ public:
 	virtual ~Binary();
 
 
+	Buffer<unsigned char>& buffer();
+
+
 	unsigned char subtype() const;
 		/// Returns the subtype
 
@@ -73,7 +81,7 @@ public:
 		/// Sets the subtype
 
 
-	Buffer<unsigned char>& buffer();
+	std::string toString() const;
 
 
 private:
@@ -83,6 +91,7 @@ private:
 
 	unsigned char _subtype;
 };
+
 
 inline unsigned char Binary::subtype() const
 {
@@ -102,12 +111,26 @@ inline Buffer<unsigned char>& Binary::buffer()
 }
 
 
+inline std::string Binary::toString() const
+{
+	std::ostringstream oss;
+	Base64Encoder encoder(oss);
+	MemoryInputStream mis((const char*) _buffer.begin(), _buffer.size());
+	StreamCopier::copyStream(mis, encoder);
+	return oss.str();
+}
+
 // BSON Embedded Document
 // spec: binary
 template<>
 struct ElementTraits<Binary::Ptr>
 {
 	enum { TypeId = 0x05 };
+
+	static std::string toString(const Binary::Ptr& value)
+	{
+		return value.isNull() ? "" : value->toString();
+	}
 };
 
 template<>

@@ -185,6 +185,12 @@ template<>
 struct ElementTraits<Document::Ptr>
 {
 	enum { TypeId = 0x03 };
+
+	static std::string toString(const Document::Ptr& value)
+	{
+		//TODO
+		return value.isNull() ? "null" : "{}";
+	}
 };
 
 template<>

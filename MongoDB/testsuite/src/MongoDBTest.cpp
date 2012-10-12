@@ -141,6 +141,9 @@ void MongoDBTest::testQueryRequest()
 			assert(birthDate.year() == 1969 && birthDate.month() == 3 && birthDate.day() == 9);
 			Poco::Timestamp lastupdatedTimestamp = doc->get<Poco::Timestamp>("lastupdated");
 			assert(doc->isType<NullValue>("unknown"));
+
+			std::string id = doc->get("_id")->toString();
+			std::cout << id << std::endl;
 		}
 		catch(Poco::NotFoundException& nfe)
 		{

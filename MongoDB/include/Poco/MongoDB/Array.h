@@ -66,6 +66,13 @@ template<>
 struct ElementTraits<Array::Ptr>
 {
 	enum { TypeId = 0x04 };
+
+	static std::string toString(const Array::Ptr& value)
+	{
+		//TODO:
+		return value.isNull() ? "null" : "[]";
+	}
+
 };
 
 template<>

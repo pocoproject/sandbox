@@ -74,6 +74,12 @@ template<>
 struct ElementTraits<ObjectId::Ptr>
 {
 	enum { TypeId = 0x07 };
+
+
+	static std::string toString(const ObjectId::Ptr& id)
+	{
+		return id->toString();
+	}
 };
 
 template<>

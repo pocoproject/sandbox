@@ -47,7 +47,8 @@
 #include "Poco/Timestamp.h"
 #include "Poco/RegularExpression.h"
 #include "Poco/Nullable.h"
-
+#include "Poco/NumberFormatter.h"
+#include "Poco/DateTimeFormatter.h"
 #include "Poco/MongoDB/MongoDB.h"
 #include "Poco/MongoDB/BSONReader.h"
 #include "Poco/MongoDB/BSONWriter.h"
@@ -66,6 +67,9 @@ public:
 
 
 	virtual ~Element();
+
+
+	virtual std::string toString() const = 0;
 
 
 	virtual int type() const = 0;
@@ -116,6 +120,11 @@ template<>
 struct ElementTraits<double>
 {
 	enum { TypeId = 0x01 };
+
+	static std::string toString(const double& value)
+	{
+		return Poco::NumberFormatter::format(value);
+	}
 };
 
 // BSON UTF-8 string
@@ -125,6 +134,11 @@ template<>
 struct ElementTraits<std::string>
 {
 	enum { TypeId = 0x02 };
+
+	static std::string toString(const std::string& value)
+	{
+		return value;
+	}
 };
 
 template<>
@@ -151,6 +165,11 @@ template<>
 struct ElementTraits<bool>
 {
 	enum { TypeId = 0x08 };
+
+	static std::string toString(const bool& value)
+	{
+		return value ? "true" : "false";
+	}
 };
 
 template<>
@@ -173,6 +192,12 @@ template<>
 struct ElementTraits<Int32>
 {
 	enum { TypeId = 0x10 };
+
+
+	static std::string toString(const Int32& value)
+	{
+		return Poco::NumberFormatter::format(value);
+	}
 };
 
 // BSON UTC datetime
@@ -181,6 +206,11 @@ template<>
 struct ElementTraits<Timestamp>
 {
 	enum { TypeId = 0x09 };
+
+	static std::string toString(const Timestamp& value)
+	{
+		return DateTimeFormatter::format(value, "%Y-%m-%dT%H:%M:%s%z");
+	}
 };
 
 template<>
@@ -206,6 +236,11 @@ template<>
 struct ElementTraits<NullValue>
 {
 	enum { TypeId = 0x0A };
+
+	static std::string toString(const NullValue& value)
+	{
+		return "null";
+	}
 };
 
 template<>
@@ -318,6 +353,12 @@ template<>
 struct ElementTraits<RegularExpression::Ptr>
 {
 	enum { TypeId = 0x0B };
+
+	static std::string toString(const RegularExpression::Ptr& value)
+	{
+		//TODO
+		return "RE: not implemented yet";
+	}
 };
 
 template<>
@@ -381,6 +422,11 @@ template<>
 struct ElementTraits<JavaScriptCode::Ptr>
 {
 	enum { TypeId = 0x0D };
+
+	static std::string toString(const JavaScriptCode::Ptr& value)
+	{
+		return value.isNull() ? "" : value->code();
+	}
 };
 
 template<>
@@ -405,6 +451,11 @@ template<>
 struct ElementTraits<Int64>
 {
 	enum { TypeId = 0x12 };
+
+	static std::string toString(const Int64& value)
+	{
+		return NumberFormatter::format(value);
+	}
 };
 
 
@@ -422,6 +473,9 @@ public:
 
 	
 	T value() const { return _value; }
+
+
+	std::string toString() const { return ElementTraits<T>::toString(_value); }
 
 	
 	int type() const { return ElementTraits<T>::TypeId; }
