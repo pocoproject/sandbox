@@ -56,10 +56,4 @@ Binary::~Binary()
 {
 }
 
-void Binary::resize(std::size_t newSize)
-{
-	//TODO:
-	//_buffer.resize(newSize);
-}
-
 }} // Namespace Poco::MongoDB

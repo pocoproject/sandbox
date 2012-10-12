@@ -65,14 +65,6 @@ public:
 	virtual ~Binary();
 
 
-	unsigned char* begin();
-		/// Returns the start of the buffer
-
-
-	Poco::Int32 size() const;
-		/// Returns the size of the buffer
-
-
 	unsigned char subtype() const;
 		/// Returns the subtype
 
@@ -81,27 +73,16 @@ public:
 		/// Sets the subtype
 
 
-	void resize(std::size_t newSize);
-		/// Resizes the buffer
+	Buffer<unsigned char>& buffer();
+
 
 private:
 
-	Poco::Buffer<unsigned char> _buffer;
+	Buffer<unsigned char> _buffer;
 
 
 	unsigned char _subtype;
 };
-
-inline unsigned char* Binary::begin()
-{
-	return _buffer.begin();
-}
-
-inline Poco::Int32 Binary::size() const
-{
-	return _buffer.size();
-}
-
 
 inline unsigned char Binary::subtype() const
 {
@@ -112,6 +93,12 @@ inline unsigned char Binary::subtype() const
 inline void Binary::subtype(unsigned char type)
 {
 	_subtype = type;
+}
+
+
+inline Buffer<unsigned char>& Binary::buffer()
+{
+	return _buffer;
 }
 
 
@@ -129,20 +116,20 @@ inline void BSONReader::read<Binary::Ptr>(Binary::Ptr& to)
 	Poco::Int32 size;
 	_reader >> size;
 
-	to->resize(size);
+	to->buffer().resize(size);
 
 	unsigned char subtype;
 	_reader >> subtype;
 	to->subtype(subtype);
 	
-	_reader.readRaw((char*) to->begin(), size);
+	_reader.readRaw((char*) to->buffer().begin(), size);
 }
 
 template<>
 inline void BSONWriter::write<Binary::Ptr>(Binary::Ptr& from)
 {
 	_writer << from->subtype();
-	_writer.writeRaw((char*) from->begin(), from->size());
+	_writer.writeRaw((char*) from->buffer().begin(), from->buffer().size());
 }
 
 
