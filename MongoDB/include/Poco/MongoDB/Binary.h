@@ -38,19 +38,17 @@
 #ifndef _MongoDB_Binary_included
 #define _MongoDB_Binary_included
 
+#include "Poco/MongoDB/MongoDB.h"
+#include "Poco/MongoDB/Element.h"
 #include "Poco/Base64Encoder.h"
 #include "Poco/Buffer.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/MemoryStream.h"
+
 #include <sstream>
 
-#include "Poco/MongoDB/MongoDB.h"
-#include "Poco/MongoDB/Element.h"
-
-namespace Poco
-{
-namespace MongoDB
-{
+namespace Poco {
+namespace MongoDB {
 
 class MongoDB_API Binary
 	/// Implements BSON Binary. It's a wrapper around a Poco::Buffer<unsigned char>.
@@ -68,9 +66,11 @@ public:
 
 
 	virtual ~Binary();
+		/// Destructor
 
 
 	Buffer<unsigned char>& buffer();
+		/// Returns a reference to the buffer
 
 
 	unsigned char subtype() const;
@@ -82,6 +82,7 @@ public:
 
 
 	std::string toString() const;
+		/// Returns the binary encoded in Base64
 
 
 private:
@@ -110,15 +111,6 @@ inline Buffer<unsigned char>& Binary::buffer()
 	return _buffer;
 }
 
-
-inline std::string Binary::toString() const
-{
-	std::ostringstream oss;
-	Base64Encoder encoder(oss);
-	MemoryInputStream mis((const char*) _buffer.begin(), _buffer.size());
-	StreamCopier::copyStream(mis, encoder);
-	return oss.str();
-}
 
 // BSON Embedded Document
 // spec: binary
