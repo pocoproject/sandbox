@@ -64,7 +64,7 @@ public:
 	{
 	}
 	
-	Poco::ActiveMethod<std::string, Void, ActiveChannel> read;
+	Poco::ActiveMethod<std::string, void, ActiveChannel> read;
 	Poco::ActiveMethod<int, std::string, ActiveChannel> write;
 
 protected:
