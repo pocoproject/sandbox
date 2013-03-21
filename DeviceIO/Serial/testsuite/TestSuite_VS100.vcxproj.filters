@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_Suite">
+      <UniqueIdentifier>{ceca31da-0fd5-4820-9ebd-5bb04ac272a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Header Files">
+      <UniqueIdentifier>{a0db34d2-093b-4c2a-b71a-7a8781b828bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Source Files">
+      <UniqueIdentifier>{ceebea2d-d5bf-4409-8a6f-445be49b802c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver">
+      <UniqueIdentifier>{dbd95731-63d8-4b97-a513-36cc9550f37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver\Source Files">
+      <UniqueIdentifier>{3bf8f774-3a49-4f90-b618-fb04bcaa17c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Serial">
+      <UniqueIdentifier>{4829df93-96b7-459e-b450-e4f60b9eb271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Serial\Header Files">
+      <UniqueIdentifier>{6a83d65c-e7c4-46e3-ae04-ac4a00e6a335}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Serial\Source Files">
+      <UniqueIdentifier>{6932a5c5-2393-4481-bbe1-c4b07274e300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{233235f4-05c5-4900-9a81-1c8af9436d84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Header Files">
+      <UniqueIdentifier>{3c1382a1-5e0d-4d37-9945-3d8f420b885e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Source Files">
+      <UniqueIdentifier>{ba6c2514-6e5e-4b6b-83a9-83ade76a0b03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ProtocolTestSuite.h">
+      <Filter>_Suite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SerialTestSuite.h">
+      <Filter>_Suite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SerialTestHW.h">
+      <Filter>Serial\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SerialTestHWSuite.h">
+      <Filter>Serial\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SerialTestSW.h">
+      <Filter>Serial\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SerialTestSWSuite.h">
+      <Filter>Serial\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProtocolTest.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TestProtocol.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ProtocolTestSuite.cpp">
+      <Filter>_Suite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SerialTestSuite.cpp">
+      <Filter>_Suite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinDriver.cpp">
+      <Filter>_Driver\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SerialTestHW.cpp">
+      <Filter>Serial\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SerialTestHWSuite.cpp">
+      <Filter>Serial\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SerialTestSW.cpp">
+      <Filter>Serial\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SerialTestSWSuite.cpp">
+      <Filter>Serial\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProtocolTest.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TestProtocol.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

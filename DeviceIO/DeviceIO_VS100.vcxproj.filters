@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DeviceIOCore">
+      <UniqueIdentifier>{d0066bd3-d6f5-4cf8-a51e-cbb836fe86bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeviceIOCore\Header Files">
+      <UniqueIdentifier>{62979b05-e20a-491d-a2d6-16abd4ee4689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeviceIOCore\Source Files">
+      <UniqueIdentifier>{d7eda243-789c-4125-acfd-900305cd163f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncDeviceIO">
+      <UniqueIdentifier>{500f5619-7363-4e17-9001-629c9e6b80a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncDeviceIO\Header Files">
+      <UniqueIdentifier>{6835da5b-8b9b-4fe0-a61a-7e58c7ea127e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AsyncDeviceIO\Source Files">
+      <UniqueIdentifier>{1b382967-997c-40cb-be6f-f52e582136d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{9397c2de-f73c-4180-bf08-e1cac7872ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Header Files">
+      <UniqueIdentifier>{c663c967-57cd-4479-be41-871508270a8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Source Files">
+      <UniqueIdentifier>{f153030c-e318-48aa-b72e-f04e698ac46d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeviceIO">
+      <UniqueIdentifier>{08e4bcce-98e6-4b82-a7ce-0ac1629f7fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeviceIO\Header Files">
+      <UniqueIdentifier>{b45ada3b-d490-4803-801f-c8411e43326c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeviceIO\Source Files">
+      <UniqueIdentifier>{5044c252-41b1-4942-89b1-10e12904849a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Poco\DeviceIO\DeviceIO.h">
+      <Filter>DeviceIOCore\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\ActiveChannel.h">
+      <Filter>AsyncDeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\AsyncChannel.h">
+      <Filter>AsyncDeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\AsyncCommand.h">
+      <Filter>AsyncDeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\AsyncEvent.h">
+      <Filter>AsyncDeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\AsyncStreamChannel.h">
+      <Filter>AsyncDeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\Protocol.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\ProtocolStream.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\Channel.h">
+      <Filter>DeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\ChannelConfig.h">
+      <Filter>DeviceIO\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Poco\DeviceIO\ChannelStream.h">
+      <Filter>DeviceIO\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AsyncChannel.cpp">
+      <Filter>AsyncDeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AsyncCommand.cpp">
+      <Filter>AsyncDeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AsyncEvent.cpp">
+      <Filter>AsyncDeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AsyncStreamChannel.cpp">
+      <Filter>AsyncDeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Protocol.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProtocolStream.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Channel.cpp">
+      <Filter>DeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelConfig.cpp">
+      <Filter>DeviceIO\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChannelStream.cpp">
+      <Filter>DeviceIO\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_Suite">
+      <UniqueIdentifier>{3ad232e1-b596-442b-99b8-0fbb0dda2125}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Header Files">
+      <UniqueIdentifier>{be41071f-f247-4423-afc1-2db9bb07a2d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Source Files">
+      <UniqueIdentifier>{15b91dd0-b125-435e-af99-b1832025e7ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver">
+      <UniqueIdentifier>{346270be-ceac-4f6c-b795-61959c081d2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver\Source Files">
+      <UniqueIdentifier>{4180d3bf-27ff-4e31-ae4a-024a53332723}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Socket">
+      <UniqueIdentifier>{f0ed7443-5dea-4387-b033-3564fad119a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Socket\Header Files">
+      <UniqueIdentifier>{b1f64e7d-c618-4b6d-8dfa-9cb1e3ed2992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Socket\Source Files">
+      <UniqueIdentifier>{a333eeb9-f437-43f8-8017-6c68267a474a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\SocketTestSuite.cpp">
+      <Filter>_Suite\Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinDriver.cpp">
+      <Filter>_Driver\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SocketChannelTest.cpp">
+      <Filter>Socket\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UDPEchoServer.cpp">
+      <Filter>Socket\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\SocketTestSuite.h">
+      <Filter>_Suite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SocketChannelTest.h">
+      <Filter>Socket\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UDPEchoServer.h">
+      <Filter>Socket\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

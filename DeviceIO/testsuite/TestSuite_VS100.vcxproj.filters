@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_Suite">
+      <UniqueIdentifier>{22d61c7b-d271-4fc2-8389-80e0748f757d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Header Files">
+      <UniqueIdentifier>{075b534b-5de2-4d0c-af81-f56beeb29b96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Source Files">
+      <UniqueIdentifier>{54827249-b677-4ae6-b028-8ec0eb571712}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver">
+      <UniqueIdentifier>{b09f1d19-b948-43e9-a3ce-a0b6d62fe685}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver\Source Files">
+      <UniqueIdentifier>{3d8b2715-24f5-4eab-90bf-26528452c6e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Async">
+      <UniqueIdentifier>{4839f776-3588-4cc6-87b7-5f867be461c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Async\Header Files">
+      <UniqueIdentifier>{56b90b9a-2131-45d1-9641-eaa950078eb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Async\Source Files">
+      <UniqueIdentifier>{041fbb55-50c3-4564-8fdd-4dff8be0ddf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{0015e78f-542e-4060-95d8-25dcd84f3bad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Header Files">
+      <UniqueIdentifier>{87f4a66b-3d6d-4743-a602-75d4b71d3134}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Protocol\Source Files">
+      <UniqueIdentifier>{d68f3f3f-069d-40e3-8657-cd47220251ea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\DeviceIOTestSuite.h">
+      <Filter>_Suite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AsyncChannelTest.h">
+      <Filter>Async\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AsyncDeviceIOTestSuite.h">
+      <Filter>Async\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProtocolTest.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProtocolTestSuite.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TestChannel.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TestProtocol.h">
+      <Filter>Protocol\Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DeviceIOTestSuite.cpp">
+      <Filter>_Suite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WinDriver.cpp">
+      <Filter>_Driver\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AsyncChannelTest.cpp">
+      <Filter>Async\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AsyncDeviceIOTestSuite.cpp">
+      <Filter>Async\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProtocolTest.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProtocolTestSuite.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TestChannel.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TestProtocol.cpp">
+      <Filter>Protocol\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
