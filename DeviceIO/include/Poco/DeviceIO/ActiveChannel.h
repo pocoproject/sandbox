@@ -68,7 +68,7 @@ public:
 	Poco::ActiveMethod<int, std::string, ActiveChannel> write;
 
 protected:
-	std::string readImpl(const Void&)
+	std::string readImpl()
 	{	
 		std::string buffer;
 		return _channel.read(buffer);
