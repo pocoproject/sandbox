@@ -171,11 +171,11 @@ protected:
 private:
 	SerialConfigImpl();
 
-	DCB             _dcb;
-	COMMTIMEOUTS    _cto;
+	DCB			 _dcb;
+	COMMTIMEOUTS	_cto;
 	FlowControlImpl _flowControl;
-	bool            _useEOF;
-	int             _bufferSize;
+	bool			_useEOF;
+	int			 _bufferSize;
 
 	friend class SerialChannelImpl;
 };

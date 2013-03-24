@@ -90,7 +90,7 @@ int SerialChannelImpl::readImpl(char* pBuffer, int length)
 	DWORD readCount = 0;
 	ZeroMemory(pBuffer, length);
 	do
-    {
+	{
 		if (!ReadFile(_handle, pBuffer + readCount, length - readCount, &read, NULL)) 
 			handleError(_pConfig->name());
 		else if (0 == read) break;
@@ -121,7 +121,7 @@ int SerialChannelImpl::readImpl(char*& pBuffer)
 	pBuffer = static_cast<char*>(std::calloc(bufSize, sizeof(char)));//! freed in parent call
 
 	do
-    {
+	{
 		if (_leftOver.size())
 		{
 			read = _leftOver.size() > bufSize - readCount ? bufSize - readCount : _leftOver.size();
@@ -184,10 +184,10 @@ const std::string& SerialChannelImpl::getNameImpl() const
 
 std::string& SerialChannelImpl::getErrorText(DWORD errCode, std::string& buf)
 {
-    DWORD dwRet;
-    LPSTR pTemp = NULL;
+	DWORD dwRet;
+	LPSTR pTemp = NULL;
 
-    dwRet = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
+	dwRet = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
 		NULL,
 		errCode,
 		LANG_USER_DEFAULT,
@@ -195,8 +195,8 @@ std::string& SerialChannelImpl::getErrorText(DWORD errCode, std::string& buf)
 		0,
 		NULL);
 
-    if (dwRet && pTemp)
-    {
+	if (dwRet && pTemp)
+	{
 		std::size_t len = std::string(pTemp).length()-2;
 		if (len >= 0)
 		{
@@ -204,10 +204,10 @@ std::string& SerialChannelImpl::getErrorText(DWORD errCode, std::string& buf)
 			buf= pTemp;
 		}
 
-        LocalFree((HLOCAL) pTemp);
-    }
+		LocalFree((HLOCAL) pTemp);
+	}
 
-    return buf;
+	return buf;
 }
 
 

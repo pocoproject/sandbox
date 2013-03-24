@@ -157,13 +157,13 @@ void SerialConfigImpl::setParityCharImpl(char parityChar)
 
 	case 'o': case 'O':
 		_termios.c_cflag |= (PARODD | PARENB); // enable parity, set to ODD
-		_termios.c_iflag |= INPCK;      // enable input parity checking
+		_termios.c_iflag |= INPCK;	  // enable input parity checking
 		return;
 
 	case 'e': case 'E':
-		_termios.c_cflag |= PARENB;     // enable parity, default is EVEN
+		_termios.c_cflag |= PARENB;	 // enable parity, default is EVEN
 		_termios.c_cflag &= ~(PARODD);  // ensure PARODD is clear
-		_termios.c_iflag |= INPCK;      // enable input parity checking
+		_termios.c_iflag |= INPCK;	  // enable input parity checking
 		return;
 
 	default:

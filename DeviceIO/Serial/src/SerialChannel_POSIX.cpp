@@ -91,7 +91,7 @@ int SerialChannelImpl::readImpl(char* pBuffer, int length)
 	int readCount = 0;
 	std::memset(pBuffer, 0, length);
 	do
-    {
+	{
 		if ((readLen = read(_handle, pBuffer + readCount, length - readCount)) < 0) 
 			handleError(_pConfig->name());
 		else if (0 == readLen) break;
@@ -122,7 +122,7 @@ int SerialChannelImpl::readImpl(char*& pBuffer)
 	pBuffer = static_cast<char*>(std::calloc(bufSize, sizeof(char)));//! freed in parent call
 
 	do
-    {
+	{
 		if (_leftOver.size())
 		{
 			readLen = _leftOver.size() > bufSize - readCount ? bufSize - readCount : _leftOver.size();
@@ -178,7 +178,7 @@ int SerialChannelImpl::writeImpl(const char* buffer, int length)
 
 std::string& SerialChannelImpl::getErrorText(std::string& buf)
 {
-    switch (errno)
+	switch (errno)
 	{
 	case EIO:
 		buf = "I/O error.";
@@ -215,7 +215,7 @@ std::string& SerialChannelImpl::getErrorText(std::string& buf)
 		buf = "Unknown error.";
 	}
 
-    return buf;
+	return buf;
 }
 
 

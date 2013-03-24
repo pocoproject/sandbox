@@ -72,7 +72,7 @@ private:
 	SerialChannelImpl(const SerialChannelImpl&);
 	const SerialChannelImpl& operator = (const SerialChannelImpl&);
 
-	int         _handle;
+	int		 _handle;
 	ConfigPtr   _pConfig;
 	std::string _leftOver;
 };

@@ -84,7 +84,7 @@ void ProtocolTest::testOne()
 	tp2.receive(str);
 	assert (tp2.readRaw() == rawData);
 	assert ("123" == str);
-    tp2.clear();
+	tp2.clear();
 	assert (tp2.readRaw() == "");
 
 	tp1.write("123");
@@ -119,7 +119,7 @@ void ProtocolTest::testTwo()
 	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
-    pTp2->clear();
+	pTp2->clear();
 	assert (pTp2->readRaw() == "");
 
 	pTp1->write("123");
@@ -172,7 +172,7 @@ void ProtocolTest::testTwo()
 	pTp4->receive(str);
 	assert (pTp4->readRaw() == rawData);
 	assert ("321" == str);
-    pTp4->clear();
+	pTp4->clear();
 	assert (pTp4->readRaw() == "");
 
 	pTp1->detach();//does nothing for a root protocol
@@ -189,7 +189,7 @@ void ProtocolTest::testTwo()
 	pTp2->receive(str);
 	assert (pTp2->readRaw() == rawData);
 	assert ("123" == str);
-    pTp2->clear();
+	pTp2->clear();
 	assert (pTp2->readRaw() == "");
 
 	pTp1->write("123");

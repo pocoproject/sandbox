@@ -171,8 +171,8 @@ private:
 
 	termios& getTermios();
 
-	termios         _termios;
-	int             _bufferSize;
+	termios		 _termios;
+	int			 _bufferSize;
 	FlowControlImpl _flowControl;
 
 	friend class SerialChannelImpl;
